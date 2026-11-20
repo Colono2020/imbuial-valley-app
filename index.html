@@ -2819,8 +2819,8 @@ function drawMap(cvm){if(!cvm||!cvm.getContext)return;const g=cvm.getContext('2d
     const c=state.crops[i];if(c){g.fillStyle=c.r?'#f5d142':'#62b35f';g.beginPath();g.arc(x*P+5,y*P+4,2.6,0,7);g.fill()}}
   // 5) árvores com copa, sombra e brilho; araucárias; pedras e arbustos
   for(let y=0;y<MH;y++)for(let x=XMIN;x<MW;x++){const i=I(x,y),o=objs[i],dep=state.depleted[i];if(!o||o==='capim'||soilOn(i))continue;const cx=x*P+P/2+(hash2(x,y,1)-.5)*2,cy=y*P+P/2+(hash2(x,y,2)-.5)*2;
-    if(o==='tree'&&!dep){g.fillStyle='rgba(0,0,0,.25)';g.beginPath();g.arc(cx+1.6,cy+2,P*.62,0,7);g.fill();g.fillStyle=pal[2];g.beginPath();g.arc(cx,cy,P*.62,0,7);g.fill();
-      g.fillStyle=pal[3];g.beginPath();g.arc(cx-1.6,cy-1.8,P*.38,0,7);g.fill();if(isApple(i)){g.fillStyle='#e0392b';g.fillRect(cx+1,cy-1,2,2)}}
+    if(o==='tree'&&!dep){g.fillStyle='rgba(0,0,0,.25)';g.beginPath();g.arc(cx+1.6,cy+2,P*.62,0,7);g.fill();const sk=isSakura(i);g.fillStyle=sk?'#d97aa0':pal[2];g.beginPath();g.arc(cx,cy,P*(sk?.7:.62),0,7);g.fill();
+      g.fillStyle=sk?'#f6b3c9':pal[3];g.beginPath();g.arc(cx-1.6,cy-1.8,P*.38,0,7);g.fill();if(sk){g.fillStyle='#fde0ea';g.fillRect(cx-2,cy-3,1.5,1.5)}if(isApple(i)&&!sk){g.fillStyle='#e0392b';g.fillRect(cx+1,cy-1,2,2)}}
     else if(o==='pine'&&!dep){g.fillStyle='rgba(0,0,0,.25)';g.beginPath();g.moveTo(cx+1.5,cy-P*.55);g.lineTo(cx+P*.55,cy+P*.5);g.lineTo(cx-P*.4,cy+P*.5);g.fill();
       g.fillStyle='#1f5a3c';g.beginPath();g.moveTo(cx,cy-P*.6);g.lineTo(cx+P*.48,cy+P*.42);g.lineTo(cx-P*.48,cy+P*.42);g.fill();g.fillStyle='#2f7a50';g.beginPath();g.moveTo(cx,cy-P*.6);g.lineTo(cx-P*.48,cy+P*.42);g.lineTo(cx,cy+P*.42);g.fill()}
     else if(o==='rock'&&!dep){g.fillStyle='#6d737c';g.beginPath();g.ellipse(cx+.6,cy+.8,3.4,2.6,0,0,7);g.fill();g.fillStyle='#b9bec5';g.beginPath();g.ellipse(cx,cy,3,2.2,0,0,7);g.fill()}
@@ -3215,7 +3215,7 @@ function drawClimaWorld(W,H){const hr=state.min/60,c=state.clima;
 /* ================= MULTIPLAYER: cooperativo no mundo do dono, até 4 jogadores, pela internet com código de sala =================
    Ligação: WebRTC (canal de dados direto entre os aparelhos). Para os aparelhos se acharem usa o servidor público grátis do PeerJS
    só como "telefonista" (sinalização). Quem hospeda manda no mundo; os convidados mandam o que fazem e o dono aplica e espalha. */
-const JOGO_VERSAO='2026-11-20o';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
+const JOGO_VERSAO='2026-11-20p';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
 const MP_MAX=4,MP_PREFIX=SLOT_KEYS[0].replace(/_slot_1$/,'').replace(/_/g,''),MP_SERVER='wss://0.peerjs.com:443/peerjs?key=peerjs';
 const MP_ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']},{urls:'stun:global.stun.twilio.com:3478'}]};
 const MP_PESSOAL=['p','energy','hunger','vida','forca','sujeira','sel','testoUntil','fomeT','coins','xpUntil','monster'];      // cada jogador tem o seu; o resto do state é o mundo do dono
