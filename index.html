@@ -117,6 +117,8 @@
   #mppill small{opacity:.8;margin-left:4px}
   .mpcode{text-align:center;background:#1d4f91;color:#fff;border-radius:14px;padding:10px;margin:6px 0;font:600 13px Poppins,sans-serif}.mpcode b{font:800 34px Poppins,sans-serif;letter-spacing:3px}
   .mpst{text-align:center;font-weight:600}
+  .cfg-head{background:linear-gradient(#5a3e8c,#8a6ac4 60%,#c7b4f0)}.cfg-row{display:flex;align-items:center;gap:10px;background:#fff;border:2px solid #e3cfa0;border-radius:14px;padding:8px 12px;margin-bottom:8px;box-shadow:0 3px 0 #e3cfa0}.cfg-row .g{flex:1}.cfg-row b{display:block}.cfg-row small{color:#8a6a44}.cfg-row input[type=range]{width:100%;accent-color:#5aa33a}.cfg-ic{font-size:26px}.cfg-sw{min-width:120px}
+  #panel.mpp .cfg-head{}
 
   #panel.mesap{width:min(820px,97vw);background:linear-gradient(#3a2416,#2a1a10);border-color:#1a0f08;color:#f5e6c8}#panel.mesap h2{color:#ffd23f;text-shadow:0 2px 0 #000}
   #panel.mesap .mesa-lug .ml{background:#4a3020;border-color:#6e4a2e;color:#f5e6c8}#panel.mesap .mesa-lug .ml.on{background:#5e3c26;border-color:#8a5c38}#panel.mesap .mesa-lug .ml.eu{border-color:#ffd23f;background:#6a4a20}#panel.mesap .ml small{color:#d9b98a}
@@ -196,6 +198,9 @@
   #nvurl{flex:1;padding:7px 10px;border:2px solid #d9c08f;border-radius:10px;font:500 13px Poppins,sans-serif}
   .nickbox{display:flex;gap:12px;align-items:center;background:#fff;border:2px solid #e3cfa0;border-radius:14px;padding:10px 12px;box-shadow:0 3px 0 #e3cfa0;margin:4px 0 12px}
   .nickbox b{display:block;color:#3b2a1a}.nickbox small{display:block;color:#8a6a44;margin-bottom:4px}.nickbox .g{flex:1}
+  .nickrow{display:flex;gap:8px;align-items:center;margin-top:4px}.nickrow input{flex:1;min-width:0}.nickrow input:disabled{opacity:.75;background:#f3ead6}
+  .nickok{font:700 14px Poppins,sans-serif;padding:7px 12px;border:0;border-radius:10px;background:#5fae4a;color:#fff;box-shadow:0 3px 0 #3d7a2f;cursor:pointer;white-space:nowrap}.nickok.alt{background:#c98a3c;box-shadow:0 3px 0 #8f5f26}
+  .nickst{margin-top:6px!important}.nickbox .nickst b{display:inline}.mpnick{font-size:18px;color:#3b2a1a}
   .nickbox input{width:100%;box-sizing:border-box;font:600 16px Poppins,sans-serif;padding:6px 10px;border:2px solid #d9c08f;border-radius:10px;background:#fffdf6}
   #panel.mpp{width:min(620px,94vw);padding:0;overflow:hidden;display:flex;flex-direction:column}
   .mp-head{background:linear-gradient(#0f2a5c 0%,#1d4f91 45%,#2f7bc4 75%,#5fb0e6 100%)}
@@ -338,7 +343,9 @@
   #splash .leaf{position:absolute;top:-4vh;width:1.4vmin;height:.9vmin;border-radius:0 70% 0 70%;animation:spLeaf linear infinite}
   @keyframes spLeaf{to{transform:translate(18vw,112vh) rotate(720deg)}}
   #splash .spcv{position:absolute;left:0;bottom:0;width:100%;height:30vh;pointer-events:none;image-rendering:pixelated}
-  #splash .spquit{position:absolute;right:12px;top:12px;font-size:13px;padding:6px 14px;border-radius:20px;background:rgba(0,0,0,.35);border:2px solid rgba(255,255,255,.55);color:#fff;box-shadow:none}
+  #splash .spgear{position:absolute;right:12px;top:10px;width:42px;height:42px;padding:0;font-size:22px;border-radius:50%;background:rgba(0,0,0,.35);border:2px solid rgba(255,255,255,.55);box-shadow:none;z-index:3}
+  #splash .spcfg{position:absolute;right:12px;top:58px;z-index:3;display:flex;flex-direction:column;gap:6px;background:rgba(30,18,10,.85);border:2px solid rgba(255,255,255,.35);border-radius:14px;padding:8px}#splash .spcfg.hidden{display:none}#splash .spcfg button{font-size:13px;padding:6px 12px;border-radius:10px;white-space:nowrap}
+  #splash .spquit{position:absolute;right:62px;top:12px;font-size:13px;padding:6px 14px;border-radius:20px;background:rgba(0,0,0,.35);border:2px solid rgba(255,255,255,.55);color:#fff;box-shadow:none}
   #splash .ver{position:absolute;right:12px;bottom:8px;color:rgba(255,255,255,.75);font-size:11px}
 
   .titlecapa{display:flex;gap:12px;align-items:center}.titlecapa img{width:64px;height:64px;border-radius:12px;border:3px solid #3a2416;image-rendering:pixelated}.titlecapa h2{margin:0}
@@ -2296,6 +2303,41 @@ function revSound(){      // moto acelerando (ao comprar na loja do Alison)
 const sfx={hit:()=>beep(160,.08),get:()=>{beep(660,.08);setTimeout(()=>beep(880,.1),70)},coin:()=>{beep(988,.07);setTimeout(()=>beep(1319,.14),70)},
   no:()=>beep(110,.15,'sawtooth'),build:()=>{[392,494,587,784].forEach((f,i)=>setTimeout(()=>beep(f,.15),i*110))}};
 
+try{const _arc=CanvasRenderingContext2D.prototype.arc;CanvasRenderingContext2D.prototype.arc=function(x,y,r,a0,a1,ccw){return _arc.call(this,x,y,r>0?r:0,a0,a1,ccw)}}catch(e){}
+/* ---------- Música de fundo (feita na hora pelo jogo, calminha, de fazenda) ---------- */
+let musicaOff=(()=>{try{return localStorage.getItem('imbuial_valley_musica')==='0'}catch(e){return false}})(),musicaVol=(()=>{try{const v=+localStorage.getItem('imbuial_valley_musvol');return v>0&&v<=1?v:.5}catch(e){return .5}})();
+const MUS={on:false,t:0,step:0,iv:null,g:null};
+const MUS_ACORDES=[[60,64,67],[57,60,64],[53,57,60],[55,59,62]],MUS_PENTA=[60,62,64,67,69,72,74,76];      // Dó · Lá menor · Fá · Sol, com melodia na escala pentatônica
+const midiHz=m=>440*Math.pow(2,(m-69)/12);
+function musNota(c,m,t0,dur,vol,tipo){const o=c.createOscillator(),g=c.createGain();o.type=tipo;o.frequency.value=midiHz(m);g.gain.setValueAtTime(0.0001,t0);g.gain.linearRampToValueAtTime(vol,t0+.03);g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);o.connect(g);g.connect(MUS.g);o.start(t0);o.stop(t0+dur+.05)}
+function musTick(){if(!MUS.on||!actx)return;const c=actx,bpm=84,pas=60/bpm/2;      // colcheias
+  while(MUS.t<c.currentTime+.35){const st=MUS.step,comp=Math.floor(st/8)%4,ac=MUS_ACORDES[comp],k=st%8;
+    if(k===0)musNota(c,ac[0]-24,MUS.t,pas*7,.09,'triangle');                                                                     // baixo
+    musNota(c,ac[[0,1,2,1][k%4]],MUS.t,pas*1.6,.035,'sine');                                                                      // dedilhado
+    if(k%2===0&&Math.random()<.55){const n=MUS_PENTA[(comp*2+((st*7+(st>>3))%5)+(Math.random()<.3?1:0))%MUS_PENTA.length];musNota(c,n+12,MUS.t,pas*2.4,.03,'triangle')}      // melodia
+    MUS.t+=pas;MUS.step++}}
+function musicaAplica(){try{musAplica0()}catch(e){}}
+function musAplica0(){const pode=!musicaOff&&actx&&!document.hidden;
+  if(pode&&!MUS.on){MUS.g=MUS.g||actx.createGain();MUS.g.gain.value=.55*musicaVol;MUS.g.connect&&MUS.g.connect(actx.destination);MUS.on=true;MUS.t=actx.currentTime+.1;clearInterval(MUS.iv);MUS.iv=setInterval(musTick,120)}
+  else if(!pode&&MUS.on){MUS.on=false;clearInterval(MUS.iv);try{MUS.g.disconnect();MUS.g=null}catch(e){}}
+  if(MUS.g)MUS.g.gain.value=.55*musicaVol}
+function musicaToggle(){musicaOff=!musicaOff;try{localStorage.setItem('imbuial_valley_musica',musicaOff?'0':'1')}catch(e){}if(!musicaOff)try{getCtx()}catch(e){}musicaAplica()}
+function musicaVolume(v){musicaVol=Math.max(.05,Math.min(1,+v||.5));try{localStorage.setItem('imbuial_valley_musvol',musicaVol)}catch(e){}musicaAplica()}
+try{document.addEventListener('visibilitychange',()=>musicaAplica());const um=()=>{try{getCtx()}catch(e){}musicaAplica()};window.addEventListener('pointerdown',um,{passive:true});window.addEventListener('keydown',um)}catch(e){}
+// ---------- Personalizar (cabeças, sons, controles, música e efeitos) ----------
+let cfgDoTitulo=false;
+function openConfig(){cfgDoTitulo=panelKind==='title'||(panelKind==='config'&&cfgDoTitulo);const I=(e,c)=>`<span class="ico" style="background:${c}">${e}</span>`;
+  showPanel('config',`<div class="m-head cfg-head"><button class="close" data-a="close">✕</button><span class="tag">do seu jeito</span><h1>⚙️ Personalizar</h1><div class="sub">Visual, sons e música do jogo</div></div><div class="m-body">
+    <div class="cfg-row"><span class="cfg-ic">🎵</span><div class="g"><b>Música</b><small>trilha calminha de fazenda</small><input type="range" id="musvol" min="5" max="100" value="${Math.round(musicaVol*100)}" ${musicaOff?'disabled':''}></div><button class="${musicaOff?'alt':''} cfg-sw" data-a="musica">${musicaOff?'🔇 Desligada':'🎵 Ligada'}</button></div>
+    <div class="cfg-row"><span class="cfg-ic">🔊</span><div class="g"><b>Efeitos sonoros</b><small>machado, moedas, bichos… (tecla M)</small></div><button class="${muted?'alt':''} cfg-sw" data-a="mutecfg">${muted?'🔇 Desligados':'🔊 Ligados'}</button></div>
+    <div class="m-grid">
+      <button class="m-btn" data-a="custom">${I('🙂','#fff3b0')}<span>Cabeças<small>fotos no rosto</small></span></button>
+      <button class="m-btn" data-a="sounds">${I('🎙️','#f6d0ff')}<span>Sons<small>áudios personalizados</small></span></button>
+      ${isTouch?`<button class="m-btn" data-a="hudedit">${I('🎮','#d6f0ff')}<span>Controles<small>arrumar os botões</small></span></button>`:''}
+      ${state&&curSlot!=null?`<button class="m-btn" data-a="fps">${I('🔋','#e4f7dc')}<span>Economia<small>${fpsLim()===30?'ligada · 30 quadros/s':'desligada · 60 quadros/s'}</small></span></button>`:''}
+    </div></div>`);
+  const r=$('musvol');if(r&&r.addEventListener)r.addEventListener('input',()=>musicaVolume(r.value/100))}
+
 /* ---------- Utilidades de jogo ---------- */
 let toastT=null;
 const TOAST_MS=10000;      // as mensagens ficam 10 segundos na tela
@@ -2422,7 +2464,7 @@ function drawClimaWorld(W,H){const hr=state.min/60,c=state.clima;
 /* ================= MULTIPLAYER: cooperativo no mundo do dono, até 4 jogadores, pela internet com código de sala =================
    Ligação: WebRTC (canal de dados direto entre os aparelhos). Para os aparelhos se acharem usa o servidor público grátis do PeerJS
    só como "telefonista" (sinalização). Quem hospeda manda no mundo; os convidados mandam o que fazem e o dono aplica e espalha. */
-const JOGO_VERSAO='2026-11-19h';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
+const JOGO_VERSAO='2026-11-20d';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
 const MP_MAX=4,MP_PREFIX=SLOT_KEYS[0].replace(/_slot_1$/,'').replace(/_/g,''),MP_SERVER='wss://0.peerjs.com:443/peerjs?key=peerjs';
 const MP_ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']},{urls:'stun:global.stun.twilio.com:3478'}]};
 const MP_PESSOAL=['p','energy','hunger','forca','sujeira','sel','testoUntil','fomeT','coins','xpUntil','monster'];      // cada jogador tem o seu; o resto do state é o mundo do dono
@@ -2430,7 +2472,7 @@ const MP_FORA_DIFF=new Set([...MP_PESSOAL,'saved','min','day','rain','clima','ri
 const MP_BLOQ=new Set(['sleep','nap','busskip','treinar','banho','trigspin','slotspin','trigbet','trigset','slotbet','plowstart','plowok','plowmode','plowset','extraok','vendaok','extravender','plowredo',
   'motoride','tratorride','invride','motouse','tratoruse','savenow','newgame','jogar','criar','criarok','apagar','apagarok','exportar','importar','importarok','titlecancel','sairmenu','fecharjogo','trocarmundo',
   'custom','sounds','sndplay','sndremove','headsize','headremove','skinlib','skinuse','skinbig','skinbg','skindel','hudedit','hudcolor','hudreset','hudmin','hudshow','hudok','mute','zoomin','zoomout','menu','mapa','mp','mphost','mpjoin','mpsair','mpkick','mpcopy','mpchat']);
-const MP_LOCAL=new Set(['close','mute','zoomin','zoomout','hudedit','hudcolor','hudreset','hudmin','hudshow','hudok','menu','mapa','custom','sounds','sndplay','sndremove','headsize','headremove','sairmenu','fecharjogo','mp','mphost','mpjoin','mpsair','mpkick','mpcopy','mpchat','nuvem','nvcopiar','nvapagar','mesa','nvtirar','nvapagarok','fps','pix','pixenviar','pixresp','trigclose','barclose']);
+const MP_LOCAL=new Set(['close','nicksalva','nickcod','mute','zoomin','zoomout','hudedit','hudcolor','hudreset','hudmin','hudshow','hudok','menu','mapa','custom','sounds','sndplay','sndremove','headsize','headremove','sairmenu','fecharjogo','mp','mphost','mpjoin','mpsair','mpkick','mpcopy','mpchat','nuvem','nvcopiar','nvapagar','mesa','config','musica','mutecfg','mpopen','custom','sounds','hudedit','nvtirar','nvapagarok','fps','pix','pixenviar','pixresp','trigclose','barclose']);
 const MP_TEST=(()=>{try{const q=new URLSearchParams(location.search).get('mptest');return q||null}catch(e){return null}})();      // só para testar no PC com 2 janelas
 const MP={role:null,code:null,ws:null,hb:null,myId:null,players:{},links:{},host:null,pc:null,ice:[],cap:null,backup:null,backupSlot:null,lastJ:{},
   tT:0,wT:0,pT:0,pillT:0,remote:false,incoming:false,nextId:1,mid:1,status:'',nome:(()=>{try{return localStorage.getItem(MP_PREFIX+'_mpnome')||''}catch(e){return''}})()};
@@ -2676,7 +2718,7 @@ function openMP(){if(MP.cap)return;
   let h='';
   if(!MP.role){
     h=head('Até '+MP_MAX+' amigos na mesma fazenda, cada um com seu boneco')+`<div class="m-body">
-    <div class="mpnome"><span class="mpav big" style="background:${MP_CORES[0]}">${mpEsc((MP.nome||'?')[0].toUpperCase())}</span><div class="g"><small>Seu nome na sala</small><input id="mpnome" maxlength="18" value="${mpEsc(MP.nome||'')}" placeholder="Ex.: Teus"></div></div>
+    ${(NICK&&NICK.n)||!nickTemBanco()?`<div class="mpnome"><span class="mpav big" style="background:${MP_CORES[0]}">${mpEsc((MP.nome||'?')[0].toUpperCase())}</span><div class="g"><small>Seu nick${NICK&&NICK.n?' (troca na tela inicial)':''}</small>${NICK&&NICK.n?`<b class="mpnick">${mpEsc(NICK.n)}</b>`:`<input id="mpnome" maxlength="18" value="${mpEsc(MP.nome||'')}" placeholder="Ex.: Teus">`}</div></div>`:nickHTML()}
     <div class="mpcards">
       <div class="mpcard host"><div class="mpci">🏠</div><h3>Hospedar</h3><p>${curSlot!=null?`O mundo <b>${mpEsc(state.nome||'')}</b> vira a sala. Você ganha um código para passar aos amigos.`:'Abra um mundo seu primeiro para poder hospedar.'}</p><button class="mpbig" data-a="mphost" ${curSlot!=null?'':'disabled'}>Criar sala</button></div>
       <div class="mpcard join"><div class="mpci">🚪</div><h3>Entrar</h3><p>Digite o código que o seu amigo passou.</p><input id="mpcode" class="mpcodein" maxlength="12" placeholder="TEUS-4821" autocomplete="off"><button class="mpbig" data-a="mpjoin">Entrar na sala</button></div>
@@ -2699,13 +2741,13 @@ function openMP(){if(MP.cap)return;
     <details class="mpregras"><summary>📜 Regras da sala</summary><p>Todos cortam, quebram, colhem, plantam, regam, compram e vendem com o dinheiro da fazenda. Só o dono passa o tempo (dormir, ônibus, academia, banho), pesca, laça bichos, ara terra, constrói pelo L e anda de moto/trator.</p></details>
     <div class="mpfim"><small>${MP.role==='host'?(NV.on?`Mundo na nuvem · código <b>${mpEsc(NV.id)}</b>. Ao sair, salva e outro assume.`:'Fechar a sala manda todo mundo de volta pro seu mundo.'):'Seu mundo está guardado e volta quando você sair.'}</small><button class="red" data-a="mpsair">${MP.role==='host'?(NV.on?'☁️ Salvar e sair':'Fechar a sala'):MP.myId?'Sair da sala':'Cancelar'}</button></div></div>`;
   }
-  MP.incoming=false;showPanel('mp',h);mpLogUI();
+  MP.incoming=false;showPanel('mp',h);mpLogUI();nickBind();
   const inp=$('mpmsg');if(inp&&inp.addEventListener)inp.addEventListener('keydown',ev=>{if(ev.key==='Enter'){ev.preventDefault();ev.stopPropagation();mpChat(inp.value);inp.value=''}});
   const ci=$('mpcode');if(ci&&ci.addEventListener){ci.addEventListener('input',()=>{ci.value=ci.value.toUpperCase()});ci.addEventListener('keydown',ev=>{if(ev.key==='Enter'){ev.preventDefault();ev.stopPropagation();ACT.mpjoin()}})}
   const ni=$('mpnome');if(ni&&ni.addEventListener)ni.addEventListener('input',()=>{const a=document.querySelector('.mpnome .mpav');if(a)a.textContent=(ni.value.trim()[0]||'?').toUpperCase()})}
 function nickSet(v){MP.nome=mpLimpo(v);try{localStorage.setItem(MP_PREFIX+'_mpnome',MP.nome)}catch(e){}}
-function nickBind(){const ni=$('nick');if(!ni||!ni.addEventListener)return;ni.addEventListener('input',()=>{nickSet(ni.value);const a=$('nickav');if(a)a.textContent=(ni.value.trim()[0]||'?').toUpperCase()});ni.addEventListener('keydown',ev=>{ev.stopPropagation();if(ev.key==='Enter'){ev.preventDefault();ni.blur&&ni.blur()}})}
-function mpLerNome(){const el=$('mpnome');if(el&&el.value!=null){MP.nome=mpLimpo(el.value);try{localStorage.setItem(MP_PREFIX+'_mpnome',MP.nome)}catch(e){}}}
+function nickBind(){const ni=$('nick');if(!ni||!ni.addEventListener)return;ni.addEventListener('input',()=>{const a=$('nickav');if(a)a.textContent=(ni.value.trim()[0]||'?').toUpperCase()});ni.addEventListener('keydown',ev=>{ev.stopPropagation();if(ev.key==='Enter'){ev.preventDefault();ACT.nicksalva()}});const nc=$('nickcod');if(nc&&nc.addEventListener)nc.addEventListener('keydown',ev=>{ev.stopPropagation();if(ev.key==='Enter'){ev.preventDefault();ACT.nickcod()}})}
+function mpLerNome(){if(NICK&&NICK.n){MP.nome=NICK.n;return}const el=$('mpnome');if(el&&el.value!=null){MP.nome=mpLimpo(el.value);try{localStorage.setItem(MP_PREFIX+'_mpnome',MP.nome)}catch(e){}}}
 
 /* ---------- Mundo na nuvem (Firebase Realtime Database pela API REST) ----------
    O mundo fica guardado na internet. Quem entra primeiro vira o dono (hospeda a sala);
@@ -2734,6 +2776,46 @@ function nvReq(path,metodo,corpo,url){const u=`${url||NV.url}/${MP_PREFIX}/${pat
       e=>{clearTimeout(to);if(e&&(e.message==='regras'||/^(HTTP|rede)/.test(e.message)))throw e;throw new Error('rede: '+(e&&e.message||e))})}
 const NV_AGORA={'.sv':'timestamp'};
 const nvErro=e=>e&&e.message==='regras'?'O banco recusou: falta publicar as Regras no Firebase (passo 4).':/^HTTP/.test(e&&e.message)?'O banco respondeu com erro: '+e.message:'Sem conexão com o banco ('+String(e&&e.message||'erro').replace(/^rede: /,'')+'). Endereço: '+nvCurto(NV.url);
+/* ---------- Nick registrado: único no banco, troca só a cada 30 dias ----------
+   O nick fica em imbuialvalley/nicks/<nome em minúsculas> = {n, u (aparelho), h (código do nick embaralhado), t}.
+   Em outro aparelho, a mesma pessoa usa o "código do nick" pra pegar o mesmo nome. */
+const NICK_DIAS=30,NICK_MS=NICK_DIAS*864e5;
+let nickDig='';
+let NICK=(()=>{try{return JSON.parse(localStorage.getItem(MP_PREFIX+'_nickreg')||'null')}catch(e){return null}})(),nickMsg='',nickOcupado=false;
+const NICK_UID=(()=>{try{let u=localStorage.getItem(MP_PREFIX+'_uid');if(!u){u=nvNovoId().replace('-','')+nvNovoId().replace('-','');localStorage.setItem(MP_PREFIX+'_uid',u)}return u}catch(e){return'X'+Math.random().toString(36).slice(2)}})();
+const nickChave=n=>String(n||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[.#$\[\]\/\s]/g,'_').slice(0,24);
+const nickHash=s=>{s=String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'');let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0}return h.toString(36)};
+function nickGuardar(){try{localStorage.setItem(MP_PREFIX+'_nickreg',JSON.stringify(NICK))}catch(e){}}
+const nickTemBanco=()=>!!NV.url;
+function nickFalta(){if(!NICK)return 0;return Math.max(0,NICK.t+NICK_MS-Date.now())}
+const nickDiasFalta=()=>Math.ceil(nickFalta()/864e5);
+function nickPronto(){if(NICK&&NICK.n){MP.nome=NICK.n;return true}if(!nickTemBanco()&&MP.nome)return true;
+  toast('Escolha e salve o seu nick na tela inicial primeiro.');return false}
+function nickFim(n,t,cod){nickDig='';NICK={n,t,c:cod||(NICK&&NICK.c)||''};nickGuardar();nickSet(n);nickMsg='✅ Nick salvo!';nickOcupado=false;nickTela()}
+function nickTela(){if(panelKind==='title')openTitle();else if(panelKind==='mp')openMP()}
+function nickSalvar(v,codigo){const n=mpLimpo(v);nickOcupado=false;nickDig=n;
+  if(n.length<3){nickMsg='⚠️ O nick precisa de pelo menos 3 letras.';return nickTela()}
+  if(NICK&&n===NICK.n){nickMsg='Esse já é o seu nick.';return nickTela()}
+  if(NICK&&nickFalta()>0){nickMsg=`⏳ Você só pode trocar o nick daqui a ${nickDiasFalta()} dia(s).`;return nickTela()}
+  if(!nickTemBanco()){nickFim(n,Date.now());return}
+  const k=nickChave(n),antigo=NICK&&NICK.n&&nickChave(NICK.n)!==k?nickChave(NICK.n):null;
+  nickMsg='🔎 Verificando se alguém já usa esse nick…';nickTela();
+  return nvReq('nicks/'+k).then(r=>{
+    if(r&&r.u!==NICK_UID){
+      if(codigo&&r.h&&nickHash(codigo)===r.h){return nvReq('nicks/'+k+'/u','PUT',NICK_UID).then(()=>nickFim(r.n,r.t||Date.now(),String(codigo).toUpperCase()))}      // é a mesma pessoa em outro aparelho
+      nickOcupado=n;nickMsg=codigo?'❌ Código errado para esse nick.':`❌ Já tem alguém com o nick "${mpEsc(r.n||n)}". Escolha outro — ou, se ele é seu, digite o código do nick.`;return nickTela()}
+    const cod=nvNovoId(),t=Date.now();
+    return nvReq('nicks/'+k,'PUT',{n,u:NICK_UID,h:nickHash(cod),t}).then(()=>nvReq('nicks/'+k)).then(c=>{
+      if(!c||c.u!==NICK_UID){nickOcupado=n;nickMsg='❌ Alguém pegou esse nick agora mesmo. Escolha outro.';return nickTela()}
+      if(antigo)nvReq('nicks/'+antigo).then(o=>{if(o&&o.u===NICK_UID)nvReq('nicks/'+antigo,'DELETE')}).catch(()=>{});
+      nickFim(n,t,cod)})
+  }).catch(e=>{nickMsg='⚠️ '+nvErro(e)+' — o nick não foi salvo, tente de novo.';nickTela()})}
+function nickHTML(){const reg=NICK&&NICK.n,trava=reg&&nickFalta()>0;
+  const info=reg?(trava?`✅ Nick registrado · pode trocar daqui a <b>${nickDiasFalta()} dia(s)</b>`:'✅ Nick registrado · já pode trocar se quiser'):(nickTemBanco()?'Escolha um nick e toque em Salvar — ninguém mais vai poder usar o mesmo.':'Escolha um nick e toque em Salvar.');
+  return `<div class="nickbox"><span class="mpav big" id="nickav" style="background:#f2b233">${mpEsc(((reg?NICK.n:MP.nome)||'?')[0].toUpperCase())}</span><div class="g"><b>Seu nick</b><small>Aparece em cima do seu boneco e no chat do multiplayer</small>
+    <div class="nickrow"><input id="nick" maxlength="18" value="${mpEsc((reg&&nickFalta()>0?NICK.n:(nickDig||(reg?NICK.n:MP.nome)))||'')}" placeholder="Escolha um apelido (ex.: Teus)" autocomplete="off" ${trava?'disabled':''}>${trava?'':'<button class="nickok" data-a="nicksalva">💾 Salvar</button>'}</div>
+    ${nickOcupado?`<div class="nickrow"><input id="nickcod" maxlength="9" placeholder="Código do nick (ex.: AB12-CD34)" autocomplete="off"><button class="nickok alt" data-a="nickcod">É meu</button></div>`:''}
+    <small class="nickst">${nickMsg||info}</small>${reg&&NICK.c?`<small class="nickst">🔑 Código do nick: <b>${mpEsc(NICK.c)}</b> — use para entrar com esse nick em outro celular/PC.</small>`:''}</div></div>`}
 // dados pessoais de cada jogador no mundo da nuvem
 function nvPessDe(o,testoMin){return{coins:Math.round((o.coins||0)*100)/100,forca:o.forca||{lvl:1,xp:0,hoje:0},testo:Math.max(0,Math.round(testoMin||0)),energy:Math.round(o.energy||0),hunger:Math.round(o.hunger==null?80:o.hunger),sujeira:o.sujeira||0}}
 function nvMinhaPess(){return nvPessDe(state,testoLeft())}
@@ -3485,7 +3567,7 @@ function updateLed(dt){
 }
 
 /* ---------- Painéis ---------- */
-function showPanel(kind,html){if(MP.cap){MP.cap.panel={kind,html};MP.cap.close=false;panelKind=kind;return}if(MP.role==='guest')MP.remote=MP.incoming;fish=null;panelKind=kind;document.body.classList.add('panelopen');const p=$('panel');p.classList.toggle('menu',kind==='menu');p.classList.toggle('motoloja',kind==='motoloja');p.classList.toggle('mapa',kind==='mapa');p.classList.toggle('mateus',kind==='mateus');p.classList.toggle('roupas',kind==='roupas'||kind==='bld:mercado'||kind==='trig');p.classList.toggle('motoloja',kind==='motoloja'||kind==='posto'||kind==='tratores');p.classList.toggle('academia',kind==='academia');p.classList.toggle('universidade',kind==='universidade');p.classList.toggle('inv',kind==='inv');p.classList.toggle('mpp',kind==='mp'||kind==='nuvem');p.classList.toggle('mesap',kind==='mesa');
+function showPanel(kind,html){if(MP.cap){MP.cap.panel={kind,html};MP.cap.close=false;panelKind=kind;return}if(MP.role==='guest')MP.remote=MP.incoming;fish=null;panelKind=kind;document.body.classList.add('panelopen');const p=$('panel');p.classList.toggle('menu',kind==='menu');p.classList.toggle('motoloja',kind==='motoloja');p.classList.toggle('mapa',kind==='mapa');p.classList.toggle('mateus',kind==='mateus');p.classList.toggle('roupas',kind==='roupas'||kind==='bld:mercado'||kind==='trig');p.classList.toggle('motoloja',kind==='motoloja'||kind==='posto'||kind==='tratores');p.classList.toggle('academia',kind==='academia');p.classList.toggle('universidade',kind==='universidade');p.classList.toggle('inv',kind==='inv');p.classList.toggle('mpp',kind==='mp'||kind==='nuvem'||kind==='config');p.classList.toggle('mesap',kind==='mesa');
   const same=p.dataset.kind===kind&&!p.classList.contains('hidden'),keep=same?[p.scrollTop,...[...p.querySelectorAll('.v-body,.g-body,.u-body,.s-body,.i-body,.m-body')].map(e=>e.scrollTop)]:null;
   p.dataset.kind=kind;p.innerHTML=html;if(keep){p.scrollTop=keep[0];[...p.querySelectorAll('.v-body,.g-body,.u-body,.s-body,.i-body,.m-body')].forEach((e,i)=>{if(keep[i+1]!=null)e.scrollTop=keep[i+1]})}p.classList.remove('hidden');paused=true;for(const k in keys)keys[k]=false;lasso=null}
 function closePanel(){if(MP.cap){MP.cap.close=true;MP.cap.panel=null;panelKind=null;return}if(panelKind==='title'||trigSpin)return;MP.remote=false;document.body.classList.remove('panelopen');$('panel').classList.add('hidden');panelKind=null;paused=false;updateHUD()}
@@ -3635,7 +3717,7 @@ function openInv(tab){if(tab)invTab=tab;const t=invTab;
     <div class="itabs">${tabs}</div>
     <div class="i-body">${t==='tudo'||t==='recursos'?`<div class="craft">🛠️ <b>Preparar:</b> ${ic('racao')} Ração = 2 capim <button class="mini" data-a="craft" ${state.inv.capim>=2?'':'disabled'}>Fazer 1</button><button class="mini alt" data-a="craftall" ${state.inv.capim>=2?'':'disabled'}>Fazer tudo (${Math.floor(state.inv.capim/2)})</button>
       ${state.flags.rod?'':` · ${ic('vara')} Vara = 8 madeiras <button class="mini" data-a="craftrod" ${state.inv.madeira>=8?'':'disabled'}>Fazer</button>`}</div>`:''}${body}</div>`)}
-function openMenu(sure){if(MP.role==='guest'&&MP.myId)return openMP();
+function openMenu(sure){const conv=MP.role==='guest'&&MP.myId;
   const lv=vilaLevel(),ti=titleInfo(lv),nt=Object.keys(state.found).length;
   const I=(e,c)=>`<span class="ico" style="background:${c}">${e}</span>`;
   showPanel('menu',`<div class="m-head"><button class="close" data-a="close">✕</button><span class="tag">${mpSemPausa()?'🌐 o jogo continua rodando (multiplayer)':'⏸ jogo pausado'}</span><h1>Imbuial Valley</h1>
@@ -3647,19 +3729,17 @@ function openMenu(sure){if(MP.role==='guest'&&MP.myId)return openMP();
     <div class="m-prog"><i style="width:${(lv-ti.de)/(ti.ate-ti.de)*100}%"></i></div>
     <button class="m-play" data-a="close">▶ Continuar jogando</button>
     <div class="m-grid">
-      <button class="m-btn" data-a="inv">${I('🎒','#ffe0a8')}<span>Mochila<small>itens e tesouros</small></span></button>
-      <button class="m-btn" data-a="bolsa">${I('📈','#c8f0d4')}<span>Bolsa<small>preços do dia · tecla B</small></span></button>
-      <button class="m-btn" data-a="fps">${I('🔋','#e4f7dc')}<span>Economia<small>${fpsLim()===30?'ligada · 30 quadros/s':'desligada · 60 quadros/s'}</small></span></button>
+      <button class="m-btn" data-a="${conv?'mpopen':'inv'}" data-v="inv">${I('🎒','#ffe0a8')}<span>Mochila<small>itens e tesouros</small></span></button>
+      <button class="m-btn" data-a="${conv?'mpopen':'bolsa'}" data-v="bolsa">${I('📈','#c8f0d4')}<span>Bolsa<small>preços do dia · tecla B</small></span></button>
+      <button class="m-btn" data-a="config">${I('⚙️','#e8e0ff')}<span>Personalizar<small>cabeças, sons, música</small></span></button>
       <button class="m-btn" data-a="mp">${I('🌐','#d9ecff')}<span>Multiplayer<small>${MP.role?'sala '+MP.code:'jogar com amigos'}</small></span></button>
-      <button class="m-btn" data-a="func">${I('👷','#ffe3c2')}<span>Funcionários<small>tratador e lavrador · tecla F</small></span></button>
+      <button class="m-btn" data-a="${conv?'mpopen':'func'}" data-v="func">${I('👷','#ffe3c2')}<span>Funcionários<small>tratador e lavrador · tecla F</small></span></button>
       <button class="m-btn" data-a="zoomin">${I('🔍','#d9ecff')}<span>Aproximar<small>tudo maior · tecla +</small></span></button>
       <button class="m-btn" data-a="zoomout">${I('🗺️','#d9ecff')}<span>Afastar<small>ver mais mapa · tecla −</small></span></button>
       <button class="m-btn" data-a="mapa">${I('🗺️','#cdeccb')}<span>Mapa<small>tecla N</small></span></button>
-      <button class="m-btn" data-a="savenow">${I('💾','#cfe2ff')}<span>Salvar<small>salva sozinho também</small></span></button>
-      <button class="m-btn" data-a="sounds">${I('🔊','#f6d0ff')}<span>Sons<small>áudios personalizados</small></span></button>
+      ${conv?'':`<button class="m-btn" data-a="savenow">${I('💾','#cfe2ff')}<span>Salvar<small>salva sozinho também</small></span></button>`}
       <button class="m-btn" data-a="mute">${I(muted?'🔇':'🔈','#ffd6cc')}<span>${muted?'Ligar som':'Desligar som'}<small>tecla M</small></span></button>
-      <button class="m-btn" data-a="custom">${I('🙂','#fff3b0')}<span>Cabeças<small>fotos no rosto</small></span></button>
-      ${isTouch?`<button class="m-btn" data-a="hudedit">${I('🎮','#d6f0ff')}<span>Controles<small>arrumar os botões</small></span></button>`:''}
+      <button class="m-btn" data-a="musica">${I(musicaOff?'🔇':'🎵','#d9f2ff')}<span>${musicaOff?'Ligar música':'Desligar música'}<small>trilha de fundo</small></span></button>
     </div>
     <details><summary>Como jogar</summary>
       <div class="keys"><kbd>W A S D</kbd><span>ou setas: andar</span><kbd>E</kbd><span>interagir · segurar perto de um animal para laçar · plantar, regar, colher · pescar</span>
@@ -3703,7 +3783,12 @@ function openSplash(){const sp=$('splash');if(!sp||!sp.classList){openTitle();re
     <div class="logo"><b>Imbuial</b><b>Valley</b><small>Um vale tranquilo em Videira · SC</small></div>
     <img class="art" src="${CAPA}" alt="">
     <button class="play" id="splashplay">▶ JOGAR</button>
-    <div class="hint">${isTouch?'toque em Jogar':'aperte Enter ou clique em Jogar'}</div><div class="ver">feito pelo Alison & Teus</div><button class="spquit" id="spquit">✖ Fechar jogo</button>`;
+    <div class="hint">${isTouch?'toque em Jogar':'aperte Enter ou clique em Jogar'}</div><div class="ver">feito pelo Alison & Teus</div><button class="spquit" id="spquit">✖ Fechar jogo</button>
+    <button class="spgear" id="spgear" title="Configurações">⚙️</button><div class="spcfg hidden" id="spcfg"><button id="spmus">${musicaOff?'🔇 Música desligada':'🎵 Música ligada'}</button><button id="spsom">${muted?'🔇 Efeitos desligados':'🔊 Efeitos ligados'}</button></div>`;
+  {const gb=$('spgear'),bx=$('spcfg'),mb=$('spmus'),sb=$('spsom');if(gb&&gb.addEventListener){const pare=ev=>{ev.stopPropagation()};
+    gb.addEventListener('click',ev=>{pare(ev);getCtx();bx.classList.toggle('hidden')});bx.addEventListener('click',pare);
+    mb.addEventListener('click',ev=>{pare(ev);musicaToggle();mb.textContent=musicaOff?'🔇 Música desligada':'🎵 Música ligada'});
+    sb.addEventListener('click',ev=>{pare(ev);muted=!muted;musicaAplica();sb.textContent=muted?'🔇 Efeitos desligados':'🔊 Efeitos ligados'})}}
   sp.classList.remove('hidden','hide');
   const go=()=>{if(sp.classList.contains('hide'))return;getCtx&&getCtx();beep(523,.1,'square',.04);setTimeout(()=>beep(784,.16,'square',.04),110);sp.classList.add('hide');setTimeout(()=>{sp.classList.add('hidden');sp.classList.remove('hide')},600);openTitle()};
   sp.onclick=go;splashGo=go;{const q=$('spquit');if(q)q.onclick=ev=>{ev.stopPropagation();ACT.fecharjogo()}}startSplashAnim()}
@@ -3765,9 +3850,9 @@ function openTitle(){
     else slots+=`<div class="wslot empty"><div class="g"><b>Espaço ${n+1}</b><br><small>vazio</small></div><button class="alt" data-a="criar" data-v="${n}">+ Novo mundo</button><button class="alt" data-a="importarok" data-v="${n}" title="Trazer um mundo exportado (arquivo .json)">📥 Importar</button></div>`}
   showPanel('title',`<div class="titlecapa"><img src="${CAPA}" alt=""><div><h2>Imbuial Valley</h2><small>escolha o seu mundo</small></div></div>
   <p>Um vale tranquilo entre imbuias e araucárias. Capture animais, cuide deles, venda o que produzem e transforme o acampamento em uma cidade.</p>
-  <div class="nickbox"><span class="mpav big" id="nickav" style="background:#f2b233">${mpEsc((MP.nome||'?')[0].toUpperCase())}</span><div class="g"><b>Seu nick</b><small>Aparece em cima do seu boneco e no chat do multiplayer</small><input id="nick" maxlength="18" value="${mpEsc(MP.nome||'')}" placeholder="Escolha um apelido (ex.: Teus)" autocomplete="off"></div></div>
+  ${nickHTML()}
   <h3>Seus mundos</h3>${slots}
-  <div class="row"><div class="g"><small>Jogar com amigos</small></div><button class="alt" data-a="nuvem">☁️ Mundos na nuvem</button><button class="alt" data-a="mp">🌐 Entrar numa sala</button></div>
+  <div class="row"><div class="g"><small>Jogar com amigos</small></div><button class="alt" data-a="config" title="Personalizar (Esc)">⚙️</button><button class="alt" data-a="nuvem">☁️ Mundos na nuvem</button><button class="alt" data-a="mp">🌐 Entrar numa sala</button></div>
   <p><small>💾 <b>Exportar</b> guarda o mundo num arquivo (para fazer cópia ou levar para outro celular/PC). 📥 <b>Importar</b> traz esse arquivo de volta.</small></p>
   <div class="row" style="margin-top:12px;justify-content:flex-end"><button class="red" data-a="fecharjogo">✖ Fechar jogo</button></div>
   <p><small>${isTouch?'No celular: use o controle da esquerda para andar e os botões da direita para as ações.':'<kbd>WASD</kbd>/setas andam · <kbd>E</kbd> interage · <kbd>Espaço</kbd> empurrão · <kbd>I</kbd> mochila · <kbd>N</kbd> mapa · <kbd>Esc</kbd> menu'}</small></p>`);
@@ -3792,10 +3877,12 @@ function importTexto(n,txt){let o=null;try{o=JSON.parse(txt)}catch(e){}const s=o
 function newWorld(n,nome){const s=newState();s.nome=(nome||'').trim().slice(0,24)||'Mundo '+(n+1);
   s.seed1=(Math.random()*2**31)|0||1;s.seed2=(Math.random()*2**31)|0||2;curSlot=n;startGame(s);save()}
 const ACT={
-  close(){if((panelKind==='mp'||panelKind==='nuvem')&&curSlot==null&&!MP.myId&&MP.role!=='host'){titleMode=null;openTitle();return}closePanel()},
+  close(){if(panelKind==='title')return;if(panelKind==='config'&&cfgDoTitulo){openTitle();return}if((panelKind==='mp'||panelKind==='nuvem'||panelKind==='config')&&curSlot==null&&!MP.myId&&MP.role!=='host'){titleMode=null;openTitle();return}closePanel()},
   mp(){openMP()},
-  mphost(){mpLerNome();mpHospedar()},
-  mpjoin(){mpLerNome();const c=$('mpcode'),v=String(c&&c.value||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+  mphost(){mpLerNome();if(!nickPronto())return;mpHospedar()},
+  nicksalva(){const i=$('nick');nickSalvar(i?i.value:'')},
+  nickcod(){const i=$('nick'),c=$('nickcod');nickSalvar(nickOcupado||(i&&i.value)||'',c?c.value:'')},
+  mpjoin(){mpLerNome();if(!nickPronto())return;const c=$('mpcode'),v=String(c&&c.value||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
     if(v.length===8&&!/^[A-Z]{4}\d{4}$/.test(v)||v.length===8&&NV.lista.some(w=>w.id.replace('-','')===v)){nvEntrar(v);return}      // é código de mundo da nuvem
     if(curSlot!=null)save();mpEntrar(c&&c.value)},
   mpsair(){if(NV.on){nvSair(()=>{if(panelKind)closePanel();curSlot=null;titleMode=null;openTitle()});return}mpParar(MP.role==='host'?'Sala fechada.':'Você saiu da sala.')},
@@ -3816,8 +3903,8 @@ const ACT={
     closePanel();if(MP.role==='host')pixPedido('h',v,val);else if(MP.host)mpSend(MP.host,{t:'pix',para:v,valor:val})},
   pixresp(v){const m=MP.pixAtual;MP.pixAtual=null;closePanel();if(!m)return;if(MP.role==='host')pixResposta(m.id,v==='1','h');else if(MP.host)mpSend(MP.host,{t:'pixok',id:m.id,ok:v==='1'})},
   fps(){fpsMax=fpsLim()===30?60:30;try{localStorage.setItem('imbuial_valley_fps',fpsMax)}catch(e){}toast(fpsMax===30?'🔋 Economia ligada: 30 quadros por segundo (o celular esquenta menos).':'⚡ Economia desligada: 60 quadros por segundo.',4000);openMenu()},
-  nvcriar(v){nvCriar(v)},
-  nvir(v){mpLerNome();const i=$('nvcod');nvEntrar(v||(i&&i.value)||'')},
+  nvcriar(v){if(!nickPronto())return;nvCriar(v)},
+  nvir(v){mpLerNome();if(!nickPronto())return;const i=$('nvcod');nvEntrar(v||(i&&i.value)||'')},
   nvforcar(){const o=NV.ocupado;NV.ocupado=null;if(NV.id)nvEntrar(nvConvite(NV.id),true);else if(o)openNuvem()},
   nvapagar(v){NV.apagar=v||null;openNuvem()},
   nvtirar(v){NV.lista=NV.lista.filter(w=>w.id!==v);nvGuardar();NV.apagar=null;if(NV.convite&&NV.convite.split('@')[0]===v)NV.convite=null;NV.status='Tirado da sua lista (o mundo continua na nuvem).';openNuvem()},
@@ -3844,7 +3931,11 @@ const ACT={
   sellall(k){const pr=Math.round(ITEMS[k].preco*marketBonus(state.b.mercado));if(state.inv[k]>0){state.coins+=pr*state.inv[k];state.inv[k]=0;state.flags.sold=1;sfx.coin()}openBld('mercado')},
   buy(v){const[k,n]=String(v).split(':'),q=+n||1,pr=(k==='racao'?racaoPrice(state.b.mercado):PAO_PRICE)*q;if(state.coins>=pr){state.coins-=pr;state.inv[k]+=q;sfx.get();lojaSay=['Valeu! Volta sempre.','Boa compra!','Tá na mão!','Precisando, é só chamar.'][Math.random()*4|0]}openBld('mercado')},
   lojatab(v){openLoja(v)},
-  mute(){muted=!muted;toast(muted?'Som desligado':'Som ligado');openMenu()},
+  mute(){muted=!muted;toast(muted?'Som desligado':'Som ligado');musicaAplica();openMenu()},
+  mutecfg(){muted=!muted;musicaAplica();openConfig()},
+  musica(){musicaToggle();toast(musicaOff?'🔇 Música desligada':'🎵 Música ligada');if(panelKind==='config')openConfig();else if(panelKind==='menu')openMenu()},
+  config(){openConfig()},
+  mpopen(v){if(MP.role==='guest'&&MP.host){closePanel();mpSend(MP.host,{t:'open',w:v})}else if(ACT[v])ACT[v]()},
   trigclose(){if(trigSpin)return;closePanel()},
   bolsa(){openBolsa()},
   busgo(v){busGo(v)},
@@ -4687,7 +4778,7 @@ function drawHzn(na){const u=2,h=hzn,A=spA;ctx.save();if(na>0&&!h.dur)ctx.filter
     if(t<4.6){const px=t<3?h.sx+(x0-h.sx)*(t/3):x0,img=SPR.npc[h.look].side[t<3?1+Math.floor(t*8)%2:0],sh=t>=3?Math.sin(t*50)*(t-3)*1.6:0;      // anda, para e começa a tremer
       ctx.save();if(t>=3.6&&Math.floor(t*12)%2)ctx.filter='brightness(2.2)';put(img,px-img.width+sh,by,h.dir<0);ctx.restore();
       if(t>3.2)say(h.lobo?'Ai... a lua cheia!':'Sinto... asas...',x0,by-52,'#e0d0ff')}
-    else{const k=t-4.6;if(k<.6){ctx.fillStyle=`rgba(120,110,140,${.8*(1-k/.6)})`;for(let i=0;i<6;i++){const a=i/6*Math.PI*2;ctx.beginPath();ctx.arc(x0+Math.cos(a)*k*30,by-20+Math.sin(a)*k*18,10-k*8,0,7);ctx.fill()}}   // fumaça da transformação
+    else{const k=t-4.6;if(k<.6){ctx.fillStyle=`rgba(120,110,140,${.8*(1-k/.6)})`;for(let i=0;i<6;i++){const a=i/6*Math.PI*2;ctx.beginPath();ctx.arc(x0+Math.cos(a)*k*30,by-20+Math.sin(a)*k*18,Math.max(0,10-k*8),0,7);ctx.fill()}}   // fumaça da transformação
       if(h.lobo){const sv=wolf,hw=k<3;wolf={x:hw?x0:x0+h.dir*(k-3)*90,dir:h.dir,howl:hw?1:0};drawWolf();wolf=sv;if(!h.snd&&k>.3){h.snd=1;howl()}}
       else{const bx=x0+h.dir*k*k*45+Math.sin(k*5)*8,byy=by-26-k*26,fl2=Math.floor(k*12)%2,z=2;
         const R=(x,y,w,hh,c)=>{ctx.fillStyle=c;ctx.fillRect(Math.round(bx+x*z),Math.round(byy+y*z),w*z,hh*z)};
@@ -4970,7 +5061,7 @@ function render(){
   for(const a of wild)if(near(a)){const t=animTier(a);tag(animName(a)+(t?' · '+rarName(a):''),a.x,tagY(a),t?RAR[t].c:'#fff')}
   {const used=[];for(const a of penAnim)if(near(a)&&!used.some(u=>Math.abs(u[0]-a.x)<1.3&&Math.abs(u[1]-a.y)<.8)){used.push([a.x,a.y]);const t=animTier(a);tag(animName(a)+(t?' · '+rarName(a):''),a.x,tagY(a),t?RAR[t].c:'#ffe9a8')}}
   if(pfx){const x=pfx.x*T-camx,y=pfx.y*T-camy;ctx.strokeStyle=pfx.stomp?'#ffb3a8':'#fff';ctx.lineWidth=4;ctx.globalAlpha=clamp(pfx.t/.18,0,1);
-    ctx.beginPath();ctx.arc(x,y,10+(.18-pfx.t)*90,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1}
+    ctx.beginPath();ctx.arc(x,y,Math.max(0,10+(.18-pfx.t)*90),0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1}
   if(fish){const bx=(fish.x+.5)*T-camx,by=(fish.y+.5)*T-camy+(fish.st==='bite'?5:Math.sin(clock*4)*2),px=p.x*T-camx,py=p.y*T-camy-34;
     ctx.strokeStyle='#8a5c38';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(px,py+14);ctx.lineTo(px+(bx-px)*.35,py-22);ctx.stroke();          // vara
     ctx.strokeStyle='rgba(255,255,255,.8)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(px+(bx-px)*.35,py-22);ctx.quadraticCurveTo((px+bx)/2,by-30,bx,by-4);ctx.stroke();
@@ -5118,11 +5209,13 @@ addEventListener('keydown',ev=>{
   if(ev.target&&/^(INPUT|TEXTAREA)$/.test(ev.target.tagName)){if(ev.key==='Enter'&&titleMode&&titleMode.criar!=null)ACT.criarok(titleMode.criar);return}
   const k=ev.key.toLowerCase();
   if(['arrowup','arrowdown','arrowleft','arrowright',' '].includes(k))ev.preventDefault();
+  if(k==='escape'&&panelKind==='title')return;      // tela de mundos fica fixa: Esc não fecha
+  if(k==='escape'&&panelKind==='config'&&cfgDoTitulo){openTitle();return}      // Personalizar aberto pela tela de mundos: Esc volta pra ela
   if(!state||panelKind==='title')return;
   if(busRide){if(k===' '||k==='enter'||k==='escape'||k==='e')busEnd();return}      // pular a viagem de ônibus
   if(MP.role&&k==='enter'&&!panelKind){openMP();setTimeout(()=>{const i=$('mpmsg');if(i&&i.focus)i.focus()},50);return}      // Enter: conversar com a sala
   if(MP.role==='guest'&&MP.myId){const op={i:'inv',b:'bolsa',f:'func'}[k];if(op){if(panelKind)closePanel();else mpSend(MP.host,{t:'open',w:op});return}}
-  if(k==='m'){muted=!muted;toast(muted?'Som desligado':'Som ligado');return}
+  if(k==='m'){muted=!muted;musicaAplica();toast(muted?'Som desligado':'Som ligado');return}
   if(k==='+'||k==='='||k==='add'){setZoom(-1);return}if(k==='-'||k==='_'||k==='subtract'){setZoom(1);return}      // + aproxima, − afasta
   if(k==='escape'){if(panelKind==='arar'){ACT.plowcancel();return}if(plow&&!panelKind){endPlow();return}if(panelKind)closePanel();else openMenu();return}
   if(k==='i'){if(panelKind==='inv')closePanel();else if(!panelKind)openInv();return}
