@@ -489,7 +489,7 @@
    Jogo 2D de fazenda/vila em um único arquivo.
    Tudo (mapa, sprites, sons) é gerado por código. */
 
-const T=48,S=3,MW=112,XMIN=-130,AW=MW-XMIN,MH=104,MH0=76,OLD_MW=72,OLD_MH=48,SAVE_KEY='imbuial_valley_save_v1';
+const T=48,S=3,MW=150,XMIN=-130,AW=MW-XMIN,MH=130,MW0=112,MHB=104,MH0=76,OLD_MW=72,OLD_MH=48,SAVE_KEY='imbuial_valley_save_v1';
 const MIN_PER_SEC=2.4;          // tempo contínuo: 24 h de jogo = 10 min reais
 const cv=document.getElementById('c'),ctx=cv.getContext('2d');
 const $=id=>document.getElementById(id);
@@ -588,7 +588,7 @@ const STUDIES={
   pesca:{nome:'Engenharia de Pesca',ico:'🎣',desc:'peixe extra ao pescar'},
 };
 const SEMESTRES=['Lobisominho','Lambeosome','Lobisoma','Lobisomem sem pelo','Lobisomem','Lobisomem adulto','Lobisomem do matagal','Lobisomem da moita','Lobisomem do arbusto','Lobisomem do arvoredo'];      // igreja, ao norte da praça; o sino toca ao meio-dia      // academia, na vila, à direita do Mercado
-const TREE_HP=24,HAND_DMG=3,HAND_ENERGY=2.5,AXE_PRICE=150,AXE_MIN=2;      // na mão: 8 golpes por árvore
+const TREE_HP=31.2,HAND_DMG=3,HAND_ENERGY=2.5,AXE_PRICE=150,AXE_MIN=2;      // na mão: 8 golpes por árvore
 const EXERCISES={
   flexao:{nome:'Flexão',ico:'🤸',energia:8,xp:3,min:15,preco:0},
   supino:{nome:'Supino',ico:'🏋️',energia:15,xp:6,min:30,preco:5},
@@ -612,7 +612,7 @@ const axeEnergy=()=>Math.max(.6,2-.12*state.forca.lvl);
 const forcaEnergia=()=>Math.max(.3,1-.06*(state.forca.lvl-1));      // força reduz a energia gasta quebrando/coletando: força 1 → 100% · 6 → 70% · 11 → 40% · 13+ → 30%
 const handDmg=()=>HAND_DMG*(1+.12*(state.forca.lvl-1));      // na mão também bate mais forte: força 1 → 8 golpes · 6 → 5 · 11 → 4 · 18+ → 3
 const handEnergy=()=>HAND_ENERGY*forcaEnergia();
-const ROCK_HP=3,rockDmg=()=>1+(state.forca.lvl-1)*.35,rockEnergy=()=>Math.max(.5,2-.15*(state.forca.lvl-1)),rockHits=()=>Math.ceil(ROCK_HP/rockDmg()-1e-9);      // pedra: força 1 → 3 golpes de 2 de energia · força 7+ → 1 golpe
+const ROCK_HP=4.5,PICK_PRICE=80,rockDmg=()=>1+(state.forca.lvl-1)*.35,rockEnergy=()=>Math.max(.5,2-.15*(state.forca.lvl-1)),rockHits=()=>Math.ceil(ROCK_HP/rockDmg()-1e-9);      // pedra: força 1 → 3 golpes de 2 de energia · força 7+ → 1 golpe
 const BREAK_XP=.3;      // força ganha por árvore ou pedra quebrada
 const TRATORES={   // vel = multiplicador da velocidade a pé; larg = quadrados de lado que planta/colhe de uma vez
   mf265:{nome:'Massey Ferguson 265',cv:65,vel:.95,larg:3,preco:70250,cor:'#c4302b',cor2:'#e8e8e8',desc:'O vermelhinho clássico da roça. Planta e colhe numa faixa de 3×3.'},
@@ -751,14 +751,14 @@ function genWest(s1){      // o oeste novo: fazenda Imbuial isolada e a estrada 
     const a=py==null?y:Math.min(py,y),b=py==null?y:Math.max(py,y);for(let yy=a;yy<=b+1;yy++){set(x,yy,4);if(py!=null&&py!==y)set(x-1,yy,4)}py=y}
   for(let y=26;y<=44;y++){set(-107,y,1);set(-106,y,1)}for(let x=-115;x<=-101;x++){set(x,44,1);set(x,45,1)}      // caminhos da fazenda (iguais aos de antes)
   for(const id of['casa','galinheiro','curral']){const[lx,ly,w,hh]=BLD[id].lot;for(let y=ly;y<ly+hh;y++)for(let x=lx;x<lx+w;x++)lotAt[I(x,y)]=id}
-  for(const[cx,cy,rx,ry]of[[-86,52,4.5,3],[-58,10,6,3.5],[-122,70,5,4]])for(let y=Math.floor(cy-ry);y<=cy+ry;y++)for(let x=Math.floor(cx-rx);x<=cx+rx;x++)if(((x+.5-cx)/rx)**2+((y+.5-cy)/ry)**2<=1)set(x,y,2);      // açudes
+  for(const[cx,cy,rx,ry]of PONDS_W)for(let y=Math.floor(cy-ry);y<=cy+ry;y++)for(let x=Math.floor(cx-rx);x<=cx+rx;x++)if(((x+.5-cx)/rx)**2+((y+.5-cy)/ry)**2<=1)set(x,y,2);      // açudes
   for(const b of BUS){const tx=Math.floor(b.x),ty=Math.floor(b.y);for(let y=ty-1;y<=ty+1;y++)for(let x=tx-2;x<=tx+2;x++)objs[I(x,y)]=null;lotAt[I(tx-1,ty)]=lotAt[I(tx,ty)]='bus'}
   const nearDirt=(x,y,r)=>{for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++){const xx=x+dx,yy=y+dy;if(xx<XMIN||yy<0||xx>=MW||yy>=MH)continue;const g=ground[I(xx,yy)];if(g===4||g===1)return true}return false};
   const tr=o=>o==='tree'||o==='pine';
-  for(let y=0;y<MH;y++)for(let x=XMIN;x<0;x++){const i=I(x,y),u=rn(),v=rn();if(ground[i]!==0||lotAt[i])continue;
+  for(let y=0;y<MHB;y++)for(let x=XMIN;x<0;x++){const i=I(x,y),u=rn(),v=rn();if(ground[i]!==0||lotAt[i])continue;
     if(x>=FARM[0]-2&&x<=FARM[2]+2&&y>=FARM[1]-3&&y<=FARM[3]+2)continue;      // fazenda limpa
     if(nearDirt(x,y,1))continue;
-    const edge=x<XMIN+3||y<3||y>MH-4||(x>-4&&(y<18||y>32)),mata=nearDirt(x,y,4);      // beira da estrada: mato fechado
+    const edge=x<XMIN+3||y<3||y>MHB-4||(x>-4&&(y<18||y>32)),mata=nearDirt(x,y,4);      // beira da estrada: mato fechado
     const pt=edge?.36:mata?.17:.1,pr=.03;
     if(u<pt){if(!edge&&(tr(objs[i-1])||tr(objs[i-AW])))continue;objs[i]=v<.25?'pine':'tree'}else if(u<pt+pr)objs[i]='rock';else if(u<pt+pr+.025)objs[i]='bush';else if(u<pt+pr+.1)objs[i]='capim'}
   for(let x=0;x<=10;x++)for(let y=14;y<=36;y++){const i=I(x,y);if(ground[i]===0&&nearDirt(x,y,1)&&objs[i]&&objs[i]!=='capim')objs[i]=null}      // emenda com Videira
@@ -774,8 +774,8 @@ function genSouth(s2){      // as 3 vilas (cada uma num canto, em volta de uma p
     for(let x=lx-1;x<=lx+w;x++)path(x,ly+hh)}      // calçada na frente, ligando na pracinha
   const nearRoad=(x,y)=>{for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const g=ground[(y+dy)*AW-XMIN+x+dx];if(g===1||g===3)return true}return false};
   const tr=o=>o==='tree'||o==='pine';
-  for(let y=MH0;y<MH;y++)for(let x=0;x<MW;x++){const i=y*AW-XMIN+x,u=rn(),v=rn();if(ground[i]!==0||lotAt[i])continue;
-    const edge=x<3||x>MW-4||y>MH-4,band=y<MH0+2;if(nearRoad(x,y)&&u<.8)continue;
+  for(let y=MH0;y<MHB;y++)for(let x=0;x<MW0;x++){const i=y*AW-XMIN+x,u=rn(),v=rn();if(ground[i]!==0||lotAt[i])continue;
+    const edge=x<3||x>MW0-4||y>MHB-4,band=y<MH0+2;if(nearRoad(x,y)&&u<.8)continue;
     const pt=edge?.34:band?.2:.08,pr=.03;
     if(u<pt){if(!edge&&(tr(objs[i-1])||tr(objs[i-AW])))continue;objs[i]=v<.2?'pine':'tree'}else if(u<pt+pr)objs[i]='rock';else if(u<pt+pr+.02)objs[i]='bush';else if(u<pt+pr+.09)objs[i]='capim'}
   for(const v of VILAS){const[zx0,zy0,zx1,zy1]=v.zone;let x0=MW,y0=MH,x1=0,y1=0;      // centrinho da vila limpo e cerca sem nada em cima
@@ -822,7 +822,7 @@ const PAO_PRICE=15,NAP_MAX=240;      // cochilo de dia: no máximo 4 h somadas p
 /* ---------- Mapa ---------- */
 let ground,objs,lotAt;
 const riverX=y=>52+Math.round(2*Math.sin(y/5));
-const ehLago=(x,y)=>Math.abs(x-riverX(y))>1;      // fora do rio é lago/açude (água marrom)
+const ehLago=(x,y)=>true;      // rio, lagos e açudes: tudo água barrenta (marrom)
 const PONDS=[[8,35,4.5,3],[90,30,7,4.5],[34,67,5,3.5]];      // lago oeste (original), lago do leste, açude do sul
 const QUARRY=[86,52,108,73];                                   // pedreira (muita pedra)
 const SEED1=20261117,SEED2=77120476;      // sementes do mundo original
@@ -874,10 +874,10 @@ function genMap(s1,s2){
   }
   // área nova: leste, sul, pedreira e mata do sul
   const rn2=mulberry32(s2);
-  for(let y=0;y<MH0;y++)for(let x=0;x<MW;x++){      // MH0: o sorteio da parte de antes das vilas do sul continua igual
+  for(let y=0;y<MH0;y++)for(let x=0;x<MW0;x++){      // MH0: o sorteio da parte de antes das vilas do sul continua igual
     if(x<OLD_MW&&y<OLD_MH)continue;const i=y*AW-XMIN+x,u=rn2(),v=rn2();
     if(ground[i]!==0||lotAt[i])continue;
-    const quarry=x>=QUARRY[0]&&x<=QUARRY[2]&&y>=QUARRY[1]&&y<=QUARRY[3],mata=y>=63&&x<46,edge=y<8||x>MW-6||y>MH0-5;
+    const quarry=x>=QUARRY[0]&&x<=QUARRY[2]&&y>=QUARRY[1]&&y<=QUARRY[3],mata=y>=63&&x<46,edge=y<8||x>MW0-6||y>MH0-5;
     if(quarry)place(x,y,u,v,0,.03,.34);
     else if(mata||edge)place(x,y,u,v,1,.3,.02);
     else place(x,y,u,v,0,x>53?.05:.08,x>53?.05:.03);
@@ -900,7 +900,172 @@ function genMap(s1,s2){
   for(let i=0;i<lotAt.length;i++)if(lotAt[i]==='velho')lotAt[i]=null;
   genWest(s1);
   {const[lx,ly,w,h]=ACC_LOT;for(let y=ly;y<ly+h;y++)for(let x=lx;x<lx+w;x++){lotAt[y*AW-XMIN+x]='acc';objs[y*AW-XMIN+x]=null}for(let x=lx;x<lx+w;x++)objs[(ly+h)*AW-XMIN+x]=null;objs[Math.floor(MAIK_POS[1])*AW-XMIN+Math.floor(MAIK_POS[0])]=null;for(let y=26;y<=28;y++)for(let x=38;x<=42;x++)objs[y*AW-XMIN+x]=null}      // A.C.C.P.U.V (depois do sorteio, para não mudar o resto do mapa)
+  genExpand(s1);finishNature(s1);
 }
+// ---- mapa maior (leste e sul) e a Pedreirinha, no canto de baixo à direita ----
+const PEDR=[116,104,145,126],PEDR_ROAD=110;      // Pedreirinha (área cheia de pedra) e a estrada que desce até ela
+const inPedr=(x,y)=>x>=PEDR[0]&&x<=PEDR[2]&&y>=PEDR[1]&&y<=PEDR[3];
+const PONDS_W=[[-86,52,4.5,3],[-58,10,6,3.5],[-122,70,5,4]];      // açudes do oeste (fazenda)
+function genExpand(s1){
+  const rn=mulberry32((s1^0x13579bdf)>>>0),I=(x,y)=>y*AW-XMIN+x,tr=o=>o==='tree'||o==='pine';
+  const road=(x,y)=>{const i=I(x,y);if(ground[i]===2)ground[i]=3;else ground[i]=1;objs[i]=null};
+  // natureza da parte nova: campo com bosques, beirada fechada
+  for(let y=0;y<MH;y++)for(let x=XMIN;x<MW;x++){if(x<MW0&&y<MHB)continue;const i=I(x,y),u=rn(),v=rn();if(ground[i]!==0||lotAt[i])continue;
+    if(inPedr(x,y))continue;
+    const edge=x>MW-4||y>MH-4||x<XMIN+3||(y<3&&x>=MW0),mata=vnoise(x,y,s1+31,10)>.62;
+    const pt=edge?.34:mata?.2:.07,pr=x>=MW0&&y>=MHB-14?.06:.03;
+    if(u<pt){if(!edge&&(tr(objs[i-1])||tr(objs[i-AW])||tr(objs[i-AW-1])||tr(objs[i-AW+1])))continue;objs[i]=v<.18?'pine':'tree'}
+    else if(u<pt+pr)objs[i]='rock';else if(u<pt+pr+.02)objs[i]='bush';else if(u<pt+pr+.08)objs[i]='capim'}
+  // a Pedreirinha: chão de cascalho, pedra para todo lado, umas árvores secas na beira
+  for(let y=PEDR[1];y<=PEDR[3];y++)for(let x=PEDR[0];x<=PEDR[2];x++){const i=I(x,y);if(ground[i]===2)continue;
+    const cx=(PEDR[0]+PEDR[2])/2,cy=(PEDR[1]+PEDR[3])/2,d=Math.hypot((x-cx)/((PEDR[2]-PEDR[0])/2),(y-cy)/((PEDR[3]-PEDR[1])/2)),n=vnoise(x,y,s1+57,5);
+    const casc=d+(n-.5)*.5<.92;if(casc)ground[i]=5;
+    const u=rn();objs[i]=null;
+    if(casc){if(u<.38)objs[i]='rock';else if(u<.41)objs[i]='capim'}
+    else if(u<.18)objs[i]='rock';else if(u<.26)objs[i]=rn()<.3?'pine':'tree';else if(u<.33)objs[i]='capim'}
+  // estrada: sai do fim da avenida do leste, desce pela beira do mapa e entra na Pedreirinha
+  for(let x=105;x<=PEDR_ROAD+1;x++){road(x,24);road(x,25)}
+  for(let y=24;y<=PEDR[1]+3;y++){road(PEDR_ROAD,y);road(PEDR_ROAD+1,y)}
+  for(let x=PEDR_ROAD;x<=PEDR[0]+5;x++){road(x,PEDR[1]+2);road(x,PEDR[1]+3)}
+  for(let y=PEDR[1]+4;y<=PEDR[1]+9;y++)for(let x=PEDR[0]+3;x<=PEDR[0]+6;x++){const i=I(x,y);objs[i]=null;if(ground[i]===0)ground[i]=5}      // pátio da entrada
+  for(const s of SIGNS)if(s.pedr)for(let dy=-1;dy<=0;dy++)for(let dx=-2;dx<=2;dx++){const i=I(Math.floor(s.x)+dx,Math.floor(s.y)+dy);if(ground[i]!==1)objs[i]=null}
+}
+// ---- acabamento do mapa todo: açudes maiores, árvores mais espalhadas, menos pinheiros e capim na beira dos açudes ----
+function finishNature(s1){
+  const I=(x,y)=>y*AW-XMIN+x,ok=(x,y)=>x>XMIN&&y>0&&x<MW-1&&y<MH-1,rn=mulberry32((s1^0x2468ace0)>>>0),tr=o=>o==='tree'||o==='pine';
+  const G=(x,y)=>ok(x,y)?ground[I(x,y)]:-1,lotPerto=(x,y,r)=>{for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++){if(!ok(x+dx,y+dy))return true;const i=I(x+dx,y+dy);if(lotAt[i]||ground[i]===1||ground[i]===3||ground[i]===4||ground[i]===5)return true}return false};
+  const pontos=[...SIGNS.map(s=>[s.x,s.y]),...VSIGNS.map(s=>[s.x,s.y]),...BUS.map(b=>[b.x,b.y]),MATEUS_POS,GABRIEL_POS];
+  // 1) açudes 40% maiores, com a beira irregular (nunca em cima de estrada, construção, vila ou lavoura)
+  for(const[cx,cy,rx,ry]of[...PONDS,...PONDS_W]){const RX=rx*1.4,RY=ry*1.4;
+    for(let y=Math.floor(cy-RY-1);y<=cy+RY+1;y++)for(let x=Math.floor(cx-RX-1);x<=cx+RX+1;x++){if(!ok(x,y))continue;const i=I(x,y);if(ground[i]!==0)continue;
+      const k=((x+.5-cx)/RX)**2+((y+.5-cy)/RY)**2+(hash2(x,y,s1&1023)-.5)*.35;if(k>1)continue;
+      if(lotPerto(x,y,2)||vilaZ(x,y)||(x>=FARM[0]-1&&x<=FARM[2]+1&&y>=FARM[1]-1&&y<=FARM[3]+1)||pontos.some(([px,py])=>Math.abs(px-x-.5)<3&&Math.abs(py-y-.5)<3))continue;
+      ground[i]=2;objs[i]=null}}
+  // 2) menos pinheiros (araucárias): mais da metade vira árvore comum
+  for(let i=0;i<AW*MH;i++)if(objs[i]==='pine'&&hash2(i%AW,(i/AW)|0,(s1>>3)&1023)<.55)objs[i]='tree';
+  // 3) árvores mais espalhadas: nenhuma colada na outra; no campo aberto, pelo menos 2 casas de folga
+  const dens=t=>{const x=(t%AW+XMIN),y=(t/AW)|0;let n=0;for(let dy=-3;dy<=3;dy++)for(let dx=-3;dx<=3;dx++)if(ok(x+dx,y+dy)&&tr(objs[I(x+dx,y+dy)]))n++;return n};
+  const ord=[];for(let i=0;i<AW*MH;i++)if(tr(objs[i]))ord.push(i);for(let k=ord.length-1;k>0;k--){const j=rn()*(k+1)|0;[ord[k],ord[j]]=[ord[j],ord[k]]}
+  const mata=new Uint8Array(AW*MH);for(const i of ord)mata[i]=dens(i)>=11?1:0;
+  const kept=new Uint8Array(AW*MH);
+  for(const i of ord){const x=(i%AW+XMIN),y=(i/AW)|0,R=mata[i]?1:(rn()<.6?2:1);let livre=true;
+    for(let dy=-R;dy<=R&&livre;dy++)for(let dx=-R;dx<=R;dx++){if(!dx&&!dy)continue;if(ok(x+dx,y+dy)&&kept[I(x+dx,y+dy)]){livre=false;break}}
+    if(livre)kept[i]=1;else objs[i]=rn()<.3?'capim':null}
+  // 4) capim cresce na beira dos açudes
+  const lago=(x,y)=>G(x,y)===2;
+  for(let y=1;y<MH-1;y++)for(let x=XMIN+1;x<MW-1;x++){const i=I(x,y);if(ground[i]!==0||objs[i]||lotAt[i])continue;
+    let d=9;for(let dy=-3;dy<=3&&d>1;dy++)for(let dx=-3;dx<=3;dx++)if(lago(x+dx,y+dy)&&Math.abs(x+dx-riverX(y+dy))>1){d=Math.min(d,Math.max(Math.abs(dx),Math.abs(dy)))}
+    if(d<=3&&!lotPerto(x,y,1)&&rn()<[0,.55,.4,.22][d])objs[i]='capim'}
+}
+/* ---------- Natureza variada: 10 árvores × 3 tamanhos, pedras (10 tons × 5 tamanhos × 5 formatos), capim (5 cores × 3 tamanhos), amoreiras (3 tamanhos) ---------- */
+const VSEED=4242;
+const vHash=(i,k)=>hash2(i%AW,(i/AW)|0,VSEED+k*131);
+const tamClasse=u=>u<.3?0:u<.75?1:2;      // 0 pequeno · 1 médio · 2 grande
+function treeVar(i){return{v:Math.floor(vHash(i,1)*10),s:tamClasse(vHash(i,2))}}
+function pineVar(i){return{s:tamClasse(vHash(i,3))}}
+function rockVar(i){const x=(i%AW+XMIN),y=(i/AW)|0;let u=vHash(i,5);if(inPedr(x,y)||(x>=QUARRY[0]&&x<=QUARRY[2]&&y>=QUARRY[1]&&y<=QUARRY[3]))u=.25+u*.75;      // na Pedreirinha e na pedreira as pedras são maiores
+  return{t:Math.floor(vHash(i,4)*10),s:Math.min(4,Math.floor(u*5)),f:Math.floor(vHash(i,6)*5)}}
+function capimVar(i){return{c:Math.floor(vHash(i,7)*5),s:tamClasse(vHash(i,8))}}
+function bushVar(i){return{s:tamClasse(vHash(i,9))}}
+const rockBonus=s=>s<=1?0:s===2?1:2;      // pedra pequena dá o normal; média +1; grande +2
+function tamBonus(i,o){return o==='rock'?rockBonus(rockVar(i).s):o==='tree'?treeVar(i).s:o==='capim'?capimVar(i).s:o==='bush'?bushVar(i).s:0}
+const NAT={tree:{},rock:{},capim:{},bush:{},pine:{}};
+const shdc=(h,k)=>{const n=parseInt(h.slice(1),16),f=v=>Math.max(0,Math.min(255,Math.round(k>0?v+(255-v)*k:v*(1+k))));return'#'+[n>>16,n>>8&255,n&255].map(v=>f(v).toString(16).padStart(2,'0')).join('')};
+// ---- árvores: tronco com casca, raízes, galhos que abrem e copas em cachos ----
+const TREE_FORMAS=[      // cada variação: altura do tronco, inclinação, galhos (ângulo, comprimento, altura) e jeito da copa
+  {nome:'redonda',tr:20,lean:0,gal:[[-.8,9,.55],[.7,9,.6],[0,8,1]],copa:'cachos',r:7},
+  {nome:'guarda-chuva',tr:24,lean:0,gal:[[-1.15,13,.75],[1.1,13,.75],[-.4,8,1],[.4,9,1]],copa:'achatada',r:6},
+  {nome:'alta',tr:28,lean:0,gal:[[-.5,7,.5],[.5,7,.65],[0,9,1]],copa:'oval',r:6},
+  {nome:'torta',tr:22,lean:.35,gal:[[-.9,10,.55],[.9,7,.7],[.3,9,1]],copa:'cachos',r:6},
+  {nome:'galhuda',tr:19,lean:0,gal:[[-1.2,12,.45],[1.25,11,.55],[-.6,9,.8],[.6,10,.85],[0,7,1]],copa:'esparsa',r:5},
+  {nome:'chorona',tr:21,lean:0,gal:[[-1,9,.7],[1,9,.7],[0,6,1]],copa:'chorona',r:7},
+  {nome:'dupla',tr:16,lean:0,gal:[[-.45,14,.5],[.5,14,.5]],copa:'dupla',r:7},
+  {nome:'cheia',tr:18,lean:-.15,gal:[[-.9,8,.6],[.8,8,.6],[0,10,1]],copa:'cheia',r:9},
+  {nome:'nuvem',tr:23,lean:.1,gal:[[-1.1,11,.5],[1.05,10,.62],[-.2,10,.95]],copa:'nuvens',r:6},
+  {nome:'cipreste',tr:14,lean:0,gal:[[0,16,1]],copa:'coluna',r:5},
+];
+const TREE_PAL=[['#2f7d3a','#4fae5a','#1f5e2a','#6cc46f'],['#2c7838','#47a553','#1d5a28','#64bd68'],['#33803a','#55b05a','#22612c','#72c870'],['#2a7536','#4aa652','#1c5826','#5fb862'],['#317a3c','#4fa95c','#205c2c','#6bc272']];
+function mkTree(v,sz,apple,stump){const key=v+'|'+sz+'|'+(apple?1:0)+(stump?'s':'');if(NAT.tree[key])return NAT.tree[key];
+  const F=TREE_FORMAS[v],k=[.78,1,1.24][sz],pal=TREE_PAL[v%TREE_PAL.length],[A,B,C,L]=pal,rn=mulberry32(v*977+sz*31+7);
+  const tr=Math.round(F.tr*k),W=Math.round(46*k)+4,H=Math.round((F.tr+F.r*2+14)*k)+10,cx=W/2|0,base=H-3;
+  const img=mk(W,H,(r,e)=>{
+    const bark='#6e4527',barkL='#8a5c38',barkD='#4f311c',tw=Math.max(3,Math.round((sz+3)*1.2)),lean=F.lean*k;
+    // raízes
+    r(cx-tw/2-2,base-1,tw+4,2,bark);r(cx-tw/2-4,base,3,2,bark);r(cx+tw/2+1,base,3,2,bark);r(cx-tw/2-3,base+1,2,1,barkD);
+    // tronco (um pouco torto conforme a variação)
+    let topX=cx;for(let y=0;y<tr;y++){const yy=base-y,off=Math.round(lean*y*.5+Math.sin(y*.35+v)*.6*(F.lean?1:.3)),w=Math.max(2,Math.round(tw-y*tw/(tr*2.2)));
+      r(cx-w/2+off,yy,w,1,bark);r(cx-w/2+off,yy,1,1,barkL);r(cx+w/2+off-1,yy,1,1,barkD);if((y+v)%5===2)r(cx-w/2+off+1,yy,1,1,barkD);topX=cx+off}
+    if(stump)return;
+    const topY=base-tr,tips=[];
+    // galhos: linhas grossas que saem do tronco
+    for(const[ang,len,h]of F.gal){const sy=Math.round(base-tr*h),sx=Math.round(cx+lean*tr*h*.5),L2=Math.round(len*k);let x=sx,y=sy;
+      for(let t=0;t<L2;t++){x+=Math.sin(ang)*1;y-=Math.cos(ang)*1;const th=t<L2*.5?2:1;r(Math.round(x),Math.round(y),th,th,bark);if(th>1)r(Math.round(x),Math.round(y),1,1,barkL)}
+      tips.push([Math.round(x),Math.round(y)]);
+      if(F.copa==='esparsa'||F.copa==='galhuda'){const a2=ang+(ang>0?.6:-.6);let x2=x,y2=y;for(let t=0;t<4*k;t++){x2+=Math.sin(a2);y2-=Math.cos(a2);r(Math.round(x2),Math.round(y2),1,1,bark)}tips.push([Math.round(x2),Math.round(y2)])}}
+    tips.push([topX,topY]);
+    const R=F.r*k,blob=(x,y,rx,ry)=>{e(x+1,y+1.5,rx,ry,C);e(x,y,rx,ry,A);e(x-rx*.3,y-ry*.35,rx*.55,ry*.5,B);if(rx>3)e(x-rx*.45,y-ry*.55,rx*.22,ry*.2,L)};
+    const forma=F.copa;
+    if(forma==='achatada'){for(const[x,y]of tips)blob(x,y,R*1.5,R*.75);blob(topX,topY-R*.3,R*2.4,R*.9)}
+    else if(forma==='oval'){blob(topX,topY-R*.6,R*1.15,R*2.1);for(const[x,y]of tips)blob(x,y,R*.8,R*.9)}
+    else if(forma==='chorona'){for(const[x,y]of tips)blob(x,y,R*1.1,R*.9);blob(topX,topY,R*1.9,R*1.1);for(let i=0;i<9;i++){const x=Math.round(topX-R*1.9+i*R*3.8/8),y0=Math.round(topY+R*.4);const l=Math.round(R*(1+rn()*1.1));r(x,y0,1,l,i%2?A:C);r(x,y0+l,1,1,B)}}
+    else if(forma==='dupla'){for(const[x,y]of tips)blob(x,y-R*.3,R*1.05,R*1.3)}
+    else if(forma==='cheia'){blob(topX,topY,R*1.35,R*1.15);for(const[x,y]of tips)blob(x,y,R*.85,R*.8)}
+    else if(forma==='nuvens'){for(const[x,y]of tips){blob(x,y,R*1.05,R*.85);blob(x+R*.6,y-R*.5,R*.7,R*.6)}}
+    else if(forma==='coluna'){for(let j=0;j<4;j++)blob(topX,topY+R*.8-j*R*1.15,R*(1.2-j*.18),R*.9)}
+    else if(forma==='esparsa'){for(const[x,y]of tips)blob(x,y,R*.95,R*.8)}
+    else{for(const[x,y]of tips)blob(x,y,R*1.1,R*1)}
+    // folhinhas soltas e sombra das folhas por cima dos galhos
+    for(let i=0;i<10+sz*5;i++){const[tx,ty]=tips[i%tips.length];r(Math.round(tx+(rn()-.5)*R*2.4),Math.round(ty+(rn()-.5)*R*1.6),1,1,rn()<.5?C:L)}
+    if(apple)for(let i=0;i<7+sz*3;i++){const[tx,ty]=tips[i%tips.length],x=Math.round(tx+(rn()-.5)*R*1.8),y=Math.round(ty+(rn()-.3)*R*1.2);r(x,y,2,2,'#d63a2f');r(x,y,1,1,'#ff9a8a')}
+  });
+  const o=outline(img);return NAT.tree[key]=o}
+// ---- pedras ----
+const ROCK_TONS=[['#8d939c','#b3b9c2','#6c727b','#d6dbe2'],['#9a9184','#bfb5a5','#766d61','#ddd3c2'],['#7f8a93','#a6b2bb','#5d6870','#cdd8e0'],['#a08470','#c4a790','#7a5f4d','#e0c6b0'],
+  ['#6e7378','#92989e','#4f5459','#b8bec4'],['#8f9a85','#b0bca5','#6b7563','#d0dbc4'],['#b0aaa0','#d0cac0','#8a847a','#ece6dc'],['#857a8c','#a89dae','#635a69','#c9bfcf'],
+  ['#a39066','#c7b287','#7d6c48','#e2d0a6'],['#5f646b','#80868e','#43474d','#a3a9b0']];
+function mkRock(t,sz,f){const key=t+'|'+sz+'|'+f;if(NAT.rock[key])return NAT.rock[key];
+  const[M,Lt,D,H]=ROCK_TONS[t],w=[8,11,14,18,22][sz],h=Math.round(w*[.62,.48,.85,.7,.6][f]),rn=mulberry32(t*53+sz*7+f*101+3);
+  const W=w+4,HH=h+4;
+  const img=mk(W,HH,(r,e)=>{const cx=W/2,by=HH-2;
+    const pedra=(x,y,rx,ry,sh)=>{e(x+.6,y+.8,rx,ry,D);e(x,y,rx,ry,M);e(x-rx*.25,y-ry*.3,rx*.65,ry*.55,Lt);e(x-rx*.45,y-ry*.55,Math.max(1,rx*.22),Math.max(.6,ry*.18),H);
+      r(Math.round(x-rx*.2),Math.round(y+ry*.2),Math.max(1,Math.round(rx*.5)),1,D);if(sh&&rx>4){r(Math.round(x+rx*.15),Math.round(y-ry*.4),1,Math.max(1,Math.round(ry*.6)),D)}};
+    if(f===0)pedra(cx,by-h/2,w/2,h/2,1);                                   // arredondada
+    else if(f===1){pedra(cx,by-h/2,w/2,h/2,0);r(cx-w/2+2,by-h/2,w-4,1,shdc(M,-.15))}      // chata, em lajota
+    else if(f===2){for(let y=0;y<h;y++){const ww=Math.max(1,Math.round(w/2*(.35+.65*y/h)));r(cx-ww,by-h+y,ww*2,1,y<h*.35?Lt:M);r(cx+ww-1,by-h+y,1,1,D);r(cx-ww,by-h+y,1,1,Lt)}
+      r(cx-1,by-h,1,2,H);r(cx+1,by-h*.5,1,h*.4,D);e(cx,by-1,w/2,1.2,D)}                  // pontuda
+    else if(f===3){pedra(cx-w*.2,by-h*.45,w*.32,h*.45,1);pedra(cx+w*.22,by-h*.32,w*.27,h*.32,0);pedra(cx+w*.02,by-h*.15,w*.18,h*.16,0)}      // monte de pedras
+    else{const pts=[];for(let a=0;a<6;a++){const ang=a/6*Math.PI*2+rn()*.4;pts.push([cx+Math.cos(ang)*w/2*(.75+rn()*.25),by-h/2+Math.sin(ang)*h/2*(.7+rn()*.3)])}      // quebrada, cheia de facetas
+      for(let y=0;y<HH;y++)for(let x=0;x<W;x++){let inn=true;for(let a=0;a<6;a++){const[x1,y1]=pts[a],[x2,y2]=pts[(a+1)%6];if((x2-x1)*(y+.5-y1)-(y2-y1)*(x+.5-x1)<0){inn=false;break}}
+        if(inn){const lx=(x-cx)/(w/2),ly=(y-(by-h/2))/(h/2);r(x,y,1,1,lx+ly<-.4?Lt:lx+ly>.5?D:M)}}
+      r(Math.round(cx-w*.2),Math.round(by-h*.75),2,1,H)}
+    // musgo e manchinhas em algumas
+    if(t===5||t===2&&sz>2)for(let i=0;i<2+sz;i++)r(Math.round(cx-w/3+rn()*w*.6),Math.round(by-h+rn()*h*.4),2,1,'#5f9a48');
+    for(let i=0;i<sz+1;i++)r(Math.round(cx-w/3+rn()*w*.6),Math.round(by-h*.8+rn()*h*.6),1,1,shdc(M,-.25))});
+  return NAT.rock[key]=outline(img)}
+// ---- capim: tufos amarelados de 5 cores e 3 tamanhos ----
+const CAPIM_COR=[['#d9cf5a','#b7ab3c','#efe48a'],['#c9b44a','#a69231','#e3d17a'],['#d6bf62','#b09a42','#ecda95'],['#bcc457','#98a03a','#d8df87'],['#e0c86a','#bfa54a','#f3e2a0']];
+function mkCapim(c,sz){const key=c+'|'+sz;if(NAT.capim[key])return NAT.capim[key];
+  const[A,D,L]=CAPIM_COR[c],hk=[.7,1,1.3][sz],rn=mulberry32(c*17+sz*5+1);
+  return NAT.capim[key]=mk(16,20,r=>{const n=6+sz*3;
+    for(let i=0;i<n;i++){const x=1+Math.round(i*13/(n-1)+(rn()-.5)),h=Math.round((6+rn()*7)*hk),lean=rn()<.5?-1:1;
+      for(let y=0;y<h;y++){const xx=x+(y>h*.6?lean:0);r(xx,19-y,1,1,y<2?D:y>h-3?L:A)}
+      if(rn()<.35){const tx=x+(lean>0?1:-1);r(tx,19-h,1,2,L);r(tx,19-h+2,1,1,A)}}      // pendão (sementinha) na ponta
+    r(2,18,12,2,D)})}
+// ---- amoreira: maior, mais folhas e cachos de amora ----
+function mkBush(sz,frutas){const key=sz+'|'+(frutas?1:0);if(NAT.bush[key])return NAT.bush[key];
+  const k=[.85,1,1.2][sz],W=Math.round(24*k),H=Math.round(19*k),rn=mulberry32(sz*41+(frutas?3:1));
+  return NAT.bush[key]=outline(mk(W,H,(r,e)=>{const cx=W/2,by=H-1;
+    e(cx,by-H*.38,W*.48,H*.38,'#245e2b');e(cx-W*.18,by-H*.5,W*.28,H*.3,'#2f7d3a');e(cx+W*.2,by-H*.48,W*.27,H*.3,'#2f7d3a');e(cx,by-H*.62,W*.3,H*.3,'#3c8f45');
+    for(let i=0;i<14+sz*6;i++){const x=Math.round(cx+(rn()-.5)*W*.85),y=Math.round(by-H*.1-rn()*H*.75);r(x,y,2,1,rn()<.5?'#57ad5f':'#2a6e31');if(rn()<.4)r(x,y-1,1,1,'#6cc46f')}
+    for(const x of[cx-W*.3,cx,cx+W*.28])r(Math.round(x),by-2,1,2,'#4f311c');      // galhinhos na base
+    if(frutas)for(let i=0;i<6+sz*3;i++){const x=Math.round(cx+(rn()-.5)*W*.75),y=Math.round(by-H*.2-rn()*H*.6);r(x,y,2,2,'#5a2a8a');r(x,y,1,1,'#b98ae8');r(x+1,y+1,1,1,'#3a1a5e');if(rn()<.3)r(x+2,y+1,1,1,'#7b3fb5')}
+    else for(let i=0;i<4;i++){const x=Math.round(cx+(rn()-.5)*W*.7),y=Math.round(by-H*.3-rn()*H*.5);r(x,y,1,1,'#d6e8a0')}}))}      // sem amora: só florzinhas
+function natImg(i,o,dep){
+  if(o==='tree'){const t=treeVar(i);return dep?mkTree(t.v,t.s,0,1):mkTree(t.v,t.s,isApple(i))}
+  if(o==='rock'){const q=rockVar(i);return mkRock(q.t,q.s,q.f)}
+  if(o==='bush')return mkBush(bushVar(i).s,!dep);
+  if(o==='capim'){const q=capimVar(i);return mkCapim(q.c,q.s)}
+  return null}
 // ---- acabamento da natureza: bosques e clareiras, árvores espaçadas, pedras em grupinhos, árvores na cidade ----
 const isApple=i=>objs[i]==='tree'&&hash2((i%AW+XMIN),(i/AW)|0,913)<.2;      // 20% das árvores são macieiras
 const APPLE_HIT=.1;      // chance de cair uma maçã a cada golpe numa macieira
@@ -911,10 +1076,10 @@ const CITY_ZONE=[9,11,48,31];      // centro de Videira e arredores: árvores be
 function refineNature(seed){
   const rn=mulberry32((seed^0x5bd1e995)>>>0),isTree=o=>o==='tree'||o==='pine',inQuarry=(x,y)=>x>=QUARRY[0]&&x<=QUARRY[2]&&y>=QUARRY[1]&&y<=QUARRY[3];
   const inCity=(x,y)=>x>=CITY_ZONE[0]&&x<=CITY_ZONE[2]&&y>=CITY_ZONE[1]&&y<=CITY_ZONE[3];
-  const nearPath=(x,y)=>{for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const nx=x+dx,ny=y+dy;if(nx>=0&&ny>=0&&nx<MW&&ny<MH0){const g=ground[ny*AW-XMIN+nx];if(g===1||g===3)return true}}return false};
-  const free=(x,y)=>x>=1&&y>=1&&x<MW-1&&y<MH0-1&&ground[y*AW-XMIN+x]===0&&!lotAt[y*AW-XMIN+x]&&!objs[y*AW-XMIN+x];
+  const nearPath=(x,y)=>{for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const nx=x+dx,ny=y+dy;if(nx>=0&&ny>=0&&nx<MW0&&ny<MH0){const g=ground[ny*AW-XMIN+nx];if(g===1||g===3)return true}}return false};
+  const free=(x,y)=>x>=1&&y>=1&&x<MW0-1&&y<MH0-1&&ground[y*AW-XMIN+x]===0&&!lotAt[y*AW-XMIN+x]&&!objs[y*AW-XMIN+x];
   // densidade original em volta (para saber se é mata fechada)
-  const dens=new Uint8Array(AW*MH0);for(let y=0;y<MH0;y++)for(let x=0;x<MW;x++){let n=0;for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++){const nx=x+dx,ny=y+dy;if(nx>=0&&ny>=0&&nx<MW&&ny<MH0&&isTree(objs[ny*AW-XMIN+nx]))n++}dens[y*AW-XMIN+x]=n}
+  const dens=new Uint8Array(AW*MH0);for(let y=0;y<MH0;y++)for(let x=0;x<MW0;x++){let n=0;for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++){const nx=x+dx,ny=y+dy;if(nx>=0&&ny>=0&&nx<MW0&&ny<MH0&&isTree(objs[ny*AW-XMIN+nx]))n++}dens[y*AW-XMIN+x]=n}
   // 1) árvores: clareiras pelo ruído e espaço mínimo entre copas (1 casa na mata fechada, 2 no campo, 3 perto da cidade)
   const order=[];for(let i=0;i<AW*MH0;i++)if(isTree(objs[i]))order.push(i);
   for(let k=order.length-1;k>0;k--){const j=rn()*(k+1)|0;[order[k],order[j]]=[order[j],order[k]]}
@@ -922,10 +1087,10 @@ function refineNature(seed){
   for(const i of order){const x=(i%AW+XMIN),y=(i/AW)|0,n=vnoise(x,y,seed,9),forest=dens[i]>=6;
     if(inCity(x,y)||(!forest&&n<.33&&rn()<.5)||nearPath(x,y)&&rn()<.5){objs[i]=rn()<.35?'capim':null;continue}
     // mata fechada: só não pode ter vizinho dos lados; campo: nenhum vizinho em volta (nem na diagonal)
-    let ok=true;for(let dy=-1;dy<=1&&ok;dy++)for(let dx=-1;dx<=1;dx++){if(!dx&&!dy)continue;if(forest&&dx&&dy)continue;const nx=x+dx,ny=y+dy;if(nx>=0&&ny>=0&&nx<MW&&ny<MH0&&kept[ny*AW-XMIN+nx]){ok=false;break}}
+    let ok=true;for(let dy=-1;dy<=1&&ok;dy++)for(let dx=-1;dx<=1;dx++){if(!dx&&!dy)continue;if(forest&&dx&&dy)continue;const nx=x+dx,ny=y+dy;if(nx>=0&&ny>=0&&nx<MW0&&ny<MH0&&kept[ny*AW-XMIN+nx]){ok=false;break}}
     if(ok)kept[i]=1;else objs[i]=rn()<.3?'capim':null}
   // bosquinhos novos no campo aberto, onde o ruído é alto (sempre respeitando o espaço)
-  for(let y=2;y<MH0-2;y++)for(let x=2;x<MW-2;x++){if(!free(x,y)||inCity(x,y)||inQuarry(x,y)||nearPath(x,y))continue;const n=vnoise(x,y,seed,9);if(n<.72||rn()>.09)continue;
+  for(let y=2;y<MH0-2;y++)for(let x=2;x<MW0-2;x++){if(!free(x,y)||inCity(x,y)||inQuarry(x,y)||nearPath(x,y))continue;const n=vnoise(x,y,seed,9);if(n<.72||rn()>.09)continue;
     let ok=true;for(let dy=-2;dy<=2&&ok;dy++)for(let dx=-2;dx<=2;dx++)if(kept[(y+dy)*AW-XMIN+x+dx]){ok=false;break}
     if(ok){objs[y*AW-XMIN+x]=rn()<.25?'pine':'tree';kept[y*AW-XMIN+x]=1}}
   // 2) pedras: longe das estradas e da cidade; ficam em grupinhos onde o ruído das pedras é alto
@@ -933,14 +1098,14 @@ function refineNature(seed){
     if(inCity(x,y)||nearPath(x,y)){objs[i]=null;continue}
     const n=vnoise(x,y,seed+7,6);if(n<.3&&rn()<.4){objs[i]=null;continue}
     if(n>.72)for(const[dx,dy]of[[1,0],[0,1],[-1,1],[1,1]])if(rn()<.22&&free(x+dx,y+dy)&&!nearPath(x+dx,y+dy))objs[(y+dy)*AW-XMIN+x+dx]='rock'}
-  for(let y=2;y<MH0-2;y++)for(let x=2;x<MW-2;x++)if(free(x,y)&&!inCity(x,y)&&!nearPath(x,y)&&vnoise(x,y,seed+7,6)>.6&&rn()<.025)objs[y*AW-XMIN+x]='rock';      // pedras soltas extras
+  for(let y=2;y<MH0-2;y++)for(let x=2;x<MW0-2;x++)if(free(x,y)&&!inCity(x,y)&&!nearPath(x,y)&&vnoise(x,y,seed+7,6)>.6&&rn()<.025)objs[y*AW-XMIN+x]='rock';      // pedras soltas extras
   // 3) árvores na cidade: poucas, bem espaçadas, longe das portas, placas e personagens
   const spots=[[MATEUS_POS[0],MATEUS_POS[1]],[GABRIEL_POS[0],GABRIEL_POS[1]],[THIAGO_POS[0],THIAGO_POS[1]],...SIGNS.map(s=>[s.x,s.y])];
-  const nearLot=(x,y)=>{for(let dy=-1;dy<=2;dy++)for(let dx=-1;dx<=1;dx++){const nx=x+dx,ny=y+dy;if(nx>=0&&ny>=0&&nx<MW&&ny<MH0&&lotAt[ny*AW-XMIN+nx])return true}return false};
+  const nearLot=(x,y)=>{for(let dy=-1;dy<=2;dy++)for(let dx=-1;dx<=1;dx++){const nx=x+dx,ny=y+dy;if(nx>=0&&ny>=0&&nx<MW0&&ny<MH0&&lotAt[ny*AW-XMIN+nx])return true}return false};
   const cand=[];for(let y=VILLAGE[1]-2;y<=VILLAGE[3];y++)for(let x=VILLAGE[0]-2;x<=VILLAGE[2]+3;x++)if(free(x,y)&&!nearLot(x,y)&&!spots.some(([sx,sy])=>Math.abs(sx-x-.5)<2.5&&Math.abs(sy-y-.5)<2.5))cand.push(y*AW-XMIN+x);
   for(let k=cand.length-1;k>0;k--){const j=rn()*(k+1)|0;[cand[k],cand[j]]=[cand[j],cand[k]]}
   let placed=0;for(const i of cand){if(placed>=12)break;const x=(i%AW+XMIN),y=(i/AW)|0;let ok=true;
-    for(let dy=-4;dy<=4&&ok;dy++)for(let dx=-4;dx<=4;dx++){const nx=x+dx,ny=y+dy;if(nx>=0&&ny>=0&&nx<MW&&ny<MH0&&isTree(objs[ny*AW-XMIN+nx])){ok=false;break}}
+    for(let dy=-4;dy<=4&&ok;dy++)for(let dx=-4;dx<=4;dx++){const nx=x+dx,ny=y+dy;if(nx>=0&&ny>=0&&nx<MW0&&ny<MH0&&isTree(objs[ny*AW-XMIN+nx])){ok=false;break}}
     if(ok){objs[i]=placed%3===2?'pine':'tree';placed++}}
 }
 const oldSoilLvl=(x,y)=>y>=15&&y<=21&&x>=4&&x<=12?((x>=9&&y>=17&&y<=19)?1:(x>=7&&y>=16&&y<=19)?2:(x>=5&&y>=16&&y<=20)?3:4)
@@ -997,7 +1162,7 @@ function walkable(tx,ty){
   if(g===3&&!state.b.ponte)return false;
   if(lotAt[i])return false;
   const o=objs[i];
-  if(o&&o!=='capim'){if((o==='tree'||o==='rock')&&state.depleted[i])return true;return false}
+  if(o&&o!=='capim'&&o!=='bush'){if((o==='tree'||o==='rock')&&state.depleted[i])return true;return false}
   return true;
 }
 function canStand(x,y,r){const f=Math.floor;return walkable(f(x-r),f(y-r))&&walkable(f(x+r),f(y-r))&&walkable(f(x-r),f(y+r))&&walkable(f(x+r),f(y+r))}
@@ -1028,6 +1193,28 @@ function ghibli(c,dir,skin){try{const w=c.width,h=c.height,g=c.getContext('2d'),
       // bochechas coradas e boquinha
       const blush=dir==='down'?[[5,7],[10,7]]:[[9,7]];for(const[x,y]of blush)if(isSkin(x,y))put(x,y,mix(P(x,y),[240,130,120],.55));
       if(dir==='down'&&isSkin(7,8)&&isSkin(8,8)){put(7,8,mix(P(7,8),[170,80,64],.45));put(8,8,mix(P(8,8),[170,80,64],.45))}}
+    // corpo mais detalhado: ombros arredondados, sombra do queixo, gola, braço separado do tronco, cinto com fivela, costura da calça, joelho e sola do sapato
+    {const C=(x,y)=>A(x,y)>200&&!isSkin(x,y),cur=(x,y)=>{const i=(y*w+x)*4;return[d[i],d[i+1],d[i+2]]},esc=(x,y,k)=>{if(A(x,y)>200)put(x,y,mix(cur(x,y),[30,18,20],k))},cla=(x,y,k)=>{if(A(x,y)>200)put(x,y,mix(cur(x,y),[255,248,232],k))};
+      const front=dir!=='side',hh=h>20?1:0;
+      if(front){
+        for(const x of[3,12])if(A(x,9)>200&&A(x,10)>200){const i=(9*w+x)*4;d[i+3]=0}      // ombro arredondado
+        for(let x=6;x<=9;x++)if(A(x,9)>200&&!isSkin(x,9))esc(x,9,.28);      // sombra do queixo no peito
+        if(dir==='down'&&C(7,9)&&C(8,9)){esc(7,10,.22);esc(8,10,.22);cla(6,9,.18);cla(9,9,.18)}      // gola em V
+        for(let y=10;y<=13;y++){if(C(4,y)&&C(3,y)&&dif(P(4,y),P(3,y))<20)esc(4,y,.2);if(C(11,y)&&C(12,y)&&dif(P(11,y),P(12,y))<20)esc(11,y,.2)}      // braço solto do tronco
+        for(let y=10;y<=13;y++){cla(4,y,.08);esc(11,y,.1)}      // luz da esquerda, sombra da direita
+        let cinto=-1;for(let y=11;y<=15+hh;y++){if(A(7,y)<200||A(7,y-1)<200)continue;if(dif(P(7,y),P(7,y-1))>45&&!isSkin(7,y)&&!isSkin(7,y-1)){cinto=y;break}}
+        if(cinto>0&&cinto<16+hh){for(let x=4;x<=11;x++)if(C(x,cinto))put(x,cinto,mix(P(x,cinto),[34,24,20],.5));if(dir==='down'&&C(7,cinto)&&C(8,cinto)){put(7,cinto,[214,176,82]);put(8,cinto,[176,138,58])}}
+        for(let y=Math.max(cinto+2,13);y<=15+hh;y++)if(C(7,y)&&C(8,y)){esc(7,y,.18)}      // costura no meio da calça
+        for(const x of[5,9])if(C(x,16+hh))cla(x,16+hh,.14);      // joelho
+        for(let x=4;x<=11;x++){let b=-1;for(let y=h-1;y>=14;y--)if(A(x,y)>200){b=y;break}if(b>0&&C(x,b))esc(x,b,.32)}      // sola do sapato
+        if(dir==='down'){for(const x of[4,11])if(A(x,6)<200&&isSkin(x+(x<8?1:-1),6))put(x,6,mix(sk,[150,90,70],.25))}      // orelhas
+      }else{
+        for(let y=10;y<=13;y++){if(C(7,y)&&C(6,y)&&dif(P(7,y),P(6,y))<20)esc(6,y,.18)}      // braço na frente do corpo
+        if(C(10,9))esc(10,9,.12);if(A(5,9)>200)cla(5,9,.1);
+        let cinto=-1;for(let y=11;y<=15+hh;y++){if(A(5,y)<200||A(5,y-1)<200)continue;if(dif(P(5,y),P(5,y-1))>45&&!isSkin(5,y)&&!isSkin(5,y-1)){cinto=y;break}}
+        if(cinto>0)for(let x=4;x<=11;x++)if(C(x,cinto)&&!(x>=7&&x<=8))put(x,cinto,mix(P(x,cinto),[34,24,20],.45));
+        for(let x=3;x<=12;x++){let b=-1;for(let y=h-1;y>=14;y--)if(A(x,y)>200){b=y;break}if(b>0&&C(x,b))esc(x,b,.32)}
+      }}
     // cores quentes e suaves, como aquarela
     for(let i=0;i<d.length;i+=4)if(d[i+3]>40){d[i]+=(255-d[i])*.06;d[i+1]+=(232-d[i+1])*.06;d[i+2]+=(200-d[i+2])*.04}
     g.putImageData(id,0,0)}catch(e){}return c}
@@ -1353,11 +1540,29 @@ const animImg=a=>(SPR.var&&SPR.var[a.sp]&&SPR.var[a.sp][a.cor|0])||SPR[a.sp];
 const animName=a=>{const v=ANIM_VARS[a.sp],vv=v&&v[a.cor|0];return SPECIES[a.sp].nome+(vv&&vv.n!=='comum'&&(a.cor|0)?' '+vv.n:'')};
 const animFem=sp=>sp==='galinha'||sp==='ovelha'||sp==='vaca';
 const rarName=a=>{const t=animTier(a);return animFem(a.sp)?RAR[t].f:RAR[t].n};
+// ---- ícones mais caprichados: cada desenho 16×16 vira 32×32 (Scale2x, bordas suaves), com contorno escuro, brilho em cima e sombra embaixo ----
+function poliIcone(src){try{const w=16,h=16,s=src.getContext('2d').getImageData(0,0,w,h).data,W=32,H=32,o=document.createElement('canvas');o.width=W;o.height=H;const g=o.getContext('2d'),id=g.createImageData(W,H),d=id.data;
+  const px=(x,y)=>{x=Math.max(0,Math.min(w-1,x));y=Math.max(0,Math.min(h-1,y));const i=(y*w+x)*4;return[s[i],s[i+1],s[i+2],s[i+3]]},eq=(a,b)=>a[0]===b[0]&&a[1]===b[1]&&a[2]===b[2]&&(a[3]>40)===(b[3]>40);
+  const set=(x,y,c)=>{const i=(y*W+x)*4;d[i]=c[0];d[i+1]=c[1];d[i+2]=c[2];d[i+3]=c[3]};
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const P=px(x,y),A=px(x,y-1),B=px(x+1,y),C=px(x-1,y),D=px(x,y+1);
+    let e0=P,e1=P,e2=P,e3=P;if(!eq(A,D)&&!eq(C,B)){if(eq(C,A))e0=C;if(eq(A,B))e1=B;if(eq(C,D))e2=C;if(eq(D,B))e3=B}
+    set(x*2,y*2,e0);set(x*2+1,y*2,e1);set(x*2,y*2+1,e2);set(x*2+1,y*2+1,e3)}
+  const al=(x,y)=>x<0||y<0||x>=W||y>=H?0:d[(y*W+x)*4+3],src2=new Uint8ClampedArray(d);const a2=(x,y)=>x<0||y<0||x>=W||y>=H?0:src2[(y*W+x)*4+3];
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){const i=(y*W+x)*4;if(src2[i+3]<=40)continue;
+    const top=a2(x,y-1)<=40||a2(x-1,y)<=40,bot=a2(x,y+1)<=40||a2(x+1,y)<=40,k=top?.22:bot?-.24:0;
+    if(k>0){d[i]+=(255-d[i])*k;d[i+1]+=(250-d[i+1])*k;d[i+2]+=(235-d[i+2])*k}else if(k<0){d[i]*=1+k;d[i+1]*=1+k;d[i+2]*=1+k}}
+  g.putImageData(id,0,0);
+  // contorno e sombrinha no chão
+  const o2=document.createElement('canvas');o2.width=W;o2.height=H;const g2=o2.getContext('2d');
+  g2.fillStyle='rgba(0,0,0,.18)';g2.beginPath();if(g2.ellipse){g2.ellipse(16,29.5,10,2.2,0,0,7);g2.fill()}
+  g2.fillStyle='rgba(52,32,22,.95)';for(let y=0;y<H;y++)for(let x=0;x<W;x++)if(a2(x,y)>40){g2.fillRect(x-1,y,3,1);g2.fillRect(x,y-1,1,3)}
+  g2.drawImage(o,0,0);return o2}catch(e){return src}}
 function buildSprites(){
   const rn=mulberry32(7);
-  SPR.grass=[['#6fb552','#5ea445','#82c563','#4f9a3c'],['#7dba48','#6aa83c','#a3cf5a','#5c9a34'],['#a3a84a','#8f9440','#b9bd5c','#8a8f3a'],['#a9c7b0','#9ab8a2','#bfd8c6','#8fb09a']]
+  SPR.grass=[['#4c9140','#41843a','#5aa24b','#356f2e'],['#7dba48','#6aa83c','#a3cf5a','#5c9a34'],['#a3a84a','#8f9440','#b9bd5c','#8a8f3a'],['#a9c7b0','#9ab8a2','#bfd8c6','#8fb09a']]
     .map(([b,d,l,t],s)=>[0,1,2,3,4,5,6,7].map(v=>mk(16,16,r=>{r(0,0,16,16,b);for(let i=0;i<14;i++)r(rn()*16|0,rn()*16|0,1+(rn()<.3),1,rn()<.5?d:l);
       for(let i=0;i<2;i++)if(rn()<.6){const x=2+rn()*11|0,y=3+rn()*10|0;r(x,y,1,2,t);r(x+2,y+1,1,2,t);r(x+1,y-1,1,2,t)}
+      if(s===0){for(let i=0;i<5;i++){const x=rn()*15|0,y=2+rn()*13|0;r(x,y,1,2,'#3a7a31');r(x,y-1,1,1,'#6cb556')}if(rn()<.5){const x=rn()*12|0,y=rn()*12|0;r(x,y,4,3,'rgba(30,70,25,.18)')}if(rn()<.4){const x=rn()*13|0,y=rn()*13|0;r(x,y,3,2,'rgba(140,200,110,.18)')}}
       if(s<2&&v===7){const x=3+rn()*9|0,y=3+rn()*9|0,c=['#ffffff','#ffe066','#ff9ec4'][rn()*3|0];r(x,y,2,2,c);r(x,y,1,1,'#fff');if(rn()<.5)r(x+5,y+4,1,1,c)}
       if(s===2&&v>4)for(let i=0;i<3;i++)r(rn()*15|0,rn()*15|0,2,1,rn()<.5?'#c9762e':'#d9a03d');
       if(s===3&&v>3)for(let i=0;i<2;i++){const x=rn()*12|0,y=rn()*13|0;r(x,y,4,2,'#eef3f0');r(x+1,y-1,2,1,'#eef3f0')}})));
@@ -1379,6 +1584,9 @@ function buildSprites(){
   SPR.path=[0,1,2,3].map(v=>mk(16,16,(r,e)=>{r(0,0,16,16,'#d8b27a');for(let i=0;i<12;i++)r(rn()*16|0,rn()*16|0,1,1,rn()<.5?'#c79f66':'#e5c592');
     for(let i=0;i<v+1;i++){const x=3+rn()*10|0,y=3+rn()*10|0,w=2+(rn()*2|0);e(x,y+.6,w,w-.8,'#a9936f');e(x,y,w,w-1,'#cdbb9c');e(x-.5,y-.6,w-1.2,Math.max(.6,w-2),'#ece0c6')}   // pedras chatas
     if(v===2){r(2,13,1,1,'#8d939c');r(12,3,1,1,'#8d939c')}}));
+  SPR.gravel=[0,1,2,3,4,5,6,7].map(v=>mk(16,16,(r,e)=>{r(0,0,16,16,'#a39b8c');for(let i=0;i<26;i++){const x=rn()*16|0,y=rn()*16|0,c=['#8d8576','#b7af9f','#968e7f','#c8c0b0','#7d766a'][rn()*5|0];r(x,y,1+(rn()<.3),1,c)}
+    for(let i=0;i<2+(v&1);i++){const x=1+rn()*12|0,y=1+rn()*12|0,w=1.4+rn()*1.4;e(x,y+.5,w,w*.7,'#6f685d');e(x,y,w,w*.65,['#b3b9c2','#bfb5a5','#9a9184'][rn()*3|0]);r(x-1,y-1,1,1,'#e2ddd2')}
+    if(v===3){r(4,9,7,1,'#7d766a');r(5,10,5,1,'#8d8576')}if(v===6){r(2,3,2,2,'#5f9a48');r(12,12,2,1,'#5f9a48')}}));      // cascalho da Pedreirinha
   // bordas de pedrinhas (leste, oeste, sul, norte — mesma ordem de D4)
   SPR.pedge=[[13,0,0,1],[0,0,0,1],[0,13,1,0],[0,0,1,0]].map(([x0,y0,ax,ay])=>mk(16,16,r=>{for(let i=0;i<4;i++){const j=i*4+(rn()*2|0),x=x0+ax*j,y=y0+ay*j,g=rn()<.5;
     r(x,y,3,3,g?'#8d939c':'#a39a8c');r(x,y,2,1,g?'#c9ced6':'#d6cdbd');r(x+1,y+2,2,1,g?'#6c727b':'#7d7568')}}));
@@ -1390,7 +1598,9 @@ function buildSprites(){
   SPR.deco=[[flw(['#ff9ec4','#ffffff','#ffe066']),flw(['#c9a0ff','#ffffff']),peb(0),tuf],[flw(['#e0392b','#ffe066']),flw(['#ff9a3d','#9b5fd5','#fff']),peb(0),tuf],
     [flw(['#e8a544','#c9762e']),shr,peb(0),shr],[peb(1),peb(1),peb(1),mk(16,16,r=>{r(7,5,1,8,'#6e4527');r(5,6,2,1,'#6e4527');r(8,8,3,1,'#6e4527');r(4,5,1,1,'#6e4527');r(11,7,1,1,'#6e4527')})]];
   SPR.water=[0,1].map(f=>mk(16,16,r=>{r(0,0,16,16,'#3f93dd');r(2+f*3,3,5,1,'#7cc0f2');r(9-f*2,9,5,1,'#7cc0f2');r(1+f*2,13,3,1,'#2f7fc8')}));
-  SPR.waterL=[0,1].map(f=>mk(16,16,r=>{r(0,0,16,16,'#7d6240');r(0,0,16,1,'#8a6e4a');r(1+f*3,3,6,1,'#b8a074');r(2+f*3,4,3,1,'#9c8458');r(8-f*2,8,6,1,'#b8a074');r(9-f*2,9,3,1,'#9c8458');r(1+f*2,13,4,1,'#c9b386');r(11-f,12,3,1,'#655034');r(12-f*3,2,2,1,'#655034')}));      // lagos e açudes: água barrenta
+  SPR.waterL=[0,1].map(f=>mk(16,16,(r,e)=>{r(0,0,16,16,'#7d6040');      // rio, lagos e açudes: água barrenta com marolinhas
+    const ond=(x,y)=>{r(x,y,2,1,'#957853');r(x+2,y-1,2,1,'#a88b62');r(x+4,y,2,1,'#957853');r(x+2,y-1,1,1,'#c4a979')};
+    ond((2+f*2)%16,4);ond((9+16-f*2)%16-1,8);ond((4+f)%16,13);r((12+f*3)%16,1,1,1,'#957853');r((1+f)%16,10,1,1,'#957853');}));
   SPR.bridge=mk(16,16,r=>{r(0,0,16,16,'#b07c4f');for(let x=0;x<16;x+=4)r(x,0,1,16,'#8a5c38');r(0,0,16,1,'#6e4527');r(0,15,16,1,'#6e4527')});
   SPR.tree=[['#2f7d3a','#4fae5a','#1f5e2a'],['#2a7436','#44a04f','#1c5626'],['#c9762e','#e8a544','#9a5220'],['#8fa99a','#f2f6f3','#6f8a7b']]
     .map(([a,b,c])=>outline(mk(34,54,(r,e)=>{r(14,30,6,22,'#6e4527');r(15,30,2,22,'#8a5c38');r(19,34,1,16,'#553620');r(11,50,12,3,'#6e4527');r(9,52,4,2,'#6e4527');r(21,52,4,2,'#6e4527');
@@ -1438,9 +1648,9 @@ function buildSprites(){
   for(const k of['mateus','giliard','gabriel','seller','thiago','luan','junior','xande','maikelen'])PORTRAIT[k]=portraitOf(SPR[k],{xande:'#7a4a24',mateus:'#4a4f57',giliard:'#2d5f80',gabriel:'#1f6b3a',seller:'#3a414b',thiago:'#8f1f1b',luan:'#1a4796',junior:'#1f6b3a',maikelen:'#0f2a17'}[k]);
   for(const set of[SPR.player,SPR.thief,SPR.seller,SPR.mateus,SPR.xande,SPR.maikelen,SPR.giliard,SPR.gabriel,SPR.thiago,SPR.luan,SPR.junior,...SPR.npc])for(const d in set)set[d]=set[d].map(outline);
   const I={
-    madeira:r=>{r(2,6,12,5,'#8a5c38');r(2,6,12,1,'#a9744f');r(12,6,2,5,'#e5c592');r(13,8,1,1,'#8a5c38');r(4,8,3,1,'#6e4527')},
-    pedra:r=>{r(3,7,10,6,'#8d939c');r(5,5,7,3,'#8d939c');r(4,7,4,2,'#b3b9c2');r(3,12,10,1,'#6c727b')},
-    capim:r=>{for(const x of[3,5,7,9,11])r(x,3+(x%4),1,10-(x%4),'#a9bf3f');r(3,10,10,2,'#c98a3d')},
+    madeira:(r,e)=>{for(const[y,dx]of[[9,0],[4,2]]){r(1+dx,y,11,5,'#8a5c38');r(1+dx,y,11,1,'#a9744f');r(1+dx,y+4,11,1,'#6e4527');r(4+dx,y+2,4,1,'#6e4527');e(12.5+dx,y+2.5,2,2.5,'#e5c592');e(12.5+dx,y+2.5,1,1.2,'#c79f66');r(13+dx,y+2,1,1,'#8a5c38')}},
+    pedra:(r,e)=>{e(8,10,6.5,4,'#6c727b');e(7.6,9.4,6,3.6,'#8d939c');e(6.5,8.2,3.6,2,'#b3b9c2');r(5,7,2,1,'#d6dbe2');r(9,11,3,1,'#6c727b');e(12.5,12.6,2.4,1.6,'#9aa0a8');r(12,12,1,1,'#c9ced6')},
+    capim:r=>{for(const[x,y]of[[3,5],[4,3],[6,4],[7,2],[9,3],[10,5],[12,4]]){r(x,y,1,12-y,'#d9cf5a');r(x,y,1,2,'#efe48a')}r(8,1,1,2,'#efe48a');r(3,10,10,2,'#a6741f');r(3,10,10,1,'#c98a3d');r(7,10,2,2,'#e8c45a')},
     racao:r=>{r(3,4,10,10,'#e5c592');r(3,4,10,2,'#c79f66');r(5,2,6,2,'#c79f66');r(6,8,4,3,'#7fb04f')},
     fruta:r=>{r(4,6,4,4,'#7b3fb5');r(8,8,4,4,'#6a2fa5');r(7,4,3,3,'#9b5fd5');r(8,2,1,2,'#3c8f45')},
     raiska:r=>{r(6,1,4,2,'#c4302b');r(6,3,4,2,'#e8eef4');r(5,5,6,9,'#dfe9f2');r(5,5,6,1,'#ffffff');r(6,8,4,3,'#c4302b');r(7,9,2,1,'#ffffff');r(6,6,1,7,'#ffffff')},
@@ -1475,7 +1685,8 @@ function buildSprites(){
     pix:r=>{r(4,1,8,14,'#ffffff');r(4,1,8,1,'#cfcfcf');r(7,3,2,1,'#32bcad');r(6,4,4,2,'#32bcad');r(7,6,2,1,'#32bcad');for(const y of[9,11,13])r(5,y,6,1,'#9aa0a8')},
     nota3:r=>{r(1,5,14,7,'#7fb04f');r(1,5,14,1,'#3f6b28');r(1,11,14,1,'#3f6b28');r(7,7,3,1,'#fff');r(9,8,1,1,'#fff');r(8,9,2,1,'#fff');r(9,10,1,1,'#fff');r(7,10,2,1,'#fff');r(3,7,2,3,'#dff0c0')},
     boleto:r=>{r(2,4,12,8,'#ffffff');r(2,4,12,1,'#cfcfcf');for(const x of[3,5,6,8,10,11,13])r(x,6,1,4,'#222');r(3,11,6,1,'#c94f3d')},
-    machado:r=>{r(7,4,2,11,'#8a5c38');r(8,4,1,11,'#a9744f');r(2,2,7,5,'#9aa0a8');r(2,2,7,1,'#d6dbe2');r(2,6,2,1,'#6c727b')},
+    machado:r=>{r(8,3,2,12,'#8a5c38');r(8,3,1,12,'#a9744f');r(8,13,2,2,'#5a3a22');r(4,3,5,4,'#8d939c');r(4,3,5,1,'#c4cad2');r(2,2,3,6,'#9aa0a8');r(2,1,2,1,'#9aa0a8');r(2,8,2,1,'#9aa0a8');r(1,2,1,6,'#e6eaf0');r(2,1,1,1,'#e6eaf0');r(2,8,1,1,'#e6eaf0');r(10,4,1,2,'#6c727b');r(5,6,3,1,'#6c727b')},
+    picareta:r=>{for(let i=0;i<11;i++){r(7,4+i,2,1,'#8a5c38');r(7,4+i,1,1,'#a9744f')}r(7,14,2,1,'#5a3a22');r(2,3,12,2,'#8d939c');r(3,2,10,1,'#c4cad2');r(1,4,2,2,'#6c727b');r(13,4,2,2,'#6c727b');r(1,6,1,1,'#5a6069');r(14,6,1,1,'#5a6069');r(6,2,4,4,'#5a6069');r(7,3,2,1,'#8a5c38')},
     vara:r=>{for(let i=0;i<11;i++)r(2+i,13-i,1,2,'#8a5c38');r(12,2,1,9,'#ddd');r(11,11,3,2,'#e33b3b');r(11,13,3,1,'#fff')},
   });
   for(const k in CROPS){const c=CROPS[k],col=c.cor,g='#3c8f45',hl='rgba(255,255,255,.35)';
@@ -1486,7 +1697,7 @@ function buildSprites(){
       else{r(4,5,8,8,col);r(3,7,10,4,col);r(7,3,2,2,g);r(5,6,2,2,hl)}};
     I['sem_'+k]=r=>{r(4,2,8,12,'#e5c592');r(4,2,8,2,'#c79f66');r(5,6,6,6,'#fff7e6');r(6,7,4,4,col)}}
   for(const k in ITEMS)if(ITEMS[k].tier){const b=I[ITEMS[k].base],col=RAR[ITEMS[k].tier].c;I[k]=(r,e)=>{b(r,e);r(10,0,6,6,'#1c1c1c');r(11,1,4,4,col);r(12,1,1,1,'#ffffff')}}
-  for(const k in I){const c=mk(16,16,I[k]);try{ICON[k]=c.toDataURL()}catch(e){ICON[k]=''}}
+  for(const k in I){const c=poliIcone(mk(16,16,I[k]));try{ICON[k]=c.toDataURL()}catch(e){ICON[k]=''}}
 }
 const ic=id=>`<img class="ic" src="${ICON[id]}" alt="">`;
 
@@ -1678,7 +1889,7 @@ function openSounds(){
 }
 
 /* ---------- Academia ---------- */
-let swingT=0,liftT=0,liftGain=0;
+let swingT=0,swingPick=0,liftT=0,liftGain=0;
 function openGym(){if(panelKind!=='academia')playSound('gabriel',1,true);const f=state.forca,need=xpNeed(f.lvl),rend=Math.round(fatigue(f.hoje)*100),em=energyMult();
   let ex='';for(const k in EXERCISES){const e=EXERCISES[k],lock=e.req&&f.lvl<e.req,en=e.energia*em,ok=!lock&&state.energy>=en&&state.coins>=e.preco;
     ex+=`<div class="row"${lock?' style="opacity:.6"':''}><span style="font-size:22px;width:28px;text-align:center">${lock?'🔒':e.ico}</span><div class="g"><b>${e.nome}</b>${lock?` <span class="no">(libera na Força ${e.req})</span>`:''}<br><small>−${+en.toFixed(1)} energia${em<1?' 💪':''} · ${e.min>=60?(e.min/60).toString().replace('.',',')+' h':e.min+' min'} · ${e.preco?brl(e.preco):'grátis'} · +${(e.xp*fatigue(f.hoje)*testoXp()).toFixed(1).replace('.',',')} de força${testoXp()>1?' 💪':''}</small></div>
@@ -1686,7 +1897,7 @@ function openGym(){if(panelKind!=='academia')playSound('gabriel',1,true);const f
   const axe=state.flags.axe?(f.lvl>=AXE_MIN?`<span class="ok">Machado em uso</span>: ${axeHits()} golpe${axeHits()>1?'s':''} por árvore (na mão: ${Math.ceil(TREE_HP/handDmg()-1e-9)}), +${axeWood()} madeira por árvore, ${axeEnergy().toFixed(1).replace('.',',')} de energia por golpe.`
     :`<span class="no">Você tem um machado, mas precisa de Força ${AXE_MIN} para usá-lo.</span>`):`Sem machado. Compre na Loja do Giliard por ${brl(AXE_PRICE)} (precisa de Força ${AXE_MIN}).`;
   const tl=testoLeft(),pct=Math.round((1-forcaEnergia())*100);
-  const efeito=`<div class="forcafx"><b>💪 O que a sua Força ${f.lvl} faz:</b><br>🌳 Árvore na mão: <b>${Math.ceil(TREE_HP/handDmg()-1e-9)} golpes</b>, ${f1(handEnergy())} de energia por golpe${hasAxe()?` · com machado: <b>${axeHits()} golpes</b>, ${f1(axeEnergy())} de energia`:''}<br>🪨 Pedra: <b>${rockHits()} golpe${rockHits()>1?'s':''}</b>, ${f1(rockEnergy())} de energia por golpe<br>🌾 Capim e pinhão: ${f1(forcaEnergia())} de energia (−${pct}%)${tl>0?`<br>💉 Testosterona: <b>${testoX()}</b> de força ganha`:''}</div>`;
+  const efeito=`<div class="forcafx"><b>💪 O que a sua Força ${f.lvl} faz:</b><br>🌳 Árvore na mão: <b>${Math.ceil(TREE_HP/handDmg()-1e-9)} golpes</b>, ${f1(handEnergy())} de energia por golpe${hasAxe()?` · com machado: <b>${axeHits()} golpes</b>, ${f1(axeEnergy())} de energia`:''}<br>🪨 Pedra (com picareta${state.flags.pick?'':' — compre na Loja'}): <b>${rockHits()} golpe${rockHits()>1?'s':''}</b>, ${f1(rockEnergy())} de energia por golpe<br>🌾 Capim e pinhão: ${f1(forcaEnergia())} de energia (−${pct}%)${tl>0?`<br>💉 Testosterona: <b>${testoX()}</b> de força ganha`:''}</div>`;
   showPanel('academia',`<div class="g-head"><button class="close" data-a="close">Fechar ✕</button><h1>🏋️ T.O.E.F.D Gym</h1><div class="sub">A força sobe devagar. Cada treino no mesmo dia rende menos — hoje você rende <b>${rend}%</b>; amanhã volta a 100%.</div></div>
     <div class="g-body"><div class="gym"><canvas id="gymcv" width="200" height="150"></canvas><div class="g">
       <div style="font-size:15px"><b>💪 Força nível ${f.lvl}</b></div>
@@ -1767,9 +1978,10 @@ function gymSprite(){if(gymCv)return gymCv;const W=GYM_LOT[2]*16,H=GYM_LOT[3]*16
     r(27,H-22,10,19,OUTL);r(28,H-21,8,18,'#c4302b');r(29,H-19,6,7,'#e0554f');r(34,H-12,1,2,'#ffd23f');           // porta
     r(8,H-9,7,6,'#1c1c1c');e(11,H-9,3,2,'#1c1c1c');r(52,H-9,4,6,'#c94f3d');r(56,H-9,4,6,'#3d7ea6');            // kettlebell e anilhas
     base(r,0,W,H)})}
+const PICK_SPR=mk(14,16,r=>{r(6,3,2,13,'#8a5c38');r(7,3,1,13,'#a9744f');r(6,15,2,1,'#5a3a22');r(1,2,12,2,'#8d939c');r(1,2,12,1,'#d6dbe2');r(0,3,2,2,'#6c727b');r(12,3,2,2,'#6c727b');r(0,5,1,1,'#5a6069');r(13,5,1,1,'#5a6069');r(6,1,2,2,'#5a6069')});
 const AXE_SPR=mk(10,16,r=>{r(4,3,2,13,'#8a5c38');r(5,3,1,13,'#a9744f');r(0,1,6,5,'#9aa0a8');r(0,1,6,1,'#d6dbe2');r(0,5,2,1,'#6c727b')});
 function drawSwing(p){if(swingT<=0)return;const sx=p.x*T-camx,sy=(p.y+.28)*T-camy,f=p.face||1,a=(1-swingT/.28)*2.2-1.2;
-  ctx.save();ctx.translate(sx+f*10,sy-34);ctx.scale(f,1);ctx.rotate(a);ctx.drawImage(AXE_SPR,-6,-44,30,48);ctx.restore()}
+  ctx.save();ctx.translate(sx+f*10,sy-34);ctx.scale(f,1);ctx.rotate(a);if(swingPick)ctx.drawImage(PICK_SPR,-14,-44,42,48);else ctx.drawImage(AXE_SPR,-6,-44,30,48);ctx.restore()}
 
 /* ---------- Arar terra: escolher as duas pontas ---------- */
 let plow=null,plowHover=null;      // plow={a:[x,y]|null,b:[x,y]|null}
@@ -2061,6 +2273,8 @@ const SIGNS=[      // poucas placas, fora da estrada para não esconder o person
   {x:-103.8,y:31.6,l:['Fazenda Imbuial'],farm:1},
   {x:-96.5,y:22.4,l:['Videira ➡ é longe, vai de ônibus!']},
   {x:-50.5,y:DIRT_Y(-50)+3.6,l:['⚠ Buraco na pista','Na chuva vira lama']},
+  {x:113.6,y:23.4,l:['⬇ Pedreirinha ⛏','muita pedra pra quebrar'],pedr:1},
+  {x:118.6,y:105.6,l:['⛏ Pedreirinha'],city:1,pedr:1},
 ];
 function drawSign(s){const sx=Math.round(s.x*T-camx),gy=Math.round(s.y*T-camy),big=s.city||s.farm;
   ctx.font='bold 13px Poppins,sans-serif';const w=Math.round(Math.max(...s.l.map((t,i)=>{ctx.font=`bold ${i===0&&big?15:13}px Poppins,sans-serif`;return ctx.measureText(t).width}))+24),hh=s.l.length*18+12,top=gy-56-hh;
@@ -2168,7 +2382,8 @@ function drawMap(cvm){if(!cvm||!cvm.getContext)return;const g=cvm.getContext('2d
   g.strokeStyle='rgba(255,255,255,.55)';g.lineWidth=1.2;for(let y=0;y<MH;y++)for(let x=XMIN;x<MW;x++)if(isW(x,y)&&hash2(x,y,9)<.12){g.beginPath();g.moveTo(x*P+1,y*P+5);g.quadraticCurveTo(x*P+3.5,y*P+2,x*P+5,y*P+5);g.quadraticCurveTo(x*P+6.5,y*P+8,x*P+9,y*P+5);g.stroke()}
   // 3) estradas: asfalto/pedra (bege com borda), estrada de chão (marrom) e pontes de madeira
   const road=(q,b,c,w)=>{g.fillStyle=b;for(let y=0;y<MH;y++)for(let x=XMIN;x<MW;x++)if(G(x,y)===q)g.fillRect(x*P-w,y*P-w,P+w*2,P+w*2);g.fillStyle=c;for(let y=0;y<MH;y++)for(let x=XMIN;x<MW;x++)if(G(x,y)===q)g.fillRect(x*P,y*P,P,P)};
-  road(4,'#6f4a29',state.rain?'#8a6440':'#c39159',1.6);road(1,'#9a7a4c','#f0dcae',1.6);
+  road(5,'#8a8174','#b3aa9b',.8);road(4,'#6f4a29',state.rain?'#8a6440':'#c39159',1.6);road(1,'#9a7a4c','#f0dcae',1.6);
+  g.fillStyle='#8f877a';for(let y=0;y<MH;y++)for(let x=XMIN;x<MW;x++)if(G(x,y)===5&&hash2(x,y,6)<.35)g.fillRect(x*P+2+hash2(x,y,7)*4,y*P+3+hash2(x,y,8)*4,2,2);      // cascalho da Pedreirinha
   g.fillStyle='#d9c08c';for(let y=0;y<MH;y++)for(let x=XMIN;x<MW;x++)if(G(x,y)===1&&hash2(x,y,3)<.25)g.fillRect(x*P+3,y*P+4,3,2);      // pedrinhas
   for(let y=0;y<MH;y++)for(let x=XMIN;x<MW;x++)if(G(x,y)===4&&hash2(x,y,4)<.12){g.fillStyle='#6f4a29';g.beginPath();g.ellipse(x*P+5,y*P+5,2.4,1.5,0,0,7);g.fill()}      // buracos
   if(state.b.ponte)for(let y=0;y<MH;y++)for(let x=XMIN;x<MW;x++)if(G(x,y)===3){g.fillStyle='#8a5c38';g.fillRect(x*P,y*P,P,P);g.fillStyle='#b0814f';for(let j=1;j<P;j+=3)g.fillRect(x*P+j,y*P,2,P)}
@@ -2204,7 +2419,7 @@ function drawMap(cvm){if(!cvm||!cvm.getContext)return;const g=cvm.getContext('2d
     g.fillStyle=fg;g.textAlign='center';g.textBaseline='middle';g.fillText(t,x,yy+hh/2+1)};
   const area=(t,x,y,col,it)=>{g.font=`${it?'italic ':''}800 ${fr}px Poppins,sans-serif`;g.textAlign='center';g.textBaseline='middle';const w=(g.measureText?g.measureText(t).width:t.length*fr*.55);placed.push([x-w/2,y-fr/2,w,fr]);
     g.lineWidth=fr*.32;g.strokeStyle='rgba(255,255,255,.85)';g.strokeText(t,x,y);g.fillStyle=col;g.fillText(t,x,y)};
-  for(const[t,x,y,c]of[['Rio',52.5,9,'#1d5f99'],['Lago',8,35.3,'#1d5f99'],['Lago do leste',90,30.3,'#1d5f99'],['Açude',34,67.3,'#1d5f99'],['Floresta',26,4.5,'#1f4d2b'],['Floresta',-120,10,'#1f4d2b'],['Pasto do leste',66,12,'#3d5a1e'],['Pedreira',97,63,'#4a4f57'],['Mata do sul',18,70,'#1f4d2b'],['Campos do sul',40,52,'#3d5a1e'],['Estrada de chão',-50,DIRT_Y(-50)-2.4,'#5a3a1e']])area(t,x*P,y*P,c,1);
+  for(const[t,x,y,c]of[['Rio',52.5,9,'#5a3f22'],['Lago',8,35.3,'#5a3f22'],['Lago do leste',90,30.3,'#5a3f22'],['Açude',34,67.3,'#5a3f22'],['Floresta',26,4.5,'#1f4d2b'],['Floresta',-120,10,'#1f4d2b'],['Pasto do leste',66,12,'#3d5a1e'],['Pedreira',97,63,'#4a4f57'],['Pedreirinha',131,115,'#4a4038'],['Mata do sul',18,70,'#1f4d2b'],['Campos do sul',40,52,'#3d5a1e'],['Estrada de chão',-50,DIRT_Y(-50)-2.4,'#5a3a1e']])area(t,x*P,y*P,c,1);
   area('VIDEIRA',27*P,15.2*P,'#7a2a1a');area('Fazenda Imbuial',-107*P,30.4*P,'#5a3a1e');
   for(const v of VILAS){const[px,py,pw,ph]=v.praca;area(`${vilaAberta(v)?'🏘️':'🔒'} ${v.nome}`,(px+pw/2)*P,(py+ph+2.2)*P,vilaAberta(v)?'#5a3a1e':'#7a4a2a');if(!vilaAberta(v))pill(`nível ${v.nivel}`,(px+pw/2)*P,(py+ph+4.6)*P,'#fff3c4','#7a4a2a')}
   const lab=(L,t,bg,fg)=>pill(t,(L[0]+L[2]/2)*P,(L[1]-.25)*P,bg||'#fffaf0',fg||'#3b2416');
@@ -2464,7 +2679,7 @@ function drawClimaWorld(W,H){const hr=state.min/60,c=state.clima;
 /* ================= MULTIPLAYER: cooperativo no mundo do dono, até 4 jogadores, pela internet com código de sala =================
    Ligação: WebRTC (canal de dados direto entre os aparelhos). Para os aparelhos se acharem usa o servidor público grátis do PeerJS
    só como "telefonista" (sinalização). Quem hospeda manda no mundo; os convidados mandam o que fazem e o dono aplica e espalha. */
-const JOGO_VERSAO='2026-11-20d';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
+const JOGO_VERSAO='2026-11-20e';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
 const MP_MAX=4,MP_PREFIX=SLOT_KEYS[0].replace(/_slot_1$/,'').replace(/_/g,''),MP_SERVER='wss://0.peerjs.com:443/peerjs?key=peerjs';
 const MP_ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']},{urls:'stun:global.stun.twilio.com:3478'}]};
 const MP_PESSOAL=['p','energy','hunger','forca','sujeira','sel','testoUntil','fomeT','coins','xpUntil','monster'];      // cada jogador tem o seu; o resto do state é o mundo do dono
@@ -3491,7 +3706,7 @@ function targetLabel(t){
   if(t.k==='soil')return t.act==='plant'?(seedOk(state.sel)?`E — Plantar ${CROPS[state.sel].nome} (${state.seeds[state.sel]})`:'E — Escolher semente'):t.act==='water'?'E — Regar':TRATOR_SO.has(state.crops[t.i].c)?`🚜 ${CROPS[state.crops[t.i].c].nome}: só o trator colhe`:`E — Colher ${CROPS[state.crops[t.i].c].nome}`;
   if(t.k==='bld'){const l=state.b[t.id];return`E — ${BLD[t.id].nome}${l===0?' (construir)':''}`}
   if(t.k==='extra')return`E — ${BLD[t.e.t].nome} extra (nível ${t.e.l})`;
-  return'E — '+{tree:hasAxe()?`Cortar árvore com machado (${axeHits()} golpe${axeHits()>1?'s':''})`:`Cortar árvore na mão (${Math.ceil(TREE_HP/handDmg()-1e-9)} golpes)`,pine:'Colher pinhão da araucária',rock:`Quebrar pedra (${rockHits()} golpe${rockHits()>1?'s':''})`,bush:'Colher amoras',capim:'Cortar capim'}[t.o];
+  return'E — '+{tree:hasAxe()?`Cortar árvore com machado (${axeHits()} golpe${axeHits()>1?'s':''})`:`Cortar árvore na mão (${Math.ceil(TREE_HP/handDmg()-1e-9)} golpes)`,pine:'Colher pinhão da araucária',rock:state.flags.pick?`Quebrar pedra com a picareta (${rockHits()} golpe${rockHits()>1?'s':''})`:'⛏ Pedra: precisa de picareta (Loja do Giliard)',bush:'Colher amoras',capim:'Cortar capim'}[t.o];
 }
 function interact(){idleT=0;
   if(MP.role==='guest'){
@@ -3538,13 +3753,14 @@ function interact(){idleT=0;
   if(o==='tree'){const ax=hasAxe();
     if(!ax&&state.flags.axe&&!state.flags.axeWarn){state.flags.axeWarn=1;toast(`Você ainda não tem força para o machado (precisa de Força ${AXE_MIN}). Treine na academia!`)}
     if(!useEnergy(ax?axeEnergy():handEnergy()))return;
-    hp[i]=(hp[i]==null?TREE_HP:hp[i])-(ax?axeDmg():handDmg());shake[i]=.25;sfx.hit();if(ax){swingT=.28;beep(120,.06,'square',.05)}
+    hp[i]=(hp[i]==null?TREE_HP:hp[i])-(ax?axeDmg():handDmg());shake[i]=.25;sfx.hit();if(ax){swingT=.28;swingPick=0;beep(120,.06,'square',.05)}
     const apple=isApple(i);if(apple&&hp[i]>.001&&Math.random()<APPLE_HIT){gain('maca',1,x+.5+(Math.random()-.5)*.6,y-.6);beep(700,.06,'triangle',.04)}
-    if(hp[i]<=.001){treeFalls.push({x,y,img:apple?SPR.treeApple[season()]:SPR.tree[season()],dir:state.p.x<x+.5?1:-1,t:0});delete hp[i];state.depleted[i]=state.day+3;gain('madeira',4+(ax?axeWood():0),x+.5,y);if(apple&&Math.random()<.5)gain('maca',1,x+.5,y-1);studyBonus('floresta','madeira',1,x+.5,y);addForcaXp(BREAK_XP,x+.5,y-1);sfx.get()}}
-  else if(o==='rock'){if(!useEnergy(rockEnergy()))return;hp[i]=(hp[i]==null?ROCK_HP:hp[i])-rockDmg();shake[i]=.25;sfx.hit();
-    if(hp[i]<=.001){delete hp[i];state.depleted[i]=1e9;gain('pedra',3,x+.5,y);studyBonus('geo','pedra',1,x+.5,y);addForcaXp(BREAK_XP,x+.5,y-1);sfx.get()}}
-  else if(o==='capim'){if(!useEnergy(forcaEnergia()))return;state.depleted[i]=state.day+1;gain('capim',2,x+.5,y);sfx.get()}
-  else if(o==='bush'){state.depleted[i]=state.day+2;gain('fruta',2,x+.5,y);sfx.get()}
+    if(hp[i]<=.001){treeFalls.push({x,y,img:natImg(i,'tree'),dir:state.p.x<x+.5?1:-1,t:0});delete hp[i];state.depleted[i]=state.day+3;gain('madeira',4+(ax?axeWood():0)+tamBonus(i,'tree'),x+.5,y);if(apple&&Math.random()<.5)gain('maca',1,x+.5,y-1);studyBonus('floresta','madeira',1,x+.5,y);addForcaXp(BREAK_XP,x+.5,y-1);sfx.get()}}
+  else if(o==='rock'){if(!state.flags.pick){if(!interact.semPica||Date.now()-interact.semPica>2500){interact.semPica=Date.now();toast('⛏ Precisa de uma picareta para quebrar pedra. Tem na Loja do Giliard (Ferramentas).');sfx.no()}return}
+    if(!useEnergy(rockEnergy()))return;swingT=.28;swingPick=1;hp[i]=(hp[i]==null?ROCK_HP:hp[i])-rockDmg();shake[i]=.25;sfx.hit();
+    if(hp[i]<=.001){delete hp[i];state.depleted[i]=1e9;gain('pedra',3+tamBonus(i,'rock'),x+.5,y);studyBonus('geo','pedra',1,x+.5,y);addForcaXp(BREAK_XP,x+.5,y-1);sfx.get()}}
+  else if(o==='capim'){if(!useEnergy(forcaEnergia()))return;state.depleted[i]=state.day+1;gain('capim',2+tamBonus(i,'capim'),x+.5,y);sfx.get()}
+  else if(o==='bush'){state.depleted[i]=state.day+2;gain('fruta',2+tamBonus(i,'bush'),x+.5,y);sfx.get()}
   else if(o==='pine'){if(!useEnergy(forcaEnergia()))return;state.depleted[i]=state.day+2;shake[i]=.25;gain('pinhao',2,x+.5,y-.5);sfx.get()}
 }
 function updateLasso(dt){
@@ -3601,7 +3817,8 @@ function openBld(id){if(id==='mercado'&&state.b.mercado>0){openLoja();return}
     h+=`<h3>Comprar</h3><div class="row">${ic('racao')}<div class="g">Ração — ${brl(rp)}</div><button class="alt" data-a="buy" data-v="racao" ${state.coins>=rp?'':'disabled'}>Comprar</button></div>
       <div class="row">${ic('pao')}<div class="g">Pão (mata a fome) — ${brl(PAO_PRICE)}</div><button class="alt" data-a="buy" data-v="pao" ${state.coins>=PAO_PRICE?'':'disabled'}>Comprar</button></div>
       <h3>Ferramentas</h3><div class="row">${ic('machado')}<div class="g">Machado — ${brl(AXE_PRICE)} <small>(precisa de Força ${AXE_MIN}; corta árvores mais rápido conforme a força)</small></div>
-      ${state.flags.axe?'<span class="ok">comprado</span>':`<button class="alt" data-a="buyaxe" ${state.coins>=AXE_PRICE?'':'disabled'}>Comprar</button>`}</div>`}
+      ${state.flags.axe?'<span class="ok">comprado</span>':`<button class="alt" data-a="buyaxe" ${state.coins>=AXE_PRICE?'':'disabled'}>Comprar</button>`}</div>
+      <div class="row">${ic('picareta')}<div class="g">Picareta — ${brl(PICK_PRICE)} <small>(quebra pedras)</small></div>${state.flags.pick?'<span class="ok">comprada</span>':`<button class="alt" data-a="buypick" ${state.coins>=PICK_PRICE?'':'disabled'}>Comprar</button>`}</div>`}
   if(id==='mercado'){h+=`<h3>Sementes</h3>`;
     for(const k in CROPS){const c=CROPS[k];if(!true)continue;
       h+=`<div class="row">${ic('sem_'+k)}<div class="g">${c.nome} — ${brl(c.sem)} <small>(${c.dias} dias${c.rebrota?', rebrota a cada '+c.rebrota:''}; vende por ${Math.round(c.preco*marketBonus(l))})</small>${state.seeds[k]?` · tem ${state.seeds[k]}`:''}</div>
@@ -3675,7 +3892,8 @@ function openLoja(tab){if(tab){lojaTab=tab;lojaSay=''}const l=state.b.mercado,d=
       card('racao','Ração','alimenta 1 animal por 12 h<br>(ou faça com 2 capins na mochila)',rp,state.inv.racao,qb('buy','racao',1,rp)+qb('buy','racao',5,rp)+qb('buy','racao',10,rp),'🐔 animais')+
       card('pao','Pão','mata a fome: <b>+45</b>',PAO_PRICE,state.inv.pao,qb('buy','pao',1,PAO_PRICE)+qb('buy','pao',3,PAO_PRICE),'🍞 quentinho')+'</div>'}
   else if(t==='ferramentas'){body=`<div class="lgrid">`+card('machado','Machado',`corta árvores mais rápido conforme a força<br>precisa de <b>Força ${AXE_MIN}</b> (você: ${state.forca.lvl})`,AXE_PRICE,null,
-      state.flags.axe?'<span class="ok">✔ comprado</span>':`<button class="mini" data-a="buyaxe" ${state.coins>=AXE_PRICE?'':'disabled'}>Comprar</button>`,'🪓')+'</div>'}
+      state.flags.axe?'<span class="ok">✔ comprado</span>':`<button class="mini" data-a="buyaxe" ${state.coins>=AXE_PRICE?'':'disabled'}>Comprar</button>`,'🪓')+
+      card('picareta','Picareta','quebra pedras (o machado não quebra)<br>mais força = menos golpes',PICK_PRICE,null,state.flags.pick?'<span class="ok">✔ comprada</span>':`<button class="mini" data-a="buypick" ${state.coins>=PICK_PRICE?'':'disabled'}>Comprar</button>`,'⛏️')+'</div>'}
   else body=upgradeHtml('mercado')+`<p class="lnote">Cada nível da Loja aumenta o preço que o Mateus paga nos seus produtos${bonus>1?` (hoje: <b class="ok">+${Math.round((bonus-1)*100)}%</b>)`:''}.</p>`;
   const tabs=[['sementes','🌱 Sementes'],['comida','🍞 Comida e ração'],['ferramentas','🛠️ Ferramentas'],['melhorias','⬆️ Melhorar a Loja']].map(([id,nm])=>`<button class="itab${t===id?' on':''}" data-a="lojatab" data-v="${id}">${nm}</button>`).join('');
   showPanel('bld:mercado',`<div class="v-head l-head"><button class="close" data-a="close">Fechar ✕</button><img src="${PORTRAIT.giliard}" alt="">
@@ -3700,6 +3918,7 @@ function openInv(tab){if(tab)invTab=tab;const t=invTab;
   else if(t==='equip'){const eq=[];
     eq.push(`<div class="icard"><img src="${outfitPreview(state.roupas.eq,2)}" alt="" style="width:auto;height:44px"><b>Roupas</b><small>${Object.keys(state.roupas.owned).length} peça(s)</small><button class="mini" data-a="guarda">Guarda-roupa</button></div>`);
     eq.push(`<div class="icard"><img src="${ICON.vara}" alt=""><b>Vara de pescar</b>${state.flags.rod?'<small class="ok">pronta</small><small>E de frente para a água</small>':`<small>8 madeiras</small><button class="mini" data-a="craftrod" ${state.inv.madeira>=8?'':'disabled'}>Fazer vara</button>`}</div>`);
+    eq.push(`<div class="icard"><img src="${ICON.picareta}" alt=""><b>Picareta</b>${state.flags.pick?`<small class="ok">em uso</small><small>${rockHits()} golpe${rockHits()>1?'s':''} por pedra</small>`:`<small>na Loja · ${brl(PICK_PRICE)}</small>`}</div>`);
     eq.push(`<div class="icard"><img src="${ICON.machado}" alt=""><b>Machado</b>${state.flags.axe?(hasAxe()?`<small class="ok">em uso</small><small>${axeHits()} golpe${axeHits()>1?'s':''} por árvore</small>`:`<small class="no">precisa de Força ${AXE_MIN}</small>`):`<small>na Loja · ${brl(AXE_PRICE)}</small>`}</div>`);
     for(const[kind,k,d]of ownedVehicles()){const f=fuelOf(kind,k),on=state.riding&&state.rideKind===kind&&vehKey()===k,sel=kind==='trator'?state.trator===k:state.moto===k;
       eq.push(`<div class="icard${sel?' sel':''}"><img src="${vehIcon(kind,k)}" alt="" style="width:78px"><b>${d.nome}</b><small>⛽ ${f.l.toFixed(1).replace('.',',')}/${tankOf(kind,k)} L${f.ad?' ⚡':''}</small>
@@ -4030,6 +4249,7 @@ const ACT={
   sellgo(){doSell()},
   gabriel(){const me=absNow();if(state.coins<GABRIEL_PRICE)return;state.coins-=GABRIEL_PRICE;state.testoUntil=Math.max(me,state.testoUntil||0)+TESTO_MIN;sfx.build();
     toast('Gabriel: "Bora, monstro! 2 dias gastando 70% menos energia."');save();openGym()},
+  buypick(){if(state.flags.pick||state.coins<PICK_PRICE)return;state.coins-=PICK_PRICE;state.flags.pick=1;sfx.build();toast('⛏ Picareta comprada! Agora dá para quebrar pedras.');if(panelKind==='bld:mercado')openLoja();save()},
   buyaxe(){if(state.flags.axe||state.coins<AXE_PRICE)return;state.coins-=AXE_PRICE;state.flags.axe=1;sfx.build();
     toast(state.forca.lvl>=AXE_MIN?'Machado comprado! As árvores agora caem mais rápido.':`Machado comprado! Treine na academia até Força ${AXE_MIN} para usá-lo.`);openBld('mercado')},
   motobuy(k){const m=MOTOS[k];if(state.motos[k]||state.coins<m.preco)return;state.coins-=m.preco;state.motos[k]=1;state.moto=k;revSound();save();
@@ -4084,9 +4304,9 @@ function objective(){
 let miniBase=null,miniT=0;
 function buildMiniBase(){const c=miniBase||document.createElement('canvas');c.width=AW;c.height=MH;const g=c.getContext('2d');if(!g||!g.createImageData)return;
   const id=g.createImageData(AW,MH);if(!id||!id.data)return;const d=id.data,col=h=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
-  const C={grass:col('#6fb552'),grass2:col('#66ab4b'),path:col('#d9b77a'),water:col('#4a90d9'),lago:col('#8a6a3f'),bridge:col('#8a5a36'),soil:col('#8a5a36'),crop:col('#a8d65a'),tree:col('#2f6b28'),pine:col('#24542a'),rock:col('#a0a4ab'),lot:col('#c94f3d'),farmlot:col('#e0a052'),city:col('#9aa0a8'),dirt:col('#b98a55')};
+  const C={gravel:col('#a59d8f'),grass:col('#4f9a3c'),grass2:col('#47903a'),path:col('#d9b77a'),water:col('#4a90d9'),lago:col('#8a6a3f'),bridge:col('#8a5a36'),soil:col('#8a5a36'),crop:col('#a8d65a'),tree:col('#2f6b28'),pine:col('#24542a'),rock:col('#a0a4ab'),lot:col('#c94f3d'),farmlot:col('#e0a052'),city:col('#9aa0a8'),dirt:col('#b98a55')};
   for(let y=0;y<MH;y++)for(let x=XMIN;x<MW;x++){const i=y*AW-XMIN+x;let c0=(x+y)%2?C.grass:C.grass2;const gr=ground[i],o=objs[i],lt=lotAt[i];
-    if(gr===1)c0=C.path;else if(gr===4)c0=C.dirt;else if(gr===2)c0=ehLago(x,y)?C.lago:C.water;else if(gr===3)c0=C.bridge;
+    if(gr===1)c0=C.path;else if(gr===5)c0=C.gravel;else if(gr===4)c0=C.dirt;else if(gr===2)c0=ehLago(x,y)?C.lago:C.water;else if(gr===3)c0=C.bridge;
     if(soilOn(i))c0=state.crops[i]?C.crop:C.soil;
     if(o&&!state.depleted[i])c0=o==='tree'?C.tree:o==='pine'?C.pine:o==='rock'?C.rock:c0;
     if(lt){const built=BLD[lt]?state.b[lt]>0:true;if(built)c0=['casa','galinheiro','curral'].includes(lt)?C.farmlot:lt==='ponte'?C.bridge:C.lot}
@@ -4910,12 +5130,12 @@ function cropInfo(){const i=Math.floor(state.p.y)*AW-XMIN+Math.floor(state.p.x),
 /* ---------- cache do chão em pedaços de 8×8 (o celular não precisa redesenhar 300 quadradinhos a cada quadro) ---------- */
 const GCH=8,gCache=new Map();let gFrame=0;
 function gTileCode(x,y,sea){const i=y*AW-XMIN+x,g=ground[i];if(isWaterAt(x,y))return'w';
-  if(g===4)return state.rain?'m':'d';if(g===3)return'b';
+  if(g===4)return state.rain?'m':'d';if(g===3)return'b';if(g===5)return'c';
   if(g===1){let m=0;for(let k=0;k<4;k++){const nx=x+D4[k][0],ny=y+D4[k][1],j=ny*AW-XMIN+nx;if(nx>=XMIN&&ny>=0&&nx<MW&&ny<MH&&ground[j]===0&&!lotAt[j]&&!soilOn(j))m|=1<<k}return'p'+m}
   if(soilOn(i))return(state.crops[i]?isWet(state.crops[i]):state.rain)?'W':'S';
   return!objs[i]&&!lotAt[i]?'g':'G'}
 function gDrawTile(c,x,y,px,py,sea){const i=y*AW-XMIN+x,g=ground[i];if(isWaterAt(x,y))return;
-  const img=g===4?(state.rain?SPR.mud:SPR.dirt)[(Math.imul(x,40503)^Math.imul(y,9973))>>>2&7]:g===1?SPR.path[(Math.imul(x,40503)^Math.imul(y,9973))>>>2&3]:g===3?SPR.bridge:soilOn(i)?((state.crops[i]?isWet(state.crops[i]):state.rain)?SPR.soilw:SPR.soil):SPR.grass[sea][(Math.imul(x,73856093)^Math.imul(y,19349663))>>>3&7];
+  const img=g===5?SPR.gravel[(Math.imul(x,40503)^Math.imul(y,9973))>>>2&7]:g===4?(state.rain?SPR.mud:SPR.dirt)[(Math.imul(x,40503)^Math.imul(y,9973))>>>2&7]:g===1?SPR.path[(Math.imul(x,40503)^Math.imul(y,9973))>>>2&3]:g===3?SPR.bridge:soilOn(i)?((state.crops[i]?isWet(state.crops[i]):state.rain)?SPR.soilw:SPR.soil):SPR.grass[sea][(Math.imul(x,73856093)^Math.imul(y,19349663))>>>3&7];
   c.drawImage(img,px,py,T,T);
   if(g===1){for(let k=0;k<4;k++){const nx=x+D4[k][0],ny=y+D4[k][1],j=ny*AW-XMIN+nx;if(nx>=XMIN&&ny>=0&&nx<MW&&ny<MH&&ground[j]===0&&!lotAt[j]&&!soilOn(j))c.drawImage(SPR.pedge[k],px,py,T,T)}}
   else if(g===0&&!objs[i]&&!lotAt[i]&&!soilOn(i)){     // flores, pedrinhas e cogumelos
@@ -4948,8 +5168,8 @@ function render(){
     const cr=state.crops[i];if(cr){const cd=CROPS[cr.c],f=cr.g/cd.dias;ctx.drawImage(SPR.crop[cr.c][cr.r?3:cr.g===0?0:f<.5?1:2],x*T-camx,y*T-camy-6,T,T);
       if(cr.r&&Math.floor(clock*2)%2){ctx.fillStyle='#fff';ctx.fillRect(x*T-camx+T-10,y*T-camy+2,4,4)}}
     const o=soilOn(i)?null:objs[i];if(o){const dep=state.depleted[i];
-      if(o==='capim'){if(!dep)ctx.drawImage(SPR.capim,x*T-camx,y*T-camy,T,T)}
-      else if(!(o==='rock'&&dep))list.push({k:0,y:y+1,x,ty:y,i,o,dep,img:o==='tree'?(dep?SPR.stump:isApple(i)?SPR.treeApple[sea]:SPR.tree[sea]):o==='pine'?(dep?SPR.pine0:SPR.pine):o==='rock'?SPR.rock:(dep?SPR.bush0:SPR.bush)})}}
+      if(o==='capim'){if(!dep){const im=natImg(i,'capim');ctx.drawImage(im,x*T-camx,(y+1)*T-camy-im.height*S,im.width*S,im.height*S)}}
+      else if(!(o==='rock'&&dep))list.push({k:0,y:y+1,x,ty:y,i,o,dep,img:o==='tree'?(dep?SPR.stump:natImg(i,'tree')):o==='pine'?(dep?SPR.pine0:SPR.pine):natImg(i,o,dep)})}}
   drawTracks();
   for(const q of pinhoes)list.push({k:27,y:q.b&&q.st==='levado'?q.y+3:q.gy,q});
   for(const id in BLD){const[lx,ly,,h]=BLD[id].lot;list.push({k:1,y:ly+h-.01,id,lx,ly})}
@@ -4983,9 +5203,9 @@ function render(){
   for(const d of list){
     if(CULL_K.has(d.k)){if(d.y<y0-1||d.y>y1+9)continue;const ex=d.a?d.a.x:d.n?d.n.x:d.t?d.t.x:null;if(ex!=null&&(ex<x0-3||ex>x1+3))continue}      // fora da tela: nem desenha
     if(d.k===0){const cx=(d.x+.5)*T-camx+(shake[d.i]?Math.round(Math.sin(clock*60)*2):0),fy=(d.ty+1)*T-camy-5,big=(d.o==='tree'&&!d.dep)||d.o==='pine';
-      shadow((d.x+.5)*T-camx,fy-1,big?26:d.img.width*S*.42,big?8:5);
+      shadow((d.x+.5)*T-camx,fy-1,big?Math.max(20,d.img.width*S*.26):d.img.width*S*.42,big?8:5);
       // árvore fica translúcida quando o personagem passa por trás da copa
-      const hide=big&&Math.abs(p.x-(d.x+.5))<1.1&&p.y<d.ty+1&&p.y>d.ty+1-d.img.height*S/T+.3;
+      const hide=(big&&Math.abs(p.x-(d.x+.5))<1.1&&p.y<d.ty+1&&p.y>d.ty+1-d.img.height*S/T+.3)||(d.o==='bush'&&Math.abs(p.x-(d.x+.5))<.9&&p.y<d.ty+1.1&&p.y>d.ty-.6);
       if(big){blitSway(d.img,cx,fy,hide?.45:null,treeSway(d.x,d.ty));visTrees.push([d.x,d.ty,d.o==='pine'])}else blit(d.img,cx,fy,false,hide?.45:null);
       if(d.o==='tree'&&!d.dep&&hp[d.i]!=null&&hp[d.i]<TREE_HP){const bx=(d.x+.5)*T-camx-20,by=(d.ty+1)*T-camy-16;ctx.fillStyle='#3b2a1a';ctx.fillRect(bx-2,by-2,44,9);ctx.fillStyle='#c94f3d';ctx.fillRect(bx,by,40*hp[d.i]/TREE_HP,5)}}
     else if(d.k===1){const img=lotSprite(d.id,state.b[d.id]);if(buildFx&&buildFx.id===d.id)drawBuildFx(d,img);else{ctx.drawImage(img,d.lx*T-camx,d.ly*T-camy-LT*S,img.width*S,img.height*S);if(state.b[d.id])drawShine(img,BLD[d.id].lot)}}
