@@ -909,7 +909,7 @@ function genMap(s1,s2){
   for(let i=0;i<lotAt.length;i++)if(lotAt[i]==='velho')lotAt[i]=null;
   genWest(s1);
   {const[lx,ly,w,h]=ACC_LOT;for(let y=ly;y<ly+h;y++)for(let x=lx;x<lx+w;x++){lotAt[y*AW-XMIN+x]='acc';objs[y*AW-XMIN+x]=null}for(let x=lx;x<lx+w;x++)objs[(ly+h)*AW-XMIN+x]=null;objs[Math.floor(MAIK_POS[1])*AW-XMIN+Math.floor(MAIK_POS[0])]=null;for(let y=26;y<=28;y++)for(let x=38;x<=42;x++)objs[y*AW-XMIN+x]=null}      // A.C.C.P.U.V (depois do sorteio, para não mudar o resto do mapa)
-  genExpand(s1);finishNature(s1);genSakura(s1);PROF=null;
+  genExpand(s1);finishNature(s1);genSakura(s1);PROF=null;NAT_I.clear();PINE_I.clear();
 }
 // ---- mapa maior (leste e sul) e a Pedreirinha, no canto de baixo à direita ----
 const PEDR=[116,104,145,126],PEDR_ROAD=110;      // Pedreirinha (área cheia de pedra) e a estrada que desce até ela
@@ -1103,7 +1103,9 @@ function mkBush(sz,frutas){const key=sz+'|'+(frutas?1:0);if(NAT.bush[key])return
     for(const x of[cx-W*.3,cx,cx+W*.28])r(Math.round(x),by-2,1,2,'#4f311c');      // galhinhos na base
     if(frutas)for(let i=0;i<6+sz*3;i++){const x=Math.round(cx+(rn()-.5)*W*.75),y=Math.round(by-H*.2-rn()*H*.6);r(x,y,2,2,'#5a2a8a');r(x,y,1,1,'#b98ae8');r(x+1,y+1,1,1,'#3a1a5e');if(rn()<.3)r(x+2,y+1,1,1,'#7b3fb5')}
     else for(let i=0;i<4;i++){const x=Math.round(cx+(rn()-.5)*W*.7),y=Math.round(by-H*.3-rn()*H*.5);r(x,y,1,1,'#d6e8a0')}}))}      // sem amora: só florzinhas
-function natImg(i,o,dep){
+const NAT_I=new Map(),PINE_I=new Map();const pineImg=(i,dep)=>{const k=i*2+(dep?1:0);let m=PINE_I.get(k);if(!m){m=mkPine(pineVar(i).s,!dep);if(PINE_I.size>3000)PINE_I.clear();PINE_I.set(k,m)}return m};      // desenho de cada árvore/pedra/capim guardado por casa (não recalcula a cada quadro)
+function natImg(i,o,dep){const key=i*8+(dep?1:0)+(o==='tree'?0:o==='rock'?2:o==='bush'?4:6),c=NAT_I.get(key);if(c)return c;const im=natImg0(i,o,dep);if(im){if(NAT_I.size>6000)NAT_I.clear();NAT_I.set(key,im)}return im}
+function natImg0(i,o,dep){
   if(o==='tree'){const t=treeVar(i);if(isSakura(i)&&!dep)return mkSakura(t.v%4,t.s);return dep?mkTree(t.v,t.s,0,1):mkTree(t.v,t.s,isApple(i)&&!isSakura(i))}
   if(o==='rock'){const q=rockVar(i);return mkRock(q.t,q.s,q.f)}
   if(o==='bush')return mkBush(bushVar(i).s,!dep);
@@ -3222,7 +3224,7 @@ function drawClimaWorld(W,H){const hr=state.min/60,c=state.clima;
 /* ================= MULTIPLAYER: cooperativo no mundo do dono, até 4 jogadores, pela internet com código de sala =================
    Ligação: WebRTC (canal de dados direto entre os aparelhos). Para os aparelhos se acharem usa o servidor público grátis do PeerJS
    só como "telefonista" (sinalização). Quem hospeda manda no mundo; os convidados mandam o que fazem e o dono aplica e espalha. */
-const JOGO_VERSAO='2026-11-20q';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
+const JOGO_VERSAO='2026-11-20s';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
 const MP_MAX=4,MP_PREFIX=SLOT_KEYS[0].replace(/_slot_1$/,'').replace(/_/g,''),MP_SERVER='wss://0.peerjs.com:443/peerjs?key=peerjs';
 const MP_ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']},{urls:'stun:global.stun.twilio.com:3478'}]};
 const MP_PESSOAL=['p','energy','hunger','vida','forca','sujeira','sel','testoUntil','fomeT','coins','xpUntil','monster'];      // cada jogador tem o seu; o resto do state é o mundo do dono
@@ -4999,7 +5001,7 @@ function miniNatureza(g,x0,y0,tw,th){const R=(x,y,w,h,cl)=>{g.fillStyle=cl;g.fil
     else if(o==='bush'){R(px,py+1,4,3,'#2f7d3a');R(px+1,py+1,1,1,'#7b3fb5')}}
 }
 function drawMini(dt){const box=$('minimap'),c=$('minicv');if(!box||!c||!c.getContext||!state)return;
-  miniT-=dt||0;if(miniT<=0||!miniBase){miniT=2;const sig=JSON.stringify(state.b)+'|'+(state.extras||[]).length;if(!miniBase||sig!==miniBase.sig||(miniBase.age=(miniBase.age||0)+1)>45){buildMiniBase();if(miniBase){miniBase.sig=sig;miniBase.age=0}}}      // só redesenha quando algo muda (corte, construção) ou a cada 1,5 min
+  miniT-=dt||0;if(miniT<=0||!miniBase){miniT=2;const sig=JSON.stringify(state.b)+'|'+(state.extras||[]).length;if(!miniBase||sig!==miniBase.sig){buildMiniBase();if(miniBase){miniBase.sig=sig;miniBase.age=0}}}      // só redesenha quando algo muda (corte, construção) ou a cada 1,5 min
   if(!miniBase)return;
   const g=c.getContext('2d'),W=c.width,H=c.height,p=state.p,tw=W/MP4,th=H/MP4;g.imageSmoothingEnabled=false;
   const x0=clamp(p.x-tw/2,XMIN,MW-tw),y0=clamp(p.y-th/2,0,MH-th),k=MP4;
@@ -5686,7 +5688,7 @@ function drawHzn(na){const u=2,h=hzn,A=spA;ctx.save();if(na>0&&!h.dur)ctx.filter
     if(t>=2.5&&t<8){const a=Math.min(1,(t-2.5)/.4)*(.55+Math.sin(t*20)*.08);ctx.fillStyle=`rgba(190,255,170,${a*.55})`;ctx.beginPath();ctx.moveTo(ux-10,uy+8);ctx.lineTo(ux+10,uy+8);ctx.lineTo(ux+38,gy+2);ctx.lineTo(ux-38,gy+2);ctx.closePath();ctx.fill();   // raio trator
       if(!h.snd){h.snd=1;ufoSound()}}
     const lift=t<3.2?0:Math.min(1,(t-3.2)/4.3);
-    if(lift<1){const vw=vw(vaca)*vu*(1-lift*.6),vh=vh(vaca)*vu*(1-lift*.6),cy=gy-(gy-uy-10)*lift,ang=lift*Math.sin(t*4)*.4;ctx.save();ctx.translate(x0,cy-vh/2);ctx.rotate(ang);if(h.dir<0)ctx.scale(-1,1);ctx.drawImage(vaca,-vw/2,-vh/2,vw,vh);ctx.restore();
+    if(lift<1){const cw=vw(vaca)*vu*(1-lift*.6),ch=vh(vaca)*vu*(1-lift*.6),cy=gy-(gy-uy-10)*lift,ang=lift*Math.sin(t*4)*.4;ctx.save();ctx.translate(x0,cy-ch/2);ctx.rotate(ang);if(h.dir<0)ctx.scale(-1,1);ctx.drawImage(vaca,-cw/2,-ch/2,cw,ch);ctx.restore();
       if(lift>0&&lift<.7)say(h.grito||'MUUU?!',x0+34,cy-vh-6,'#fff')}
     ctx.fillStyle='#9aa0a8';ctx.beginPath();ctx.ellipse(ux,uy+4,26,7,0,0,7);ctx.fill();ctx.fillStyle='#6c727b';ctx.fillRect(ux-26,uy+4,52,3);      // disco voador
     ctx.fillStyle='rgba(150,230,255,.85)';ctx.beginPath();ctx.ellipse(ux,uy-1,11,8,0,Math.PI,0);ctx.fill();ctx.fillStyle='#7dff7a';ctx.fillRect(ux-3,uy-6,2,3);ctx.fillRect(ux+1,uy-6,2,3);
@@ -5855,25 +5857,28 @@ function aguaProf(){const P=new Uint8Array(AW*MH);const q=[];for(let i=0;i<AW*MH
   for(let i=0;i<AW*MH;i++)if(P[i]===9)P[i]=4;return P}
 const AGUA_COR=['#86764a','#776a43','#67603d','#5a5637','#504e33'];      // marrom-oliva: barrenta, mas com cara de água
 const AGUA_SAK=['#86d4d8','#6cc6d2','#5bb8cc','#4fadc6','#48a5c0'];
-function drawAgua(px,py,x,y){if(!PROF||PROF.length!==AW*MH)PROF=aguaProf();const i=y*AW-XMIN+x,d=Math.min(4,PROF[i]||1),u=T/16,sk=naSakura(x,y);
-  ctx.fillStyle=(sk?AGUA_SAK:AGUA_COR)[d];ctx.fillRect(px,py,T,T);
-  if(sk){const h=hash2(x,y,999),f=Math.sin(clock*1.5+h*9);if(h<.09&&d>=2){const cx=px+T/2+f*2,cy=py+T/2;ctx.fillStyle='#2f7d3a';ctx.beginPath();ctx.ellipse(cx,cy,T*.32,T*.22,0,.4,Math.PI*2-.1);ctx.fill();ctx.fillStyle='#4fae5a';ctx.beginPath();ctx.ellipse(cx-2,cy-2,T*.2,T*.12,0,0,7);ctx.fill();
-      if(h<.04){ctx.fillStyle='#f6b3c9';for(let a=0;a<5;a++){const b=a/5*Math.PI*2;ctx.fillRect(cx+Math.cos(b)*5-3,cy-6+Math.sin(b)*4-3,6,6)}ctx.fillStyle='#ffe066';ctx.fillRect(cx-2,cy-8,4,4)}}      // vitória-régia e flor de lótus
-    else if(h>.93){ctx.fillStyle='#f6b3c9';ctx.fillRect(px+(((h*97)%1)*T|0),py+(((h*53)%1)*T|0),5,4)}}      // pétala boiando
+const AGUA_T=new Map();
+function aguaTile(sk,d,dec){const key=sk*100+d*10+dec;let c=AGUA_T.get(key);if(c)return c;c=document.createElement('canvas');c.width=c.height=T;const g=c.getContext('2d');
+  g.fillStyle=(sk?AGUA_SAK:AGUA_COR)[d];g.fillRect(0,0,T,T);const cx=T/2,cy=T/2;
+  if(dec===1||dec===2){g.fillStyle='#2f7d3a';g.beginPath();g.ellipse(cx,cy,T*.32,T*.22,0,.4,Math.PI*2-.1);g.fill();g.fillStyle='#4fae5a';g.beginPath();g.ellipse(cx-2,cy-2,T*.2,T*.12,0,0,7);g.fill();      // vitória-régia
+    if(dec===2){g.fillStyle='#f6b3c9';for(let a=0;a<5;a++){const b=a/5*Math.PI*2;g.fillRect(cx+Math.cos(b)*5-3,cy-6+Math.sin(b)*4-3,6,6)}g.fillStyle='#ffe066';g.fillRect(cx-2,cy-8,4,4)}}      // flor de lótus
+  else if(dec>=3){g.fillStyle='#f6b3c9';g.fillRect([8,26,15][dec-3],[12,30,22][dec-3],5,4)}      // pétala boiando
+  AGUA_T.set(key,c);return c}
+function drawAgua(px,py,x,y){if(!PROF||PROF.length!==AW*MH)PROF=aguaProf();const i=y*AW-XMIN+x,d=Math.min(4,PROF[i]||1),u=T/16,sk=naSakura(x,y)?1:0;
+  let dec=0;if(sk){const h0=hash2(x,y,999);if(h0<.09&&d>=2)dec=h0<.04?2:1;else if(h0>.93)dec=3+((h0*1000|0)%3)}
+  ctx.drawImage(aguaTile(sk,d,dec),px,py);      // fundo pronto (cor da profundidade e enfeites) num desenho só
   const rio=Math.abs(x-riverX(y))<=RIO_W+1,h=hash2(x,y,321),h2=hash2(x,y,654);
-  // fios de correnteza (no rio descem; no lago só balançam)
-  for(let k=0;k<3;k++){const hh=k===1?h2:k===2?(h+h2)%1:h,len=5+Math.floor(hh*6),ox=Math.floor(hh*16),wy=rio?((clock*7+hh*16+k*8)%16):(4+k*7+Math.sin(clock*1.3+hh*6)*1.5);
-    const wx=rio?ox:((ox+clock*1.5*(k?1:-1))%16+16)%16;ctx.fillStyle=sk?'rgba(220,250,255,.5)':d>=3?'rgba(214,206,160,.55)':'rgba(226,216,170,.65)';
-    ctx.fillRect(px+Math.floor(wx)*u,py+Math.floor(wy)*u,Math.min(len,16-Math.floor(wx))*u,u);ctx.fillRect(px+(Math.floor(wx)+1)*u,py+(Math.floor(wy)-1)*u,Math.max(0,Math.min(len-2,15-Math.floor(wx)))*u,u)}
-  // reflexo do céu e brilhinho do sol
-  const tw=Math.sin(clock*2.2+h*20);if(tw>.6){ctx.fillStyle=tw>.9?'#e8dcb0':'rgba(190,210,225,.55)';ctx.fillRect(px+Math.floor(h2*14)*u,py+Math.floor(h*14)*u,2*u,u)}}
+  ctx.fillStyle=sk?'rgba(220,250,255,.5)':d>=3?'rgba(214,206,160,.55)':'rgba(226,216,170,.65)';
+  for(let k=0;k<2;k++){const hh=k?h2:h,len=5+Math.floor(hh*6),ox=Math.floor(hh*16),wy=rio?((clock*7+hh*16+k*8)%16):(4+k*7+Math.sin(clock*1.3+hh*6)*1.5);      // correnteza (no rio desce; no lago balança)
+    const wx=Math.floor(rio?ox:((ox+clock*1.5*(k?1:-1))%16+16)%16);ctx.fillRect(px+wx*u,py+Math.floor(wy)*u,Math.min(len,16-wx)*u,u)}
+  const tw=Math.sin(clock*2.2+h*20);if(tw>.75){ctx.fillStyle='#e8dcb0';ctx.fillRect(px+Math.floor(h2*14)*u,py+Math.floor(h*14)*u,2*u,u)}}      // brilhinho do sol
 /* ---------- cache do chão em pedaços de 8×8 (o celular não precisa redesenhar 300 quadradinhos a cada quadro) ---------- */
 const GCH=8,gCache=new Map();let gFrame=0;
-function gTileCode(x,y,sea){const i=y*AW-XMIN+x,g=ground[i];if(isWaterAt(x,y))return'w';
-  if(g===3)return'b';
-  if(g===1||g===4||g===5){let m=0;for(let k=0;k<4;k++){const nx=x+D4[k][0],ny=y+D4[k][1],j=ny*AW-XMIN+nx;if(nx>=XMIN&&ny>=0&&nx<MW&&ny<MH&&ground[j]===0&&!lotAt[j]&&!soilOn(j))m|=1<<k}return(g===1?'p':g===5?'c':state.rain?'m':'d')+m}
-  if(soilOn(i))return(state.crops[i]?isWet(state.crops[i]):state.rain)?'W':'S';
-  return!objs[i]&&!lotAt[i]?'g':'G'}
+function gTileCode(x,y,sea){const i=y*AW-XMIN+x,g=ground[i];if(isWaterAt(x,y))return 1;      // código numérico (sem criar texto a cada quadro: evita as travadinhas do coletor de lixo)
+  if(g===3)return 2;
+  if(g===1||g===4||g===5){let m=0;for(let k=0;k<4;k++){const nx=x+D4[k][0],ny=y+D4[k][1],j=ny*AW-XMIN+nx;if(nx>=XMIN&&ny>=0&&nx<MW&&ny<MH&&ground[j]===0&&!lotAt[j]&&!soilOn(j))m|=1<<k}return(g===1?16:g===5?32:state.rain?48:64)+m}
+  if(soilOn(i))return(state.crops[i]?isWet(state.crops[i]):state.rain)?3:4;
+  return!objs[i]&&!lotAt[i]?5:6}
 function gDrawTile(c,x,y,px,py,sea){const i=y*AW-XMIN+x,g=ground[i];if(isWaterAt(x,y))return;
   const img=g===5?SPR.gravel[(Math.imul(x,40503)^Math.imul(y,9973))>>>2&7]:g===4?(state.rain?SPR.mud:SPR.dirt)[(Math.imul(x,40503)^Math.imul(y,9973))>>>2&7]:g===1?SPR.path[(Math.imul(x,40503)^Math.imul(y,9973))>>>2&3]:g===3?SPR.bridge:soilOn(i)?((state.crops[i]?isWet(state.crops[i]):state.rain)?SPR.soilw:SPR.soil):SPR.grass[sea][(Math.imul(x,73856093)^Math.imul(y,19349663))>>>3&7];
   c.drawImage(img,px,py,T,T);
@@ -5885,13 +5890,13 @@ function gDrawTile(c,x,y,px,py,sea){const i=y*AW-XMIN+x,g=ground[i];if(isWaterAt
 function drawGroundChunks(x0,y0,x1,y1,sea){gFrame++;
   const ci0=Math.floor((x0-XMIN)/GCH),ci1=Math.floor((x1-XMIN)/GCH),cj0=Math.floor(y0/GCH),cj1=Math.floor(y1/GCH);
   for(let cj=cj0;cj<=cj1;cj++)for(let ci=ci0;ci<=ci1;ci++){const X=XMIN+ci*GCH,Y=cj*GCH,key=ci+','+cj;
-    let sig=sea+(state.b.ponte?'P':'');for(let y=Y;y<Y+GCH&&y<MH;y++)for(let x=X;x<X+GCH&&x<MW;x++)sig+=gTileCode(x,y,sea);
+    let sig=(sea*7+(state.b.ponte?3:1))|0,sig2=0;for(let y=Y;y<Y+GCH&&y<MH;y++)for(let x=X;x<X+GCH&&x<MW;x++){const c=gTileCode(x,y,sea);sig=Math.imul(sig^c,16777619)>>>0;sig2=(sig2*31+c)>>>0}sig=sig+'_'+sig2;
     let e=gCache.get(key);
     if(!e||e.sig!==sig){if(!e){const c=document.createElement('canvas');c.width=GCH*T;c.height=GCH*T;e={cv:c,g:c.getContext('2d')};gCache.set(key,e)}
       e.sig=sig;const g=e.g;if(g){g.imageSmoothingEnabled=false;g.clearRect(0,0,GCH*T,GCH*T);
         for(let y=Y;y<Y+GCH&&y<MH;y++)for(let x=X;x<X+GCH&&x<MW;x++)gDrawTile(g,x,y,(x-X)*T,(y-Y)*T,sea)}}
     e.f=gFrame;ctx.drawImage(e.cv,X*T-camx,Y*T-camy)}
-  if(gCache.size>40){const v=[...gCache.entries()].sort((a,b)=>a[1].f-b[1].f);for(let k=0;k<v.length-32;k++)gCache.delete(v[k][0])}}
+  const vis=(ci1-ci0+1)*(cj1-cj0+1),lim=Math.max(48,vis*2);if(gCache.size>lim){const v=[...gCache.entries()].sort((a,b)=>a[1].f-b[1].f);for(let k=0;k<v.length-(lim-8);k++)if(v[k][1].f<gFrame-2)gCache.delete(v[k][0])}}      // nunca apaga um pedaço que ainda está na tela
 const CULL_K=new Set([1,2,4,6,13,26,32]);
 function render(){
   tags.length=0;bubbles.length=0;
@@ -5908,7 +5913,7 @@ function render(){
       if(cr.r&&Math.floor(clock*2)%2){ctx.fillStyle='#fff';ctx.fillRect(x*T-camx+T-10,y*T-camy+2,4,4)}}
     const o=soilOn(i)?null:objs[i];if(o){const dep=state.depleted[i];
       if(o==='capim'){if(!dep){const im=natImg(i,'capim');ctx.drawImage(im,x*T-camx,(y+1)*T-camy-im.height*S,im.width*S,im.height*S)}}
-      else if(!(o==='rock'&&dep))list.push({k:0,y:y+1,x,ty:y,i,o,dep,img:o==='tree'?(dep?SPR.stump:natImg(i,'tree')):o==='pine'?mkPine(pineVar(i).s,!dep):natImg(i,o,dep)})}}
+      else if(!(o==='rock'&&dep))list.push({k:0,y:y+1,x,ty:y,i,o,dep,img:o==='tree'?(dep?SPR.stump:natImg(i,'tree')):o==='pine'?pineImg(i,dep):natImg(i,o,dep)})}}
   drawTracks();
   for(const q of pinhoes)list.push({k:27,y:q.b&&q.st==='levado'?q.y+3:q.gy,q});
   for(const id in BLD){const[lx,ly,,h]=BLD[id].lot;list.push({k:1,y:ly+h-.01,id,lx,ly})}
@@ -6074,7 +6079,12 @@ function bgTick(){if(!state||!document.hidden||!mpSemPausa()){bgLast=0;return}co
   try{while(dt>0){const d=Math.min(.05,dt);dt-=d;clock+=d;mpTick(d);if(busRide)busTick(d);else update(d);if(MP.role!=='guest')nivelTick(d);funcTick(d)}}catch(e){}}
 let fpsMax=null,pausaPintada=false;
 const fpsLim=()=>{if(fpsMax==null){let v=0;try{v=+localStorage.getItem('imbuial_valley_fps')}catch(e){}fpsMax=v===30||v===60?v:(isTouch?30:60)}return fpsMax};
-function frame(ts){
+let erroQuadro=0,erroMsg='';
+function frame(ts){try{frame0(ts)}catch(e){      // um erro num quadro nunca mais congela o jogo: avisa, guarda e segue
+    erroQuadro++;const m=String(e&&e.message||e);if(m!==erroMsg){erroMsg=m;try{console.error(e);localStorage.setItem('imbuial_valley_ultimo_erro',new Date().toISOString()+' · '+JOGO_VERSAO+' · '+String(e&&e.stack||e).slice(0,600))}catch(_){}}
+    if(erroQuadro<3||erroQuadro%300===0)try{toast('⚠️ Aconteceu um erro, mas o jogo continuou. Se repetir, mande para o Alison: '+m.slice(0,90))}catch(_){}
+    requestAnimationFrame(frame)}}
+function frame0(ts){
   if(ts-last<1000/fpsLim()-3&&last){requestAnimationFrame(frame);return}      // limite de quadros (celular: 30 por segundo, esquenta bem menos)
   const dt=Math.min(.05,(ts-last)/1000||0);last=ts;const mpVivo=mpSemPausa();if(!paused||mpVivo||panelKind==='academia'||!state)clock+=dt;      // pausado: o cenário congela também (água, nuvens, árvores, folhas)
   if(state){updateBell(dt);morteTick(dt);      // o sino toca mesmo com uma janela aberta (o jogo fica pausado, o sino não)
