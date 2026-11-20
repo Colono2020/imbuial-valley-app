@@ -1124,6 +1124,12 @@ function genSakura(s1){const rn=mulberry32((s1^0x5a4b3c2d)>>>0),I=(x,y)=>y*AW-XM
     if(d<.95){const u=rn();if(u<.24){let ok2=true;for(let dy=-2;dy<=2&&ok2;dy++)for(let dx=-2;dx<=2;dx++)if(SAKURA.has(I(x+dx,y+dy))){ok2=false;break}if(ok2){objs[i]='tree';SAKURA.add(i)}}
       else if(u<.3)objs[i]='bush';else if(u<.36)objs[i]='capim'}}
   for(const i of SAKURA){const x=i%AW+XMIN,y=(i/AW)|0;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const j=I(x+dx,y+dy);if(j!==i&&(objs[j]==='tree'||objs[j]==='pine')&&!SAKURA.has(j))objs[j]=null}}      // nada colado nas cerejeiras
+  // trilha de terra saindo da estrada de chão e descendo, cheia de curva, até a beira norte do lago
+  {const y0=DIRT_Y(Math.round(cx))+2;let lastX=Math.round(cx);
+   for(let y=y0;y<cy;y++){const xc=Math.round(cx+2.2*Math.sin((y-y0)/3.5)+1.2*Math.sin((y-y0)/1.7));
+     for(let x=Math.min(lastX,xc)-1;x<=Math.max(lastX,xc)+1;x++){const i=I(x,y);if(ground[i]===2)continue;if(lotAt[i])continue;if(ground[i]===0)ground[i]=4;objs[i]=null;SAKURA.delete(i)}
+     lastX=xc;let fim=false;for(let x=xc-1;x<=xc+1;x++)if(ground[I(x,y+1)]===2)fim=true;if(fim)break}
+   for(const sg of SIGNS)if(sg.sak)for(let dy=-1;dy<=0;dy++)for(let dx=-2;dx<=2;dx++){const i=I(Math.floor(sg.x)+dx,Math.floor(sg.y)+dy);if(ground[i]!==4&&ground[i]!==1){objs[i]=null;SAKURA.delete(i)}}}
   // prainha (pontal de grama) entrando no lago pelo sul, bom para pescar
   for(let y=Math.round(cy+ry*.6);y<=Math.round(cy+ry+1);y++)for(const x of[Math.round(cx)-1,Math.round(cx),Math.round(cx)+1]){const i=I(x,y);ground[i]=0;objs[i]=null;SAKURA.delete(i)}}
 const isSakura=i=>SAKURA.has(i);
@@ -2664,6 +2670,7 @@ const SIGNS=[      // poucas placas, fora da estrada para não esconder o person
   {x:-96.5,y:22.4,l:['Videira ➡ é longe, vai de ônibus!']},
   {x:-50.5,y:DIRT_Y(-50)+3.6,l:['⚠ Buraco na pista','Na chuva vira lama']},
   {x:113.6,y:23.4,l:['⬇ Pedreirinha ⛏','muita pedra pra quebrar'],pedr:1},
+  {x:-45.4,y:DIRT_Y(-48)+3.4,l:['⬇ Lago das Sakuras 🌸','peixes raros'],sak:1},
   {x:118.6,y:105.6,l:['⛏ Pedreirinha'],city:1,pedr:1},
 ];
 function drawSign(s){const sx=Math.round(s.x*T-camx),gy=Math.round(s.y*T-camy),big=s.city||s.farm;
@@ -3215,7 +3222,7 @@ function drawClimaWorld(W,H){const hr=state.min/60,c=state.clima;
 /* ================= MULTIPLAYER: cooperativo no mundo do dono, até 4 jogadores, pela internet com código de sala =================
    Ligação: WebRTC (canal de dados direto entre os aparelhos). Para os aparelhos se acharem usa o servidor público grátis do PeerJS
    só como "telefonista" (sinalização). Quem hospeda manda no mundo; os convidados mandam o que fazem e o dono aplica e espalha. */
-const JOGO_VERSAO='2026-11-20p';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
+const JOGO_VERSAO='2026-11-20q';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
 const MP_MAX=4,MP_PREFIX=SLOT_KEYS[0].replace(/_slot_1$/,'').replace(/_/g,''),MP_SERVER='wss://0.peerjs.com:443/peerjs?key=peerjs';
 const MP_ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']},{urls:'stun:global.stun.twilio.com:3478'}]};
 const MP_PESSOAL=['p','energy','hunger','vida','forca','sujeira','sel','testoUntil','fomeT','coins','xpUntil','monster'];      // cada jogador tem o seu; o resto do state é o mundo do dono
