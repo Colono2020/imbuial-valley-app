@@ -3376,7 +3376,7 @@ function drawClimaWorld(W,H){const hr=state.min/60,c=state.clima;
 /* ================= MULTIPLAYER: cooperativo no mundo do dono, até 4 jogadores, pela internet com código de sala =================
    Ligação: WebRTC (canal de dados direto entre os aparelhos). Para os aparelhos se acharem usa o servidor público grátis do PeerJS
    só como "telefonista" (sinalização). Quem hospeda manda no mundo; os convidados mandam o que fazem e o dono aplica e espalha. */
-const JOGO_VERSAO='2026-11-21i';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
+const JOGO_VERSAO='2026-11-21j';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
 const MP_MAX=4,MP_PREFIX=SLOT_KEYS[0].replace(/_slot_1$/,'').replace(/_/g,''),MP_SERVER='wss://0.peerjs.com:443/peerjs?key=peerjs';
 const MP_ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']},{urls:'stun:global.stun.twilio.com:3478'}]};
 const MP_LEVE=['p','energy','hunger','vida','forca','sujeira','sel','testoUntil','fomeT','coins','xpUntil','monster','napHoje'];      // muda toda hora: vai junto em cada batida
@@ -3616,7 +3616,7 @@ function mpGuestMsg(m){
   if(m.t==='saiu'){const r=MP.players[m.id];if(r){toast(`🌐 ${r.nome} saiu da sala.`);delete MP.players[m.id]}return}
   if(m.t==='tick'){if(m.day>state.day)toast(`Amanheceu — dia ${m.day}.`);state.min=m.min;state.day=m.day;state.rain=m.rain;state.clima=m.clima;if(m.hp)hp=m.hp;
     if(m.me)Object.assign(state,m.me);
-    if(m.wild){const by={};for(const a of wild)by[a.mid]=a;wild=m.wild.map(n=>{const o=by[n.mid];if(o){const x=o.x,y=o.y;Object.assign(o,n);o.tx=n.x;o.ty=n.y;o.x=x;o.y=y;return o}n.tx=n.x;n.ty=n.y;return n})}
+    if(m.wild){const by={};for(const a of wild)by[a.mid]=a;wild=m.wild.map(n=>{n.vx=n.mv?.01:0;n.vy=0;n.moving=!!n.mv;for(const k of['led','ledBy','lassoBy','lt'])if(!(k in n))n[k]=k==='led'?false:k==='lt'?0:'';const o=by[n.mid];if(o){const x=o.x,y=o.y;Object.assign(o,n);o.tx=n.x;o.ty=n.y;o.x=x;o.y=y;return o}n.tx=n.x;n.ty=n.y;return n})}
     if(m.th)thieves=m.th;
     const vivos=new Set();for(const[id,x,y,d,mv,rd]of m.pl||[]){if(id===MP.myId)continue;vivos.add(id);const r=MP.players[id]||(MP.players[id]={id,nome:'…',p:{x,y,dir:'down',walk:0}});r.tx=x;r.ty=y;r.p.dir=d;r.mov=mv;r.rd=rd||''}
     for(const id in MP.players)if(!vivos.has(id))delete MP.players[id];return}
@@ -3660,7 +3660,8 @@ function mpTick(dt){if(!MP.role)return;if(MP.role==='host'){mpLacos(dt);if(!paus
     if(MP.relay){const agora=Date.now();for(const id in MP.links){const l=MP.links[id];if(l.relay&&agora-(l.rx||agora)>20000)mpPerdeu(l)}}
     if((MP.tT+=dt)>=(MP.relay?.25:.12)){MP.tT=0;MP.n=(MP.n||0)+1;for(const a of wild)if(!a.mid)a.mid=MP.mid++;
       const base={t:'tick',min:state.min,day:state.day,rain:state.rain,clima:state.clima,hp,pl:mpPub()};
-      if(MP.n%2===0){base.wild=wild.map(a=>{const o={};for(const k in a)if(typeof a[k]!=='function'&&typeof a[k]!=='object')o[k]=a[k];o.x=Math.round(a.x*100)/100;o.y=Math.round(a.y*100)/100;return o});base.th=thieves}
+      if(MP.n%2===0){base.wild=wild.map(a=>{const o={mid:a.mid,sp:a.sp,x:Math.round(a.x*100)/100,y:Math.round(a.y*100)/100,face:a.face,mv:(a.vx||a.vy||a.flee>0||a.moving)?1:0};      // só o que o convidado precisa para desenhar (bem menos dados pela internet)
+        if(a.cor)o.cor=a.cor;if(a.led)o.led=1;if(a.ledBy)o.ledBy=a.ledBy;if(a.lassoBy){o.lassoBy=a.lassoBy;o.lt=a.lt}if(a.tier!=null)o.tier=a.tier;return o});base.th=thieves.length?thieves.map(t=>{const o={};for(const k in t)if(k!=='fl'&&k!=='exit')o[k]=typeof t[k]==='number'?Math.round(t[k]*100)/100:t[k];return o}):thieves}
       for(const id in MP.links){const g=MP.players[id];mpSend(MP.links[id],Object.assign({},base,{me:g?mpPessoal(g,1):null}))}
       for(const id in MP.links){const g=MP.players[id];if(!g)continue;const d={};let n=0;g.progJ=g.progJ||{};for(const k of MP_PROG){let j;try{j=JSON.stringify(g[k])}catch(e){continue}if(g.progJ[k]!==j){g.progJ[k]=j;d[k]=g[k];n++}}if(n)mpSend(MP.links[id],{t:'prog',d})}}
     if((MP.wT+=dt)>=1){MP.wT=0;const d={};let n=0;for(const k in state){if(MP_FORA_DIFF.has(k))continue;let j;try{j=JSON.stringify(state[k])}catch(e){continue}if(MP.lastJ[k]!==j){MP.lastJ[k]=j;d[k]=state[k];n++}}
