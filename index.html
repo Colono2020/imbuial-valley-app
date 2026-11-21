@@ -455,6 +455,7 @@
   #panel.inv{width:min(900px,97vw);padding:0;overflow:hidden;display:flex;flex-direction:column}
   .i-head{background:linear-gradient(#a9744f,#7a4a2a);color:#fff;padding:14px 18px 10px;position:relative;border-bottom:3px solid #4a2f1a}
   .barb-head{background:linear-gradient(#6a3420,#2a1410)!important;border-bottom:4px solid #c9a24a!important}.barb-head h1{font-family:Georgia,'Times New Roman',serif;color:#f4dc9a;letter-spacing:.03em}.barb-head .sub{color:#e8d0a0}.barb-head img{border-color:#c9a24a!important}
+  .pltbox{background:#fff8e6;border:2px solid #e0c890;border-radius:12px;padding:6px 10px;margin:4px 0 12px}.pltrow{gap:6px;margin:4px 0}.pltrow.on{background:#e9f6dd;border-radius:10px}
   .perfil{display:flex;gap:10px;align-items:center;padding:8px 14px;background:linear-gradient(#f6e7c8,#ecd4a8);border-bottom:2px solid #c9a46a}.perfil .pfoto{width:64px;height:64px;border:3px solid #3a2416;border-radius:10px;image-rendering:pixelated}.perfil .pcorpo{height:64px;image-rendering:pixelated}.perfil small{color:#5a3a1e}
   .i-head h1{margin:0;font-size:26px;text-shadow:0 2px 0 #4a2f1a}.i-head .sub{font-size:13px;padding-right:90px}
   .i-head .close{position:absolute;right:12px;top:12px;background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.55);box-shadow:none}
@@ -481,7 +482,7 @@
 <div id="testo" class="box hidden"></div>
 <div id="inv" class="box"></div>
 <div id="minimap" class="box hidden" title="Mapa (M)"><canvas id="minicv" width="200" height="132"></canvas><small>Videira · Imbuial</small></div>
-<div id="help">WASD/setas: andar · E: interagir (segure para laçar) · Espaço: empurrão / pisão · Q: trocar semente · L: arar terra · R: moto · T: trator · M: mapa · I: mochila · +/−: zoom · Esc: menu · N: som</div>
+<div id="help">WASD/setas: andar · E ou clique esquerdo: interagir (segure para laçar) · Espaço: empurrão / pisão · Q: trocar semente · L: arar terra · R: moto · T: trator · M: mapa · I: mochila · +/−: zoom · Esc: menu · N: som</div>
 <div id="panel" class="box hidden"></div>
 <div id="splash" class="hidden"></div>
 <div id="hudedit" class="hidden"></div>
@@ -2347,8 +2348,8 @@ function drawBuildFx(d,img){const b=buildFx,k=Math.min(1,b.t/(b.dur-.4)),e=1-Mat
     ctx.fillStyle='#a9744f';ctx.fillRect(ox-2,ly-14,w+4,6);ctx.fillStyle='#6e4527';ctx.fillRect(ox-2,ly-8,w+4,2);
     for(let i=0;i<7;i++){const a=(b.t*1.4+i/7)%1;ctx.fillStyle=`rgba(200,180,140,${.55*(1-a)})`;ctx.beginPath();ctx.arc(ox+((i*53)%w),oy+hh-6-a*24,8+a*12,0,7);ctx.fill()}      // poeira
     if(Math.floor(b.t*4)%2===0){ctx.font='bold 14px Poppins,sans-serif';ctx.textAlign='center';ctx.fillStyle='#000';ctx.fillText('toc!',ox+w*(.25+((Math.floor(b.t*4)*37)%50)/100)+1,ly-19);ctx.fillStyle='#ffe066';ctx.fillText('toc!',ox+w*(.25+((Math.floor(b.t*4)*37)%50)/100),ly-20)}}}
-const LOJA_NIVEL={moto:4,pitol:8,tratores:10,slot:10,trig:15};      // lojas que só abrem a partir de um nível do personagem
-const LOJA_NOME={moto:'A Loja de Motos',pitol:'A Pitol Calçados',tratores:'A Concessionária de tratores',slot:'O caça-níquel',trig:'O Triguinho'};
+const LOJA_NIVEL={moto:4,pitol:8,tratores:10,slot:10,mesa:12,trig:15};      // lojas que só abrem a partir de um nível do personagem
+const LOJA_NOME={moto:'A Loja de Motos',pitol:'A Pitol Calçados',tratores:'A Concessionária de tratores',slot:'O caça-níquel',mesa:'A mesa de truco do Xande',trig:'O Triguinho'};
 const lojaOk=k=>!LOJA_NIVEL[k]||state.nivel.lvl>=LOJA_NIVEL[k];
 function lojaTrava(k){toast(`🔒 ${LOJA_NOME[k]} libera no nível ${LOJA_NIVEL[k]} do personagem (você está no ${state.nivel.lvl}). Jogue e colha para subir de nível.`);sfx.no()}
 const NIVEL_XP=l=>Math.round((40+l*25)*1.35);      // XP para passar do nível l para o l+1, 35% mais difícil (nível 1→2: 88 · 5→6: 223 · 10→11: 392)
@@ -3095,6 +3096,7 @@ const SX={
   mangueira:(c,t)=>{sxN(c,t,1.4,'highpass',3500,2500,1,.12,.08);sxN(c,t,1.4,'bandpass',1200,900,1,.06,.08)},      // jato de água
   espuma:(c,t)=>{for(let i=0;i<24;i++)sxT(c,t+i*.08+Math.random()*.05,sxR(900,2200),sxR(1800,3000),.04,'sine',.012)},      // bolhas estourando
   brilho:(c,t)=>{for(let i=0;i<5;i++)sxT(c,t+i*.07,1568*Math.pow(1.12,i),1568*Math.pow(1.12,i),.3,'sine',.02,.01)},
+  alarme:(c,t)=>{for(let i=0;i<6;i++){sxT(c,t+i*.32,880,660,.3,'square',.035);sxT(c,t+i*.32+.15,660,880,.15,'square',.03)}},      // alarme do galinheiro/curral
   hz_estrela:(c,t)=>{for(let i=0;i<8;i++)sxT(c,t+i*.05,2600+i*220,2600+i*220,.4,'sine',.006,.01)},
   tesoura:(c,t)=>{for(let i=0;i<4;i++){const tt=t+i*.11;sxN(c,tt,.035,'highpass',6000,4000,1,.22);sxT(c,tt,3200,2600,.03,'triangle',.05)}},      // tesoura de barbeiro
   machado:(c,t,v)=>{const p=[1,.86,1.14][v%3];sxT(c,t,180*p,70*p,.16,'sine',.5);sxN(c,t,.07,'bandpass',1800*p,900,2.5,.35);sxT(c,t+.005,420*p,260*p,.09,'triangle',.18);if(v===2)sxN(c,t+.07,.05,'highpass',3000,3000,1,.12)},
@@ -3374,7 +3376,7 @@ function drawClimaWorld(W,H){const hr=state.min/60,c=state.clima;
 /* ================= MULTIPLAYER: cooperativo no mundo do dono, até 4 jogadores, pela internet com código de sala =================
    Ligação: WebRTC (canal de dados direto entre os aparelhos). Para os aparelhos se acharem usa o servidor público grátis do PeerJS
    só como "telefonista" (sinalização). Quem hospeda manda no mundo; os convidados mandam o que fazem e o dono aplica e espalha. */
-const JOGO_VERSAO='2026-11-21e';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
+const JOGO_VERSAO='2026-11-21i';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
 const MP_MAX=4,MP_PREFIX=SLOT_KEYS[0].replace(/_slot_1$/,'').replace(/_/g,''),MP_SERVER='wss://0.peerjs.com:443/peerjs?key=peerjs';
 const MP_ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']},{urls:'stun:global.stun.twilio.com:3478'}]};
 const MP_LEVE=['p','energy','hunger','vida','forca','sujeira','sel','testoUntil','fomeT','coins','xpUntil','monster','napHoje'];      // muda toda hora: vai junto em cada batida
@@ -3391,7 +3393,7 @@ function progTroca(chave){if(!state||!chave)return;const era=state.progDono;if(e
 // o convidado faz praticamente tudo; só fica de fora o que é do servidor: trocar o dono, mexer na sala, salvar/apagar/trocar o mundo
 const MP_BLOQ=new Set(['savenow','newgame','jogar','criar','criarok','apagar','apagarok','exportar','importar','importarok','titlecancel','sairmenu','fecharjogo','trocarmundo',
   'custom','sounds','sndplay','sndremove','headsize','headremove','skinlib','skinuse','skinbig','skinbg','skindel','hudedit','hudcolor','hudreset','hudmin','hudshow','hudok','mute','zoomin','zoomout','menu','mapa','mp','mphost','mpjoin','mpsair','mpkick','mpcopy','mpchat']);
-const MP_LOCAL=new Set(['close','acordar','nicksalva','nickcod','mute','zoomin','zoomout','hudedit','hudcolor','hudreset','hudmin','hudshow','hudok','menu','mapa','custom','sounds','sndplay','sndremove','headsize','headremove','sairmenu','fecharjogo','mp','mphost','mpjoin','mpsair','mpkick','mpcopy','mpchat','nuvem','nvcopiar','nvapagar','mesa','config','musica','mutecfg','mpopen','custom','sounds','hudedit','nvtirar','nvapagarok','fps','pix','pixenviar','pixresp','trigclose','barclose',
+const MP_LOCAL=new Set(['close','acordar','nicksalva','nickcod','mute','zoomin','zoomout','hudedit','hudcolor','hudreset','hudmin','hudshow','hudok','menu','mapa','custom','sounds','sndplay','sndremove','headsize','headremove','sairmenu','fecharjogo','mp','mphost','mpjoin','mpsair','mpkick','mpcopy','mpchat','nuvem','nvcopiar','nvapagar','mesa','config','musica','mutecfg','mpopen','custom','sounds','hudedit','nvtirar','nvapagarok','fps','pix','pixenviar','pixresp','trigclose','barclose','barmesa','voltabar',
   'trigspin','slotspin','trigbet','trigset','slotbet','plowstart','plowok','plowmode','plowset','extraok','vendaok','extravender','plowredo','plowcancel','motoride','tratorride','invride','busskip']);      // o convidado faz estes no próprio aparelho
 const MP_TEST=(()=>{try{const q=new URLSearchParams(location.search).get('mptest');return q||null}catch(e){return null}})();      // só para testar no PC com 2 janelas
 const MP={role:null,code:null,ws:null,hb:null,myId:null,players:{},links:{},host:null,pc:null,ice:[],cap:null,backup:null,backupSlot:null,lastJ:{},
@@ -3570,7 +3572,7 @@ function mpLacos(dt){for(const g of mpConv()){
     let d=Math.hypot(p.x-a.x,p.y-a.y);const ang=Math.atan2(p.y-a.y,p.x-a.x);a.moving=false;
     if(d>1.1){move(a,Math.cos(ang)*Math.min(d-1.1,5*dt),Math.sin(ang)*Math.min(d-1.1,5*dt),.3);a.face=Math.cos(ang)>=0?1:-1;a.moving=true;d=Math.hypot(p.x-a.x,p.y-a.y);if(d>2){a.x=p.x-Math.cos(ang)*2;a.y=p.y-Math.sin(ang)*2}}
     const perto=[...(state.b[sp.pen]>0?[BLD[sp.pen].lot]:[]),...extrasDe(sp.pen).map(extraLot)].some(([x,y,w,h])=>Math.hypot(Math.max(x-p.x,0,p.x-(x+w)),Math.max(y-p.y,0,p.y-(y+h)))<1);
-    if(perto&&penCount(sp.pen)<capTotal(sp.pen)){wild.splice(wild.indexOf(a),1);g.led=null;state.animals.push({sp:a.sp,fed:0,prog:0,cor:a.cor|0});if(animTier(a)>=5)state.toefdWild=false;state.flags.captured=1;syncPens();
+    if(perto&&penCount(sp.pen)<capTotal(sp.pen)){wild.splice(wild.indexOf(a),1);g.led=null;state.animals.push({sp:a.sp,fed:0,prog:0,cor:a.cor|0});if(animTier(a)>=5)state.toefdWild=false;(g.flags=g.flags||{}).captured=1;syncPens();
       mpFx(g,[[`${sp.nome} entregue no ${BLD[sp.pen].nome}. Não esqueça de alimentar!`]],[['sx:get']]);toast(`🤠 ${g.nome} trouxe ${animFem(a.sp)?'uma':'um'} ${animName(a)} para o ${BLD[sp.pen].nome}!`);sfx.coin();MP.wT=99;save()}}}}
 // ---------- dormir no multiplayer: a noite passa quando todo mundo deitou ----------
 const mpDormindo=()=>(MP.dorme?1:0)+mpConv().filter(g=>g.dorme).length;
@@ -3643,7 +3645,7 @@ function mpParar(msg){const era=MP.role;if(era==='host')mesaFecha();else MESA_V=
   MP.nuvem=null;if(era==='guest'&&!joined&&nuv){nvFalhou(nuv,msg);return}
   if(msg)toast('🌐 '+msg,7000);if(panelKind==='mp')openMP()}
 // ---------- a cada quadro: rede e bonecos dos outros ----------
-function mpTick(dt){if(!MP.role)return;if(MP.role==='host'){mpLacos(dt);if(MP.dormeChk){MP.dormeChk=0;mpDormeTudo()}}
+function mpTick(dt){if(!MP.role)return;if(MP.role==='host'){mpLacos(dt);if(!paused||mpSemPausa())for(const g of mpConv()){g.xpAcc=(g.xpAcc||0)+dt;if(g.xpAcc>=60){g.xpAcc-=60;mpComo(g,()=>addNivelXp(XP_MINUTO))}}if(MP.dormeChk){MP.dormeChk=0;mpDormeTudo()}}
   for(const id in MP.players){const r=MP.players[id];if(r.me||!r.p)continue;const ox=r.p.x,oy=r.p.y;if(r.tx!=null){const k=Math.min(1,dt*10);r.p.x+=(r.tx-r.p.x)*k;r.p.y+=(r.ty-r.p.y)*k}r.p.walk=r.mov?(r.p.walk||0)+dt*6:0;if(r.say){r.say.t-=dt;if(r.say.t<=0)r.say=null}
     const noBus=!!(r.rd&&r.rd[0]==='b'),era=!!r.noBus;r.noBus=noBus;
     if(noBus){const fl=r.rd==='b:1';r.busV=dt>0?Math.hypot(r.p.x-ox,r.p.y-oy)/dt:0;r.busFum=busFumaca(r.busFum||[],r.p.x,r.p.y+.45,fl,dt,r.busV>.3?9:3);
@@ -3983,14 +3985,19 @@ function drawBus(){if(!busFx)return;busFx.t+=1/60;const t=busFx.t;if(t>6){busFx=
 const FUNC={
   trat:{nome:'Tratador',ico:'🧑‍🌾',nivel:6,taxa:250,sal:12,look:1,
     desc:'Cuida de um cercado: todo dia às 6h dá ração aos animais (usa a ração da sua mochila) e recolhe a produção para a mochila.'},
+  plt:{nome:'Plantador',ico:'🌱',nivel:1,taxa:300,sal:0,look:2,
+    desc:'Só planta, e é simples: escolha a semente e deposite sementes da sua mochila no saco dele. Ele anda pelas suas lavouras (das 7h às 18h) e planta em todo canteiro vazio até o saco acabar. Não tem salário: paga só a contratação. Dá para contratar quantos quiser; cada um a mais fica mais caro.'},
   lav:{nome:'Lavrador',ico:'👨‍🌾',nivel:9,taxa:350,sal:65,look:3,
     desc:'Até 15 lavradores. Eles se dividem entre as suas lavouras (pedaços de terra arada) das 7h às 18h e combinam entre si: cada um pega um canteiro diferente, ninguém faz o serviço do colega. Andam andando pelos canteiros e fazendo o serviço na hora em que precisa. Você escolhe o que cada um faz: colher o que estiver pronto, plantar com as sementes que você tiver e regar. Quanto mais funções, maior o salário. Trigo, milho e feijão continuam só com trator.'},
 };
 const funcDireitos=()=>1+['assoc1','assoc2','assoc3'].filter(id=>state.b[id]>0).length;      // 1 da fazenda + 1 por Associação das vilas
-const funcN=t=>t==='trat'?state.func.trat.length:state.func.lav;
+const pltF=()=>state.func.plt||(state.func.plt={n:0,sem:null,dep:{}});      // plantadores: quantos, que semente plantar e o saco de sementes deles
+const funcN=t=>t==='trat'?state.func.trat.length:t==='plt'?pltF().n:state.func.lav;
+const SEG_NIVEL=50,SEG_PRECO=30000,SEG_SEGURA=30;      // segurança do tratador: libera no nível 50 ou comprando por R$ 30.000; segura o ladrão por 30 s
+const segAtiva=pen=>!!(state.func&&state.func.seg&&state.func.seg[pen]&&state.func.trat.includes(pen));
 const LAV_MAX=15;      // até 15 lavradores; vários na mesma lavoura, combinando quem faz o quê
-const funcCap=t=>t==='lav'?LAV_MAX:funcDireitos();
-const funcPreco=t=>Math.round(FUNC[t].taxa*Math.pow(t==='lav'?1.22:1.8,funcN(t))/10)*10;      // cada contratado a mais deixa o próximo mais caro
+const funcCap=t=>t==='lav'?LAV_MAX:t==='plt'?99:funcDireitos();
+const funcPreco=t=>Math.round(FUNC[t].taxa*Math.pow(t==='lav'?1.22:t==='plt'?1.3:1.8,funcN(t))/10)*10;      // plantador: R$ 300, depois 390, 510, 660…      // cada contratado a mais deixa o próximo mais caro
 const LAV_FUN={c:{nome:'Colher',ico:'🧺',sal:15},p:{nome:'Plantar',ico:'🌱',sal:30},r:{nome:'Regar',ico:'💧',sal:20}};
 function lavFun(n){const f=state.func;f.lavF=f.lavF||[];while(f.lavF.length<f.lav)f.lavF.push({c:1,p:1,r:1});return f.lavF[n]||{c:1,p:1,r:1}}      // o que o lavrador n faz (padrão: tudo)
 const lavSal=n=>{const q=lavFun(n);let v=0;for(const k in LAV_FUN)if(q[k])v+=LAV_FUN[k].sal;return v};
@@ -4023,7 +4030,22 @@ function openFunc(){const f=state.func,dir=funcDireitos(),lv=lavouras(),lvl=stat
   {const t='trat',F=FUNC[t],trav=lvl<F.nivel,cheio=funcN(t)>=dir,pr=funcPreco(t);h+=sec(t);
     for(const pen of['galinheiro','curral']){const tem=f.trat.includes(pen);
       h+=`<div class="row"><span style="font-size:24px">${pen==='galinheiro'?'🐔':'🐄'}</span><div class="g">${BLD[pen].nome}${state.b[pen]?'':' <small class="no">(ainda não construído)</small>'} — ${tem?'<span class="ok">tratador trabalhando</span>':'sem tratador'}</div>
-        ${tem?`<button class="alt" data-a="funcoff" data-v="trat:${pen}">Demitir</button>`:`<button data-a="funcon" data-v="trat:${pen}" ${!trav&&!cheio&&state.b[pen]&&state.coins>=pr?'':'disabled'}>Contratar · ${brl(pr)}</button>`}</div>`}}
+        ${tem?`<button class="alt" data-a="funcoff" data-v="trat:${pen}">Demitir</button>`:`<button data-a="funcon" data-v="trat:${pen}" ${!trav&&!cheio&&state.b[pen]&&state.coins>=pr?'':'disabled'}>Contratar · ${brl(pr)}</button>`}</div>`;
+      {const sg=f.seg&&f.seg[pen],livre=lvl>=SEG_NIVEL;      // segurança: nível 50 libera de graça, antes disso dá para comprar
+       h+=`<div class="row segrow"><span style="font-size:22px">🛡️</span><div class="g"><b>Segurança do ${BLD[pen].nome.toLowerCase()}</b> ${sg?(tem?'<span class="ok">ativa</span>':'<small class="no">comprada · contrate o tratador para ela funcionar</small>'):''}
+         <br><small>O tratador também vigia: quando o ladrão chega, ele segura o ladrão por ${SEG_SEGURA} s (não derrota, só atrasa). Se você não chegar a tempo, o ladrão leva o bicho.</small></div>
+         ${sg?'':livre?`<button data-a="funcseg" data-v="${pen}">Liberar · nível ${SEG_NIVEL} ✓</button>`:`<button data-a="funcseg" data-v="${pen}" ${state.coins>=SEG_PRECO?'':'disabled'} title="Ou chegue ao nível ${SEG_NIVEL} para liberar de graça">Comprar · ${brl(SEG_PRECO)}<br><small>ou nível ${SEG_NIVEL}</small></button>`}</div>`}}}
+  // plantadores: menu simples (semente + saco de sementes)
+  {const t='plt',F=FUNC[t],P=pltF(),pr=funcPreco(t),ks=Object.keys(CROPS).filter(k=>!TRATOR_SO.has(k)&&((state.seeds[k]||0)>0||(P.dep[k]||0)>0||P.sem===k));
+    h+=`<h3>${F.ico} Plantadores <small>(${P.n}) · sem salário · próximo contrato ${brl(pr)}</small></h3><p><small>${F.desc}</small></p>
+      <div class="row"><span style="font-size:24px">🌱</span><div class="g">${P.n?`<b>${P.n}</b> plantador${P.n>1?'es':''} trabalhando`:'Nenhum plantador ainda'}${lv.length?'':' <small class="no">(are terra com L primeiro)</small>'}</div>
+        ${P.n?'<button class="alt" data-a="funcoff" data-v="plt">Demitir 1</button>':''}<button data-a="funcon" data-v="plt" ${lv.length&&state.coins>=pr?'':'disabled'}>Contratar · ${brl(pr)}</button></div>`;
+    if(P.n){h+=`<div class="pltbox"><p><small>1) Escolha a semente que eles plantam · 2) deposite sementes da sua mochila no saco deles</small></p>`+
+      (ks.length?ks.map(k=>{const C=CROPS[k],on=P.sem===k,d=P.dep[k]||0,m=state.seeds[k]||0;return`<div class="row pltrow${on?' on':''}"><button class="mini ${on?'':'alt'}" data-a="pltsem" data-v="${k}">${on?'✅':'⬜'} ${ic('sem_'+k)} ${C.nome}</button>
+        <div class="g"><small>no saco: <b>${d}</b> · na mochila: ${m}</small></div>
+        <button class="mini" data-a="pltdep" data-v="${k}:10" ${m?'':'disabled'}>+10</button><button class="mini" data-a="pltdep" data-v="${k}:all" ${m?'':'disabled'}>+ tudo</button>${d?`<button class="mini alt" data-a="pltret" data-v="${k}">Retirar</button>`:''}</div>`}).join('')
+       :'<p class="no"><small>Você não tem sementes. Compre na Loja do Giliard.</small></p>')+
+      (P.sem&&!(P.dep[P.sem]>0)?`<p class="no"><small>O saco de ${CROPS[P.sem].nome.toLowerCase()} está vazio: deposite sementes para eles plantarem.</small></p>`:'')+`</div>`}}
   // lavradores: um por lavoura
   {const t='lav',F=FUNC[t],trav=lvl<F.nivel,cheio=funcN(t)>=LAV_MAX,pr=funcPreco(t);h+=sec(t);
     if(!lv.length)h+='<p><small>Você ainda não tem lavoura. Are terra com a tecla <kbd>L</kbd>.</small></p>';
@@ -4079,20 +4101,38 @@ function syncFunc(){const f=state&&state.func;if(!f){funcNpcs=[];return}const ou
   const lv=lavouras();for(let n=0;n<f.lav&&lv.length;n++){const ro=lavRoca(n);let x0=MW,y0=MH,x1=0,y1=0;for(const i of lv[ro]){const x=(i%AW+XMIN),y=(i/AW)|0;x0=Math.min(x0,x);y0=Math.min(y0,y);x1=Math.max(x1,x);y1=Math.max(y1,y)}
     const old=funcNpcs.find(m=>m.t==='lav'&&m.ref===n),i0=lv[ro][Math.floor((n*7919)%lv[ro].length)];const nn=Object.assign(old||{t:'lav',ref:n,x:(i0%AW+XMIN)+.5,y:((i0/AW)|0)+.5,dir:'down',walk:0,tx:null,ty:null,wait:.5,st:'olha'},{area:[x0+.5,y0+.5,x1+.5,y1+.5],tiles:lv[ro]});
       if(!state.soil[Math.floor(nn.y)*AW-XMIN+Math.floor(nn.x)]){nn.x=(i0%AW+XMIN)+.5;nn.y=((i0/AW)|0)+.5;nn.tx=null;nn.job=null;nn.st='olha'}out.push(nn)}
+  {const P=pltF(),todos=lv.flat();if(todos.length)for(let n=0;n<P.n;n++){const old=funcNpcs.find(m=>m.t==='plt'&&m.ref===n),i0=todos[(n*4129+7)%todos.length];
+    const nn=Object.assign(old||{t:'plt',ref:n,x:(i0%AW+XMIN)+.5,y:((i0/AW)|0)+.5,dir:'down',walk:0,tx:null,ty:null,wait:.5+n*.3,st:'olha'},{tiles:todos});out.push(nn)}}
   funcNpcs=out}
+function pltTick(n,dt){const P=pltF();
+  if(n.st==='faz'){n.tw-=dt;n.walk=0;if(n.tw<=0){const i=n.job,k=P.sem;if(MP.role!=='guest'&&k&&P.dep[k]>0&&state.soil[i]&&!state.crops[i]){P.dep[k]--;state.crops[i]={c:k,g:0,w:false,r:false};if(Math.hypot(n.x-state.p.x,n.y-state.p.y)<7)sx('plantar')}
+      if(LAV_RES.get(i)===n)LAV_RES.delete(i);n.st='olha';n.wait=.3;n.job=null}return}
+  if(n.wait>0){n.wait-=dt;n.walk=0;return}
+  if(n.tx==null){const tiles=n.tiles||[];let best=null,bd=1e9;
+    if(P.sem&&P.dep[P.sem]>0)for(const i of tiles){if(state.crops[i]||!state.soil[i])continue;const dono=LAV_RES.get(i);if(dono&&dono!==n)continue;const x=(i%AW+XMIN)+.5,y=((i/AW)|0)+.5;
+      let d=Math.hypot(x-n.x,y-n.y);for(const m of funcNpcs)if(m!==n&&(m.t==='plt'||m.t==='lav'))d+=Math.max(0,2.5-Math.hypot(x-m.x,y-m.y))*1.5;if(d<bd){bd=d;best={i,x,y}}}      // cada um pega um canteiro diferente
+    if(best){n.job=best.i;n.tx=best.x;n.ty=best.y-.05;LAV_RES.set(best.i,n)}
+    else if(tiles.length){const i=tiles[Math.random()*tiles.length|0];n.tx=(i%AW+XMIN)+.2+Math.random()*.6;n.ty=((i/AW)|0)+.2+Math.random()*.6;n.job=null}
+    else return}
+  const dx=n.tx-n.x,dy=n.ty-n.y,d=Math.hypot(dx,dy);
+  if(d<.06){n.tx=null;if(n.job!=null){n.st='faz';n.tw=1.1;n.dir='down'}else{n.st='olha';n.wait=1.5+Math.random()*2.5;n.dir=['down','left','right','up'][Math.random()*4|0]}return}
+  const sp=Math.min(d,1.5*dt);n.x+=dx/d*sp;n.y+=dy/d*sp;n.walk+=dt*6;n.st='anda';n.dir=Math.abs(dx)>Math.abs(dy)?(dx<0?'left':'right'):(dy<0?'up':'down')}
 const funcOnDuty=()=>state.min>=420&&state.min<1080;      // trabalham das 7h às 18h
 let funcSyncT=0;
-function funcTick(dt){if((funcSyncT-=dt)<=0){funcSyncT=8;syncFunc()}if(!funcOnDuty())return;for(const n of funcNpcs){if(n.t==='lav'){lavTick(n,dt);continue}
+function funcTick(dt){if((funcSyncT-=dt)<=0){funcSyncT=8;syncFunc()}if(!funcOnDuty())return;for(const n of funcNpcs){if(n.t==='lav'){lavTick(n,dt);continue}if(n.t==='plt'){pltTick(n,dt);continue}
   if(n.wait>0){n.wait-=dt;n.walk=0;continue}
   if(n.tx==null){const a=n.area;n.tx=a[0]+Math.random()*(a[2]-a[0]);n.ty=a[1]+Math.random()*(a[3]-a[1])}
   const dx=n.tx-n.x,dy=n.ty-n.y,d=Math.hypot(dx,dy);
   if(d<.08){n.tx=null;n.wait=1.5+Math.random()*3;n.dir=n.t==='lav'?'down':n.dir;continue}
   const s=Math.min(d,1.3*dt);n.x+=dx/d*s;n.y+=dy/d*s;n.walk+=dt*6;n.dir=Math.abs(dx)>Math.abs(dy)?(dx<0?'left':'right'):(dy<0?'up':'down')}}
-function drawFuncNpc(n){drawPerson(SPR.npc[FUNC[n.t].look],Object.assign({},n,{lift:n.st==='faz'&&n.act!=='r'?-2:0}));
+function drawFuncNpc(n){if(n.t==='trat'&&thieves.some(t=>t.st==='segurado'&&t.pen===n.ref))return;      // está lá segurando o ladrão
+  drawPerson(SPR.npc[FUNC[n.t].look],Object.assign({},n,{lift:n.st==='faz'&&n.act!=='r'?-2:0}));
   const sx=Math.round(n.x*T-camx),sy=Math.round((n.y+.28)*T-camy);
   if(n.t==='lav')drawLavAcao(n,sx,sy);
+  if(n.t==='plt'){ctx.fillStyle='#c9a26b';ctx.fillRect(sx-16,sy-26,9,11);ctx.fillStyle='#8a5c38';ctx.fillRect(sx-16,sy-26,9,2);      // saquinho de sementes
+    if(n.st==='faz'){ctx.fillStyle='#e8c860';for(let k=0;k<4;k++){const yy=((clock*50+k*7)%18);ctx.fillRect(sx+8+k%2*4,sy-12+yy,2,2)}}}      // sementes caindo
   if(n.t==='trat'&&!n.walk){ctx.fillStyle='#c9a26b';ctx.fillRect(sx+8,sy-22,12,10);ctx.fillStyle='#8a5c38';ctx.fillRect(sx+8,sy-22,12,2)}      // balde de ração
-  const p=state.p;if(Math.hypot(n.x-p.x,n.y-p.y)<4)tag(`${FUNC[n.t].nome}${n.t==='trat'?' · '+BLD[n.ref].nome:' · lavoura '+(n.ref+1)}`,n.x,n.y-1.35,'#cdeccb')}
+  const p=state.p;if(Math.hypot(n.x-p.x,n.y-p.y)<4)tag(`${FUNC[n.t].nome}${n.t==='trat'?' · '+BLD[n.ref].nome:n.t==='plt'?(pltF().sem?' · '+CROPS[pltF().sem].nome+' ('+(pltF().dep[pltF().sem]||0)+')':''):' · lavoura '+(n.ref+1)}`,n.x,n.y-1.35,'#cdeccb')}
 /* ---------- Cerca das vilas trancadas ---------- */
 function pushVilaFences(list,x0,x1,y0,y1){
   for(const v of VILAS){if(vilaAberta(v))continue;const[zx0,zy0,zx1,zy1]=v.zone;
@@ -4189,10 +4229,13 @@ function dropCarry(t,quiet){const a=t.carry;if(!a)return;t.carry=null;state.anim
 function thiefGo(t,st){t.st=st;const g=st==='come'?PEN_SPOT[t.pen]:t.exit;t.fl=flow(g[0],g[1])}
 function updateThieves(dt){
   for(const t of thieves.slice()){
-    if(t.say>0)t.say-=dt;t.sayT-=dt;if(t.sayT<=0&&(t.st==='come'||t.st==='flee'||t.st==='steal')){t.say=sndDur('ladrao_grito',2.2,5);t.sayT=t.say+3+Math.random()*3;playSound('ladrao_grito',distVol(t))}
+    if(t.say>0)t.say-=dt;t.sayT-=dt;if(t.sayT<=0&&(t.st==='come'||t.st==='flee'||t.st==='steal'||t.st==='segurado')){t.say=sndDur('ladrao_grito',2.2,5);t.sayT=t.say+3+Math.random()*3;playSound('ladrao_grito',distVol(t))}
     if(t.st==='down'||t.st==='stun'){t.t-=dt;if(t.t<=0)thiefGo(t,penCount(t.pen)>0?'come':'flee');continue}
     let r=false;
-    if(t.st==='come'){if(!penCount(t.pen)){thiefGo(t,'flee');continue}r=follow(t,t.fl,2.3,dt);if(r){t.st='steal';t.t=4;t.walk=0;t.say=Math.max(3,sndDur('ladrao_grito',3,5));t.sayT=t.say+3;playSound('ladrao_grito',distVol(t),true);toast(`Um ladrão está roubando no ${BLD[t.pen].nome}! Empurre-o com Espaço.`);sfx.no()}}
+    if(t.st==='come'){if(!penCount(t.pen)){thiefGo(t,'flee');continue}r=follow(t,t.fl,2.3,dt);if(r&&segAtiva(t.pen)&&(t.segT==null||t.segT>0)){r=false;const novo=t.segT==null;if(novo)t.segT=SEG_SEGURA;t.st='segurado';t.walk=0;
+        if(novo){toast(`❗🚨 Ladrão no ${BLD[t.pen].nome}! O tratador está segurando ele — você tem ${SEG_SEGURA} s para chegar!`,7000);sx('alarme')}}
+      else if(r){t.st='steal';t.t=4;t.walk=0;t.say=Math.max(3,sndDur('ladrao_grito',3,5));t.sayT=t.say+3;playSound('ladrao_grito',distVol(t),true);toast(`Um ladrão está roubando no ${BLD[t.pen].nome}! Empurre-o com Espaço.`);sfx.no()}}
+    else if(t.st==='segurado'){t.segT-=dt;t.walk=0;if(!penCount(t.pen)){thiefGo(t,'flee');continue}if(t.segT<=0){t.segT=0;t.st='steal';t.t=1.5;toast(`❗ O tratador não aguentou mais: o ladrão se soltou e está pegando um bicho do ${BLD[t.pen].nome}!`,6000);sfx.no()}}
     else if(t.st==='steal'){t.t-=dt;const list=state.animals.filter(a=>SPECIES[a.sp].pen===t.pen);
       if(!list.length)thiefGo(t,'flee');
       else if(t.t<=0){const a=list[Math.random()*list.length|0];state.animals.splice(state.animals.indexOf(a),1);syncPens();t.carry=a;thiefGo(t,'flee');startDonkey();/* o burro só aparece depois que o ladrão já levou o animal */
@@ -4558,7 +4601,6 @@ function findTarget0(){
   {const bt=barTarget(p);if(bt)return bt}
   {const at=accTarget(p);if(at)return at}
   {const bb=barbTarget(p);if(bb)return bb}
-  {const mt=mesaTarget(p);if(mt)return mt}
   if(Math.hypot(JUNIOR_POS[0]-p.x,JUNIOR_POS[1]-p.y)<1.5)return{k:'trig'};
   {const[x,y,w,h]=TRIG_LOT,dx=Math.max(x-p.x,0,p.x-(x+w)),dy=Math.max(y-p.y,0,p.y-(y+h));if(Math.hypot(dx,dy)<.75)return{k:'trig'}}
   {const[x,y,w,h]=PITOL_LOT,dx=Math.max(x-p.x,0,p.x-(x+w)),dy=Math.max(y-p.y,0,p.y-(y+h));if(Math.hypot(dx,dy)<.75)return{k:'pitol'}}
@@ -4864,7 +4906,7 @@ function openMenu(sure){const conv=MP.role==='guest'&&MP.myId;
       <button class="m-btn" data-a="musica">${I(musicaOff?'🔇':'🎵','#d9f2ff')}<span>${musicaOff?'Ligar música':'Desligar música'}<small>trilha de fundo</small></span></button>
     </div>
     <details><summary>Como jogar</summary>
-      <div class="keys"><kbd>W A S D</kbd><span>ou setas: andar</span><kbd>E</kbd><span>interagir · segurar perto de um animal para laçar · plantar, regar, colher · pescar</span>
+      <div class="keys"><kbd>W A S D</kbd><span>ou setas: andar</span><kbd>E</kbd><span>(ou clique esquerdo do mouse) interagir · segurar perto de um animal para laçar · plantar, regar, colher · pescar</span>
         <kbd>Espaço</kbd><span>empurrão no ladrão; pisão quando ele cai</span><kbd>Q</kbd><span>trocar a semente em uso</span><kbd>L</kbd><span>arar terra: escolha as duas pontas e pague por canteiro</span><kbd>R</kbd><span>montar e descer da moto (loja do Alison, ao lado da ponte)</span><kbd>T</kbd><span>subir e descer do trator (concessionária do outro lado da ponte)</span><kbd>I</kbd><span>mochila</span><kbd>M</kbd><span>mapa geral</span><kbd>N</kbd><span>ligar ou desligar o som</span><kbd>Esc</kbd><span>este menu</span></div>
       <ul class="tips">
         <li><b>Recursos:</b> corte árvores e quebre pedras para construir e melhorar a vila.</li>
@@ -5007,7 +5049,7 @@ function openTitle(){
   <div class="row"><div class="g"><small>Jogar com amigos</small></div><button class="alt" data-a="config" title="Personalizar (Esc)">⚙️</button><button class="alt" data-a="nuvem">☁️ Mundos na nuvem</button><button class="alt" data-a="mp">🌐 Entrar numa sala</button></div>
   <p><small>💾 <b>Exportar</b> guarda o mundo num arquivo (para fazer cópia ou levar para outro celular/PC). 📥 <b>Importar</b> traz esse arquivo de volta.</small></p>
   <div class="row" style="margin-top:12px;justify-content:flex-end"><button class="red" data-a="fecharjogo">✖ Fechar jogo</button></div>
-  <p><small>${isTouch?'No celular: use o controle da esquerda para andar e os botões da direita para as ações.':'<kbd>WASD</kbd>/setas andam · <kbd>E</kbd> interage · <kbd>Espaço</kbd> empurrão · <kbd>I</kbd> mochila · <kbd>M</kbd> mapa · <kbd>Esc</kbd> menu'}</small></p>`);
+  <p><small>${isTouch?'No celular: use o controle da esquerda para andar e os botões da direita para as ações.':'<kbd>WASD</kbd>/setas andam · <kbd>E</kbd> (ou clique esquerdo) interage · <kbd>Espaço</kbd> empurrão · <kbd>I</kbd> mochila · <kbd>M</kbd> mapa · <kbd>Esc</kbd> menu'}</small></p>`);
   nickBind();
   const inp=$('worldname');if(inp&&inp.focus){inp.focus();inp.select&&inp.select()}}
 /* ---------- Exportar / importar mundo (arquivo .json) ---------- */
@@ -5105,11 +5147,21 @@ const ACT={
   zoomin(){setZoom(-1)},zoomout(){setZoom(1)},
   func(){openFunc()},
   funcon(v){const[t,pen]=v.split(':'),F=FUNC[t],pr=funcPreco(t);if(state.nivel.lvl<F.nivel||funcN(t)>=funcCap(t)||state.coins<pr)return;
+    if(t==='plt'){if(!lavouras().length)return toast('Are um pedaço de terra (tecla L) antes de contratar um plantador.');state.coins-=pr;pltF().n++;syncFunc();sfx.coin();toast(`🌱 Plantador contratado! Escolha a semente e deposite sementes no saco dele.`);save();openFunc();return}
     if(t==='trat'){if(!state.b[pen]||state.func.trat.includes(pen))return;state.func.trat.push(pen)}else{if(!lavouras().length)return toast('Are um pedaço de terra (tecla L) antes de contratar um lavrador.');state.func.lav++}
     state.coins-=pr;if(t==='lav'&&state.func.pago!==-1)state.func.pago=state.day;syncFunc();sfx.coin();toast(`${F.ico} ${F.nome} contratado! ${t==='lav'?'Ele já vai para a lavoura hoje (das 7h às 18h)':'Ele começa amanhã às 6h'} (salário ${brl(t==='lav'?lavSal(state.func.lav-1):F.sal)}/dia).`);save();openFunc()},
   lavfun(v){const[n,k]=String(v).split(':'),q=lavFun(+n);if(!LAV_FUN[k]||+n>=state.func.lav)return;q[k]=q[k]?0:1;save();openFunc()},
-  funcoff(v){const[t,pen]=v.split(':');if(t==='trat')state.func.trat=state.func.trat.filter(p=>p!==pen);else{state.func.lav=Math.max(0,state.func.lav-1);if(state.func.lavF)state.func.lavF.length=Math.min(state.func.lavF.length,state.func.lav)}syncFunc();toast(`${FUNC[t].nome} demitido.`);save();openFunc()},bolsatab(v){openBolsa(v)},bolsasell(){openSell()},
-  barclose(){if(slotSpin)return;closePanel()},bartab(v){if(slotSpin)return;if(v==='slot'&&!lojaOk('slot')){lojaTrava('slot');return}openBar(v)},
+  pltsem(k){if(!CROPS[k]||TRATOR_SO.has(k))return;pltF().sem=k;save();openFunc()},
+  pltdep(v){const[k,q]=String(v).split(':'),f=pltF();if(!CROPS[k]||TRATOR_SO.has(k))return;const tem=state.seeds[k]||0,n=q==='all'?tem:Math.min(tem,+q||0);if(n<=0)return;
+    state.seeds[k]=tem-n;f.dep[k]=(f.dep[k]||0)+n;if(!f.sem)f.sem=k;sfx.coin();save();openFunc()},
+  pltret(k){const f=pltF(),n=f.dep[k]||0;if(!n)return;f.dep[k]=0;state.seeds[k]=(state.seeds[k]||0)+n;save();openFunc()},
+  funcseg(pen){if(pen!=='galinheiro'&&pen!=='curral')return;const f=state.func;f.seg=f.seg||{};if(f.seg[pen])return;
+    if(state.nivel.lvl<SEG_NIVEL){if(state.coins<SEG_PRECO)return;state.coins=Math.round((state.coins-SEG_PRECO)*100)/100}
+    f.seg[pen]=1;sfx.build();toast(`🛡️ Segurança do ${BLD[pen].nome.toLowerCase()} ativada! O tratador vai segurar os ladrões por ${SEG_SEGURA} s.`,6000);save();openFunc()},
+  funcoff(v){const[t,pen]=v.split(':');if(t==='plt'){const f=pltF();f.n=Math.max(0,f.n-1);syncFunc();save();openFunc();return}if(t==='trat')state.func.trat=state.func.trat.filter(p=>p!==pen);else{state.func.lav=Math.max(0,state.func.lav-1);if(state.func.lavF)state.func.lavF.length=Math.min(state.func.lavF.length,state.func.lav)}syncFunc();toast(`${FUNC[t].nome} demitido.`);save();openFunc()},bolsatab(v){openBolsa(v)},bolsasell(){openSell()},
+  barclose(){if(slotSpin)return;closePanel()},
+  barmesa(){if(slotSpin)return;if(!lojaOk('mesa')){lojaTrava('mesa');return}MP.incoming=false;openMesa()},
+  voltabar(){MP.incoming=false;if(MP.role==='guest'&&MP.host){closePanel();mpSend(MP.host,{t:'e',x:XANDE_POS[0],y:XANDE_POS[1]+.6,d:'up',sel:state.sel});return}openBar('menu')},bartab(v){if(slotSpin)return;if(v==='slot'&&!lojaOk('slot')){lojaTrava('slot');return}openBar(v)},
   barbuy(k){const e=BAR_MENU.find(x=>x[0]===k),pr=barPreco(k);if(!e||state.coins<pr)return;state.coins=Math.round((state.coins-pr)*100)/100;state.inv[k]=(state.inv[k]||0)+1;sfx.coin&&sfx.coin();barSay=k==='linguica'?'Essa linguiça é da boa!':k==='raiska'||k==='vinho_pet'?'Vai com calma, hein!':'Bom apetite!';openBar('menu')},
   slotbet(v){if(slotSpin)return;slotBet=Math.max(1,Math.min(state.coins||1,slotBet+(+v)));openBar('slot')},
   slotspin(){if(slotSpin||!lojaOk('slot'))return;const bet=slotBet;if(bet<1||state.coins<bet)return;coinsAdd(-bet);slotSpin=true;slotMsg='Girando...';openBar('slot');
@@ -5446,6 +5498,13 @@ function drawThief(t){const hd=HEADS.thief.cv;const sx=Math.round(t.x*T-camx),sy
     const hx=sx+26+(hd?hd.width/2-8:0),hy=sy-16;ctx.fillStyle='rgba(95,176,238,.55)';ctx.beginPath();ctx.ellipse(hx+4,sy+2,16+Math.sin(clock*3)*3,5,0,0,7);ctx.fill();
     for(let i=0;i<8;i++){const ph=(clock*1.5+i/8)%1,side=i%2?1:-1,tx=hx+side*(6+ph*30),ty=hy-Math.sin(ph*Math.PI)*26+ph*10;ctx.fillStyle=i%3?'#5fb0ee':'#bfe6ff';ctx.fillRect(tx-2,ty,4,6);ctx.fillRect(tx-1,ty-2,2,2)}
     tag('Ladrão (chorando)',t.x,t.y-.9,'#ff9d8f');bubbles.push([Math.floor(clock/1.6)%3===2?'Buááááá!':'É culpa do Bolsonaro!',sx+10,sy-74])}
+  else if(t.st==='segurado'){const tr=Math.sin(clock*22)*.06,lado=t.x<(PEN_SPOT[t.pen]||[t.x])[0]?1:-1;      // o tratador agarra o ladrão: os dois se debatendo
+    drawPerson(SPR.thief,{x:t.x+tr,y:t.y,dir:lado>0?'right':'left',walk:clock*3},hd);
+    drawPerson(SPR.npc[FUNC.trat.look],{x:t.x+lado*.55-tr,y:t.y+.05,dir:lado>0?'left':'right',walk:clock*3.4});
+    for(let i=0;i<4;i++){const a=(clock*3+i/4)%1;ctx.fillStyle=`rgba(200,180,140,${.5*(1-a)})`;ctx.beginPath();ctx.arc(sx+Math.sin(i*2.3)*18,sy-2-a*10,4+a*8,0,7);ctx.fill()}      // poeira da briga
+    const fr=t.segT||0,k=clamp(fr/SEG_SEGURA,0,1);ctx.fillStyle='#3b2a1a';ctx.fillRect(sx-36,sy+8,72,16);ctx.fillStyle=k>.33?'#f5c542':'#e0483a';ctx.fillRect(sx-34,sy+10,68*k,12);      // tempo que o tratador ainda aguenta (embaixo dos pés)
+    ctx.font='bold 12px Poppins,sans-serif';ctx.textAlign='center';ctx.fillStyle='#fff';ctx.fillText(`🛡️ ${Math.ceil(fr)} s`,sx,sy+20);ctx.textAlign='left';
+    tag('Ladrão (segurado)',t.x,t.y-1.35,'#ff9d8f');bubbles.push([Math.floor(clock/1.8)%2?'Daqui não passa!':'Socorro, patrão! Vem logo!',(t.x+lado*.55)*T-camx,(t.y-1.9)*T-camy])}
   else{drawPerson(SPR.thief,t.st==='steal'||t.st==='stun'?{x:t.x,y:t.y,dir:t.dir,walk:0}:t,hd);tag('Ladrão',t.x,t.y-1.25,'#ff9d8f');if(t.say>0)bubbles.push(['Faz o L!',t.x*T-camx,(t.y-1.75)*T-camy-(hd?hd.width-20:0)]);
     if(t.st==='steal'){ctx.fillStyle='#3b2a1a';ctx.fillRect(sx-26,sy-84,52,10);ctx.fillStyle='#e0483a';ctx.fillRect(sx-24,sy-82,48*clamp(1-t.t/4,0,1),6)}}}
 /* ---------- Paisagem no topo: céu, sol, lua e o lobisomem ---------- */
@@ -5709,7 +5768,7 @@ function mesaModos(){const n=mesaSentados().length;return n===2?[['truco','🃏 
 function mesaTarget(p){return Math.hypot(MESA_POS[0]-p.x,MESA_POS[1]+.4-p.y)<1.6?{k:'mesa'}:null}
 // ações (no dono)
 function mesaAcao(pid,a,v){const L=MESA.lugares,meu=L.indexOf(pid),G=MESA.G;let err=null;
-  if(a==='sentar'){v=v|0;if(G&&!G.fim)err='Tem partida rolando.';else if(meu>=0)err='Você já está sentado.';else if(v<0||v>3||L[v])err='Lugar ocupado.';else{L[v]=pid;MESA.aposta=null;MESA.prop=null;if(G&&G.fim)MESA.G=null}}
+  if(a==='sentar'){v=v|0;const qn=pid==='h'?state.nivel:(MP.players[pid]||{}).nivel;if(qn&&qn.lvl<LOJA_NIVEL.mesa)err=`A mesa libera no nível ${LOJA_NIVEL.mesa}.`;else if(G&&!G.fim)err='Tem partida rolando.';else if(meu>=0)err='Você já está sentado.';else if(v<0||v>3||L[v])err='Lugar ocupado.';else{L[v]=pid;MESA.aposta=null;MESA.prop=null;if(G&&G.fim)MESA.G=null}}
   else if(a==='levantar'){if(G&&!G.fim&&MESA.ids&&MESA.ids.includes(pid))err='Para sair no meio da partida, use Desistir.';else if(meu>=0){L[meu]=null;MESA.aposta=null;MESA.prop=null}}
   else if(a==='propor'){const o=v||{},modo=String(o.modo||''),val=Math.max(0,Math.round(+o.valor*100)/100||0);
     if(meu<0)err='Sente na mesa primeiro.';else if(G&&!G.fim)err='Já tem partida.';else if(!mesaModos().some(m=>m[0]===modo))err='Esse jogo não dá com '+mesaSentados().length+' jogadores.';
@@ -5770,7 +5829,7 @@ function mesaPede(a,v){if(MP.role==='host')mesaAcao('h',a,v);else if(MP.host&&MP
 function cartaHtml(c,opt){opt=opt||{};if(c==null)return'';if(c<0)return opt.a?`<button class="cx back" data-a="mesa" data-v="${opt.a}"${opt.off?' disabled':''}></button>`:`<span class="cx back${opt.mini?' mini':''}"></span>`;const vm=cNaipe(c)===0||cNaipe(c)===2,man=opt.man!=null&&cPosto(c)===opt.man;
   const tag=opt.a?`button class="cx${vm?' vm':''}${man?' man':''}${opt.mini?' mini':''}" data-a="mesa" data-v="${opt.a}"${opt.off?' disabled':''}`:`span class="cx${vm?' vm':''}${man?' man':''}${opt.mini?' mini':''}"`;
   const r=C_POSTO[cPosto(c)],n=C_NAIPE[cNaipe(c)];return`<${tag.replace('class="cx','class="cx'+(opt.grande?' g':''))}><em>${r}<br>${n}</em><b>${r}</b><i>${n}</i><em class="b">${r}<br>${n}</em>${man?'<u>★</u>':''}</${opt.a?'button':'span'}>`}
-function openMesa(){if(MP.cap)return;const V=MESA_V;let h=`${X}<h2>🃏 Mesa do Xande</h2>`;
+function openMesa(){if(MP.cap)return;if(!lojaOk('mesa')){lojaTrava('mesa');return}const V=MESA_V;let h=`${X}<h2>🃏 Mesa do Xande <small style="font-size:13px">· lá dentro do bar</small></h2><div class="row" style="margin:-4px 0 6px"><button class="mini alt" data-a="voltabar">⬅ Voltar ao balcão</button></div>`;
   if(!MP.role||(MP.role==='guest'&&!MP.myId)){showPanel('mesa',h+`<div class="mesa-off"><p>A mesa de <b>truco</b> e <b>fodinha</b> é para jogar com os amigos.</p><p>Abra uma sala (🌐 Multiplayer ou ☁️ Mundo na nuvem) e chamem todo mundo aqui no bar!</p></div><div class="row"><div class="g"></div><button data-a="mp">🌐 Multiplayer</button></div>`);return}
   if(!V){showPanel('mesa',h+'<p>Carregando a mesa…</p>');mesaPede('ver');return}
   const J=V.jogo,eu=V.eu,meuLug=V.lug.findIndex(l=>l&&l.id===eu);
@@ -6011,7 +6070,7 @@ function monsterTick(o,gm){const m=o.monster;if(!m||(m.e<=0&&m.h<=0))return;cons
 function xandeFrames(){const L=lookNpc(NPC_LOOKS.xande,'xande');L.laranjas=1;return hdFrames(L,'down',['parado0','parado1'])}
 function barTarget(p){if(Math.hypot(XANDE_POS[0]-p.x,XANDE_POS[1]-p.y)<1.5)return{k:'bar'};const[x,y,w,h]=BAR_LOT,dx=Math.max(x-p.x,0,p.x-(x+w)),dy=Math.max(y-p.y,0,p.y-(y+h));return Math.hypot(dx,dy)<.75?{k:'bar'}:null}
 function openBar(tab){if(tab)barTab=tab;if(!barSay)barSay=XANDE_LINES[xandeLine++%XANDE_LINES.length];slotBet=Math.max(1,Math.min(slotBet,state.coins||1));
-  const tabs=`<div class="itabs">${[['menu','🍺 Cardápio'],['slot',lojaOk('slot')?'🎰 Caça-níquel':`🔒 Caça-níquel (nível ${LOJA_NIVEL.slot})`]].map(([k,t])=>`<button class="itab${barTab===k?' on':''}" data-a="bartab" data-v="${k}">${t}</button>`).join('')}</div>`;
+  const tabs=`<div class="itabs">${[['menu','🍺 Cardápio'],['slot',lojaOk('slot')?'🎰 Caça-níquel':`🔒 Caça-níquel (nível ${LOJA_NIVEL.slot})`]].map(([k,t])=>`<button class="itab${barTab===k?' on':''}" data-a="bartab" data-v="${k}">${t}</button>`).join('')}<button class="itab" data-a="barmesa">${lojaOk('mesa')?'🃏 Mesa de truco':`🔒 Mesa de truco (nível ${LOJA_NIVEL.mesa})`}</button></div>`;      // a mesa fica lá dentro do bar
   let body='';
   if(barTab==='menu')body=`<p style="margin:0 0 8px"><small>📈 Os preços do Xande seguem a Bolsa de Videira e mudam todo dia.</small></p>`+BAR_MENU.map(([k,pr0,d])=>{const it=ITEMS[k],pr=barPreco(k),vv=bolsaVar(bolsaKey(k));return`<div class="bar-it">${ic(k)}<div style="flex:1"><b>${it.nome}</b>${it.alcool?' <span class="bar-tag">🥴 alcoólica</span>':''}<br><small>${d} · +${it.comida} fome</small><br><small>na mochila: ${state.inv[k]||0}</small></div>
       <button class="mini" data-a="barbuy" data-v="${k}" ${state.coins<pr?'disabled':''}>${brl(pr)}<br><small style="font-size:10px;opacity:.85">${vv>.005?'▲':vv<-.005?'▼':'='} ${Math.round(bolsaMult(k)*100)}%</small></button></div>`}).join('');
@@ -6361,7 +6420,7 @@ function render(){
   if(funcOnDuty())for(const n of funcNpcs)list.push({k:32,y:n.y+.28,n});
   for(const d of VDECOR)list.push({k:26,y:d[2],d});
   list.push({k:29,y:BAR_LOT[1]+BAR_LOT[3]-.01});if(expOn('xande'))list.push({k:30,y:XANDE_POS[1]+.28});
-  list.push({k:39,y:ACC_LOT[1]+ACC_LOT[3]-.01},{k:41,y:MESA_POS[1]+.3});if(expOn('maikelen'))list.push({k:40,y:MAIK_POS[1]+.28});
+  list.push({k:39,y:ACC_LOT[1]+ACC_LOT[3]-.01});if(expOn('maikelen'))list.push({k:40,y:MAIK_POS[1]+.28});
   list.push({k:24,y:TRIG_LOT[1]+TRIG_LOT[3]-.01});if(trigOpen()&&expOn('junior'))list.push({k:25,y:JUNIOR_POS[1]+.28});
   list.push({k:19,y:PITOL_LOT[1]+PITOL_LOT[3]-.01});if(expOn('luan'))list.push({k:20,y:LUAN_POS[1]+.28});
   list.push({k:16,y:GAS_LOT[1]+GAS_LOT[3]-.01},{k:17,y:TRATOR_LOT[1]+TRATOR_LOT[3]-.01},{k:45,y:LAVA_LOT[1]+LAVA_LOT[3]-.01});if(postoAnim)list.push({k:46,y:POSTO_VEH()[1]+.28});if(lavaAnim)list.push({k:47,y:LAVA_VEH()[1]+.28});if(expOn('thiago'))list.push({k:18,y:THIAGO_POS[1]+.28});
@@ -6652,6 +6711,9 @@ addEventListener('keydown',ev=>{
   keys[k]=true;
 });
 addEventListener('keyup',ev=>{keys[ev.key.toLowerCase()]=false});
+try{cv.addEventListener('pointerdown',ev=>{if(ev.pointerType!=='mouse'||ev.button!==0||plow||!state||paused||morte||busRide||panelKind)return;      // no PC o botão esquerdo do mouse é o E
+    ev.preventDefault();if(!keys.e){keys.e=true;idleT=0;interact()}});
+  addEventListener('pointerup',ev=>{if(ev.pointerType==='mouse'&&ev.button===0&&keys.e)keys.e=false});}catch(e){}
 try{cv.addEventListener('pointerdown',()=>{if(!fish)return;if(fish.st==='jogo'||fish.st==='carga')pescaHold=true});addEventListener('pointerup',()=>{pescaHold=false});addEventListener('pointercancel',()=>{pescaHold=false})}catch(e){}
 
 migrateOldSave();genMap();buildSprites();resize();loadHeads();loadSkin();loadSounds();
