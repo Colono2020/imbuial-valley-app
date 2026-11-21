@@ -480,8 +480,8 @@
 <div id="obj" class="box"></div>
 <div id="testo" class="box hidden"></div>
 <div id="inv" class="box"></div>
-<div id="minimap" class="box hidden" title="Mapa (N)"><canvas id="minicv" width="200" height="132"></canvas><small>Videira · Imbuial</small></div>
-<div id="help">WASD/setas: andar · E: interagir (segure para laçar) · Espaço: empurrão / pisão · Q: trocar semente · L: arar terra · R: moto · T: trator · N: mapa · I: mochila · +/−: zoom · Esc: menu · M: som</div>
+<div id="minimap" class="box hidden" title="Mapa (M)"><canvas id="minicv" width="200" height="132"></canvas><small>Videira · Imbuial</small></div>
+<div id="help">WASD/setas: andar · E: interagir (segure para laçar) · Espaço: empurrão / pisão · Q: trocar semente · L: arar terra · R: moto · T: trator · M: mapa · I: mochila · +/−: zoom · Esc: menu · N: som</div>
 <div id="panel" class="box hidden"></div>
 <div id="splash" class="hidden"></div>
 <div id="hudedit" class="hidden"></div>
@@ -2373,7 +2373,7 @@ function addForcaXp(n,wx,wy){const f=state.forca;n=Math.round(n*testoXp()*10)/10
   if(up){sfx.build();toast(`💪 Trabalho pesado! Força subiu para o nível ${f.lvl}!${f.lvl===AXE_MIN&&state.flags.axe?' Agora você consegue usar o machado.':''}`)}}
 function train(k){const e=EXERCISES[k],f=state.forca,en=e.energia*energyMult();if(state.energy<en||state.coins<e.preco||(e.req&&f.lvl<e.req))return;
   state.energy-=en;state.coins-=e.preco;const tx=testoXp();      // bônus da testosterona conta pelas horas que faltavam no começo do treino
-  const b=state.min;advanceAnimals(e.min);if(b<720&&b+e.min>=720)respawnRocks();state.min+=e.min;state.hunger=Math.max(0,state.hunger-e.min*.05);if(state.min>=1440)state.min-=1440;if(b<360&&state.min>=360)morning();
+  const b=state.min;if(!MP.cap){advanceAnimals(e.min);if(b<720&&b+e.min>=720)respawnRocks();state.min+=e.min;if(state.min>=1440)state.min-=1440;if(b<360&&state.min>=360)morning()}state.hunger=Math.max(0,state.hunger-e.min*.05);      // o treino do convidado não passa o relógio da sala
   const g=e.xp*fatigue(f.hoje)*tx;f.hoje++;f.xp+=g;liftT=1.6;liftGain=g;let up=0;
   while(f.xp>=xpNeed(f.lvl)){f.xp-=xpNeed(f.lvl);f.lvl++;up=1}
   if(up){sfx.build();toast(`Força subiu para o nível ${f.lvl}! +1 ponto de estudo na Unoesc Videira.${f.lvl===AXE_MIN&&state.flags.axe?' Agora você consegue usar o machado.':''}`)}else beep(330,.08,'square',.05);
@@ -2460,7 +2460,7 @@ function plowBar(){const el=$('plowbar');if(!plow){el.classList.add('hidden');re
     :isObra(m)?(state.nivel.lvl<extraNivel(m)?`<span class="no">🔒 ${BLD[m].nome} extra libera no nível ${extraNivel(m)}</span>`:`${isTouch?'Pare onde fica a <b>porta</b> e aperte <b>E</b>':'Clique onde fica a <b>porta</b> (ou <kbd>E</kbd>)'} · ${brl(extraPreco(m).c)} + ${extraPreco(m).m} madeiras + ${extraPreco(m).p} pedras`)
     :`${isTouch?'Chegue perto e aperte <b>E</b>':'Clique'} num <b>galinheiro ou curral</b> para vender (devolve metade do gasto)`;
   el.innerHTML=`<div class="pb-modes">${PLOW_MODOS.map(([k,n])=>`<button class="mini ${k===m?'':'alt'}" data-a="plowset" data-v="${k}">${n}</button>`).join('')}<button class="mini alt" data-a="plowcancel">✕</button></div><div class="pb-dica">${dica}</div>`}
-function startPlow(mode){if(MP.role==='guest'){toast('🔒 No multiplayer só o dono ara terra e constrói pela tecla L.');return}if(panelKind)closePanel();plow={a:null,b:null,mode:mode||'arar'};plowBar()}
+function startPlow(mode){if(panelKind)closePanel();plow={a:null,b:null,mode:mode||'arar'};plowBar()}
 function endPlow(){plow=null;plowBar()}
 function plowCorner(x,y,porE){if(!plow)return;x=clamp(x,XMIN,MW-1);y=clamp(y,0,MH-1);
   if(isObra(plow.mode)){const t=plow.mode,[,,w,hh]=BLD[t].lot;openExtraConfirm(t,x-Math.floor(w/2),y-hh);return}
@@ -2920,8 +2920,8 @@ function drawChurchClock(){const[lx,ly]=CHURCH_LOT,cx=lx*T+40*S-camx,cy=ly*T-LT*
 /* ---------- Mapa geral ---------- */
 const MAP_PX=10;
 function openMap(){
-  const lg=[['#e8c860','Você'],['#d4302a','Ladrão'],['#ffffff','Animal solto'],['#8a5a36','Lavoura'],['#f0dcae','Estrada'],['#c39159','Estrada de chão'],['#3d8fd8','Água']],ico='🏠 Casa · 🛒 Loja · ⛲ Praça · 💪 Gym · 🏍️ Motos · ⛽ Posto · 🚜 Tratores · 👕 Pitol · 🎰 Triguinho · 🍺 Xande · ⛪ Igreja · 🎓 Unoesc · 🚌 Ônibus';
-  showPanel('mapa',`${X}<h2>🗺️ Mapa de Imbuial Valley</h2><p><small>${vilaTitle()} · Dia ${fmt(state.day)} · aperte <kbd>N</kbd> ou <kbd>Esc</kbd> para fechar</small></p>
+  const lg=[['#e8c860','Você'],...(MP.role?[['#4fa3e0','Amigos na sala']]:[]),['#d4302a','Ladrão'],['#ffffff','Animal solto'],['#8a5a36','Lavoura'],['#f0dcae','Estrada'],['#c39159','Estrada de chão'],['#3d8fd8','Água']],ico='🏠 Casa · 🛒 Loja · ⛲ Praça · 💪 Gym · 🏍️ Motos · ⛽ Posto · 🚜 Tratores · 👕 Pitol · 🎰 Triguinho · 🍺 Xande · ⛪ Igreja · 🎓 Unoesc · 🚌 Ônibus';
+  showPanel('mapa',`${X}<h2>🗺️ Mapa de Imbuial Valley</h2><p><small>${vilaTitle()} · Dia ${fmt(state.day)} · aperte <kbd>M</kbd> ou <kbd>Esc</kbd> para fechar</small></p>
     <canvas id="mapcv" width="${AW*MAP_PX}" height="${MH*MAP_PX}"></canvas>
     <div class="legend">${lg.map(([c,n])=>`<span><i style="background:${c}"></i>${n}</span>`).join('')}</div><div class="legend" style="margin-top:2px">${ico}</div>`);
   drawMap($('mapcv'))}
@@ -2989,6 +2989,10 @@ function drawMap(cvm){if(!cvm||!cvm.getContext)return;const g=cvm.getContext('2d
   for(const a of wild){const r=2.2*k;if(animTier(a)>=5){g.fillStyle='#ff4d4d';g.beginPath();g.arc(a.x*P,a.y*P,r*2,0,7);g.fill();pill('💪 T.O.E.F.D',a.x*P,a.y*P-r*2,'#ffd9d6','#a3201a')}
     g.fillStyle={galinha:'#fff',pato:'#f3efe0',ovelha:'#f5f5f0',porco:'#f2a7b5',vaca:'#fafafa'}[a.sp];g.strokeStyle='#333';g.lineWidth=1.2;g.beginPath();g.arc(a.x*P,a.y*P,r,0,7);g.fill();g.stroke()}
   for(const t of thieves){g.strokeStyle='#d4302a';g.lineWidth=2*k;const x=t.x*P,y=t.y*P,s=4*k;g.beginPath();g.moveTo(x-s,y-s);g.lineTo(x+s,y+s);g.moveTo(x+s,y-s);g.lineTo(x-s,y+s);g.stroke()}
+  if(MP.role)for(const id in MP.players){const o=MP.players[id];if(!o||o.me||!o.p)continue;const ox=o.p.x*P,oy=o.p.y*P,c=mpCor(id),r2=6*k;      // amigos na sala
+    g.fillStyle='#fff';g.strokeStyle='#3b2a1a';g.lineWidth=2;g.beginPath();g.arc(ox,oy,r2+2,0,7);g.fill();g.stroke();
+    if(o.img){g.save();g.beginPath();g.arc(ox,oy,r2,0,7);g.clip();g.drawImage(o.img,ox-r2,oy-r2,r2*2,r2*2);g.restore()}else{g.fillStyle=c;g.beginPath();g.arc(ox,oy,r2,0,7);g.fill();g.fillStyle='#fff';g.font=`bold ${Math.round(8*k)}px Poppins,sans-serif`;g.textAlign='center';g.textBaseline='middle';g.fillText((o.nome||'?')[0].toUpperCase(),ox,oy+.5);g.textBaseline='alphabetic'}
+    pill((o.rd&&o.rd[0]==='b'?'🚌 ':'')+(o.nome||'Amigo')+(id==='h'?' 👑':''),ox,oy-r2-4,c,'#1c1c1c')}
   const p=state.p,px=p.x*P,py=p.y*P,hd=HEADS.player.cv,R=8*k;
   g.fillStyle='rgba(255,224,102,.35)';g.beginPath();g.arc(px,py,R*1.9+Math.sin(clock*4)*2,0,7);g.fill();
   g.fillStyle='#fff';g.strokeStyle='#3b2a1a';g.lineWidth=2;g.beginPath();g.arc(px,py,R+2,0,7);g.fill();g.stroke();
@@ -3040,6 +3044,7 @@ let tractorTile=-1;
 function harvestAt(i,wx,wy){const c=state.crops[i],k=c.c,xb=extraHarvest(state.b.lavoura),n=1+Math.floor(xb)+(Math.random()<xb%1?1:0);state.inv[k]+=n;state.flags.harvest=1;addNivelXp(XP_COLHEITA,wx,wy);
   if(CROPS[k].rebrota){c.g=CROPS[k].dias-CROPS[k].rebrota;c.r=false}else delete state.crops[i];return n}
 function tractorWork(){const p=state.p,cx=Math.floor(p.x),cy=Math.floor(p.y),ti=cy*AW-XMIN+cx;if(ti===tractorTile)return;tractorTile=ti;
+  if(MP.role==='guest'){if(MP.host&&MP.myId)mpSend(MP.host,{t:'trator',x:p.x,y:p.y,k:state.trator});return}
   const r=(TRATORES[state.trator].larg-1)/2;let col=0,pl=0;
   for(let y=cy-r;y<=cy+r;y++)for(let x=cx-r;x<=cx+r;x++){if(x<XMIN||y<0||x>=MW||y>=MH)continue;const i=y*AW-XMIN+x;if(!soilOn(i))continue;const c=state.crops[i];
     if(c&&c.r)col+=harvestAt(i);
@@ -3234,7 +3239,7 @@ let cfgDoTitulo=false;
 function openConfig(){cfgDoTitulo=panelKind==='title'||(panelKind==='config'&&cfgDoTitulo);const I=(e,c)=>`<span class="ico" style="background:${c}">${e}</span>`;
   showPanel('config',`<div class="m-head cfg-head"><button class="close" data-a="close">✕</button><span class="tag">do seu jeito</span><h1>⚙️ Personalizar</h1><div class="sub">Visual, sons e música do jogo</div></div><div class="m-body">
     <div class="cfg-row"><span class="cfg-ic">🎵</span><div class="g"><b>Música</b><small>trilha calminha de fazenda</small><input type="range" id="musvol" min="5" max="100" value="${Math.round(musicaVol*100)}" ${musicaOff?'disabled':''}></div><button class="${musicaOff?'alt':''} cfg-sw" data-a="musica">${musicaOff?'🔇 Desligada':'🎵 Ligada'}</button></div>
-    <div class="cfg-row"><span class="cfg-ic">🔊</span><div class="g"><b>Efeitos sonoros</b><small>machado, moedas, bichos… (tecla M)</small></div><button class="${muted?'alt':''} cfg-sw" data-a="mutecfg">${muted?'🔇 Desligados':'🔊 Ligados'}</button></div>
+    <div class="cfg-row"><span class="cfg-ic">🔊</span><div class="g"><b>Efeitos sonoros</b><small>machado, moedas, bichos… (tecla N)</small></div><button class="${muted?'alt':''} cfg-sw" data-a="mutecfg">${muted?'🔇 Desligados':'🔊 Ligados'}</button></div>
     <div class="m-grid">
       <button class="m-btn" data-a="custom">${I('🙂','#fff3b0')}<span>Cabeças<small>fotos no rosto</small></span></button>
       <button class="m-btn" data-a="sounds">${I('🎙️','#f6d0ff')}<span>Sons<small>áudios personalizados</small></span></button>
@@ -3285,7 +3290,7 @@ function spawnToefd(quiet){if(wild.some(a=>a.sp==='galinha'&&a.cor===TOEFD_COR))
   for(let t=0;t<200;t++){const x=z[0]+Math.random()*(z[2]-z[0]),y=z[1]+Math.random()*(z[3]-z[1]);
     if(inVila(x,y,1)||inFarm(x,y,1)||!canStand(x,y,.3))continue;
     wild.push({sp:'galinha',x,y,vx:0,vy:0,timer:2,flee:0,face:1,cor:TOEFD_COR});state.toefdWild=true;
-    if(!quiet){toast('🏆💪 Uma GALINHA T.O.E.F.D apareceu em algum lugar do mapa! Cada ovo dela vale R$ 3.000,00. Abra o mapa (N)!');for(let i=0;i<4;i++)setTimeout(()=>beep(520+i*130,.12,'square',.05),i*120)}return true}return false}
+    if(!quiet){toast('🏆💪 Uma GALINHA T.O.E.F.D apareceu em algum lugar do mapa! Cada ovo dela vale R$ 3.000,00. Abra o mapa (M)!');for(let i=0;i<4;i++)setTimeout(()=>beep(520+i*130,.12,'square',.05),i*120)}return true}return false}
 function updateToefd(dt){state.toefdT=(state.toefdT||0)+dt;if(state.toefdT>=TOEFD_EVERY){state.toefdT=0;if(!state.toefdWild&&Math.random()<TOEFD_CHANCE)spawnToefd()}}
 function spawnWild(){
   const rn=Math.random;
@@ -3369,15 +3374,25 @@ function drawClimaWorld(W,H){const hr=state.min/60,c=state.clima;
 /* ================= MULTIPLAYER: cooperativo no mundo do dono, até 4 jogadores, pela internet com código de sala =================
    Ligação: WebRTC (canal de dados direto entre os aparelhos). Para os aparelhos se acharem usa o servidor público grátis do PeerJS
    só como "telefonista" (sinalização). Quem hospeda manda no mundo; os convidados mandam o que fazem e o dono aplica e espalha. */
-const JOGO_VERSAO='2026-11-21a';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
+const JOGO_VERSAO='2026-11-21e';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
 const MP_MAX=4,MP_PREFIX=SLOT_KEYS[0].replace(/_slot_1$/,'').replace(/_/g,''),MP_SERVER='wss://0.peerjs.com:443/peerjs?key=peerjs';
 const MP_ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']},{urls:'stun:global.stun.twilio.com:3478'}]};
-const MP_PESSOAL=['p','energy','hunger','vida','forca','sujeira','sel','testoUntil','fomeT','coins','xpUntil','monster'];      // cada jogador tem o seu; o resto do state é o mundo do dono
-const MP_FORA_DIFF=new Set([...MP_PESSOAL,'saved','min','day','rain','clima','riding','rideKind']);
-const MP_BLOQ=new Set(['sleep','nap','busskip','treinar','banho','trigspin','slotspin','trigbet','trigset','slotbet','plowstart','plowok','plowmode','plowset','extraok','vendaok','extravender','plowredo',
-  'motoride','tratorride','invride','motouse','tratoruse','savenow','newgame','jogar','criar','criarok','apagar','apagarok','exportar','importar','importarok','titlecancel','sairmenu','fecharjogo','trocarmundo',
+const MP_LEVE=['p','energy','hunger','vida','forca','sujeira','sel','testoUntil','fomeT','coins','xpUntil','monster','napHoje'];      // muda toda hora: vai junto em cada batida
+const MP_PROG=['inv','seeds','nivel','flags','roupas','visual','estudos','found','motos','moto','tratores','trator','fuel','vsuj'];      // progresso de cada jogador: mochila, peixes, sementes, nível, roupas, veículos…
+const MP_PESSOAL=[...MP_LEVE,...MP_PROG];      // cada jogador tem o seu; o resto do state é o mundo do dono
+const MP_FORA_DIFF=new Set([...MP_PESSOAL,'saved','min','day','rain','clima','riding','rideKind','jogs','progDono']);
+// o progresso de quem não é o dono fica guardado no próprio mundo, pelo nome (volta igual quando a pessoa entra de novo)
+function progNovo(){const n=newState(),o={};for(const k of MP_PROG)o[k]=n[k];return o}
+function progDe(o){const r={};for(const k of MP_PROG)r[k]=o[k];return JSON.parse(JSON.stringify(r))}
+function progDoJogador(chave){const j=state.jogs&&state.jogs[chave];const base=progNovo();if(!j)return base;for(const k of MP_PROG)if(j[k]!==undefined)base[k]=j[k];return base}
+function progGuarda(chave,o){if(!chave)return;(state.jogs=state.jogs||{})[chave]=progDe(o)}
+function progTroca(chave){if(!state||!chave)return;const era=state.progDono;if(era===chave)return;if(!era){state.progDono=chave;return}      // mundo antigo: o que está nele fica com quem abriu      // mundo da nuvem: quem assume o mundo usa o progresso dele, o do dono anterior fica guardado
+  if(era)progGuarda(era,state);const meu=progDoJogador(chave);for(const k of MP_PROG)state[k]=meu[k];if(state.jogs)delete state.jogs[chave];state.progDono=chave;applyOutfit&&applyOutfit()}
+// o convidado faz praticamente tudo; só fica de fora o que é do servidor: trocar o dono, mexer na sala, salvar/apagar/trocar o mundo
+const MP_BLOQ=new Set(['savenow','newgame','jogar','criar','criarok','apagar','apagarok','exportar','importar','importarok','titlecancel','sairmenu','fecharjogo','trocarmundo',
   'custom','sounds','sndplay','sndremove','headsize','headremove','skinlib','skinuse','skinbig','skinbg','skindel','hudedit','hudcolor','hudreset','hudmin','hudshow','hudok','mute','zoomin','zoomout','menu','mapa','mp','mphost','mpjoin','mpsair','mpkick','mpcopy','mpchat']);
-const MP_LOCAL=new Set(['close','acordar','nicksalva','nickcod','mute','zoomin','zoomout','hudedit','hudcolor','hudreset','hudmin','hudshow','hudok','menu','mapa','custom','sounds','sndplay','sndremove','headsize','headremove','sairmenu','fecharjogo','mp','mphost','mpjoin','mpsair','mpkick','mpcopy','mpchat','nuvem','nvcopiar','nvapagar','mesa','config','musica','mutecfg','mpopen','custom','sounds','hudedit','nvtirar','nvapagarok','fps','pix','pixenviar','pixresp','trigclose','barclose']);
+const MP_LOCAL=new Set(['close','acordar','nicksalva','nickcod','mute','zoomin','zoomout','hudedit','hudcolor','hudreset','hudmin','hudshow','hudok','menu','mapa','custom','sounds','sndplay','sndremove','headsize','headremove','sairmenu','fecharjogo','mp','mphost','mpjoin','mpsair','mpkick','mpcopy','mpchat','nuvem','nvcopiar','nvapagar','mesa','config','musica','mutecfg','mpopen','custom','sounds','hudedit','nvtirar','nvapagarok','fps','pix','pixenviar','pixresp','trigclose','barclose',
+  'trigspin','slotspin','trigbet','trigset','slotbet','plowstart','plowok','plowmode','plowset','extraok','vendaok','extravender','plowredo','plowcancel','motoride','tratorride','invride','busskip']);      // o convidado faz estes no próprio aparelho
 const MP_TEST=(()=>{try{const q=new URLSearchParams(location.search).get('mptest');return q||null}catch(e){return null}})();      // só para testar no PC com 2 janelas
 const MP={role:null,code:null,ws:null,hb:null,myId:null,players:{},links:{},host:null,pc:null,ice:[],cap:null,backup:null,backupSlot:null,lastJ:{},
   tT:0,wT:0,pT:0,pillT:0,remote:false,incoming:false,nextId:1,mid:1,status:'',nome:(()=>{try{return localStorage.getItem(MP_PREFIX+'_mpnome')||''}catch(e){return''}})()};
@@ -3481,10 +3496,13 @@ function mpHostSignal(m){const src=m.src;if(!src)return;
     pc.setRemoteDescription(m.payload.sdp).then(()=>{for(const c of L.ice)pc.addIceCandidate(c).catch(()=>{});L.ice=null;return pc.createAnswer()}).then(a=>pc.setLocalDescription(a))
       .then(()=>mpWs({type:'ANSWER',payload:{sdp:pc.localDescription},dst:src})).catch(()=>{})}
   else if(m.type==='CANDIDATE'){const L=MP.pend&&MP.pend[src];if(!L)return;if(L.ice)L.ice.push(m.payload.c);else L.pc.addIceCandidate(m.payload.c).catch(()=>{})}}
-function mpPessoal(g){const o={};for(const k of MP_PESSOAL)if(k!=='p')o[k]=g[k];return o}
-function mpMundo(){const o={};for(const k in state)if(!MP_PESSOAL.includes(k)&&k!=='saved')o[k]=state[k];return o}
+function coinsAdd(d){d=Math.round(d*100)/100;state.coins=Math.round((state.coins+d)*100)/100;if(MP.role==='guest'&&MP.host&&d)mpSend(MP.host,{t:'moedas',d})}
+function mpPlowManda(tipo){if(MP.role!=='guest'||!MP.host||!plow)return false;const al=plow.alvo;
+  mpSend(MP.host,{t:'plow',tipo,a:plow.a,b:plow.b,mode:plow.mode,obra:plow.obra||null,alvo:al?{t:al.t,e:al.e?al.e.id:null}:null});endPlow();panelKind=null;closePanel();return true}
+function mpPessoal(g,leve){const o={};for(const k of leve?MP_LEVE:MP_PESSOAL)if(k!=='p')o[k]=g[k];return o}
+function mpMundo(){const o={};for(const k in state)if(!MP_FORA_DIFF.has(k)||k==='min'||k==='day'||k==='rain'||k==='clima')o[k]=state[k];return o}
 function mpHeadUrl(){try{return!skinOn()&&HEADS.player&&HEADS.player.cv&&HEADS.player.cv.toDataURL?HEADS.player.cv.toDataURL():null}catch(e){return null}}
-const mpVeic=()=>state&&state.riding?(state.rideKind==='trator'?'t:'+state.trator:'m:'+state.moto):'';
+const mpVeic=()=>busRide?'b:'+(busRide.flip?1:0):state&&state.riding?(state.rideKind==='trator'?'t:'+state.trator:'m:'+state.moto):'';      // b = dentro do ônibus
 function mpPub(){const a=[];for(const id in MP.players){const r=MP.players[id],p=r.me?state.p:r.p;if(p)a.push([id,Math.round(p.x*100)/100,Math.round(p.y*100)/100,p.dir,r.me?(keys.a||keys.d||keys.w||keys.s||keys.arrowleft||keys.arrowright||keys.arrowup||keys.arrowdown?1:0):(r.mov?1:0),r.me?mpVeic():(r.rd||'')])}return a}
 function mpInfo(r){return{t:'pinfo',id:r.id,nome:r.nome,head:r.me?mpHeadUrl():r.head||null}}
 function mpHostMsg(link,m){
@@ -3492,18 +3510,19 @@ function mpHostMsg(link,m){
     const id='g'+(MP.nextId++),f=m.forca&&m.forca.lvl>0?{lvl:m.forca.lvl|0,xp:+m.forca.xp||0,hoje:0}:{lvl:1,xp:0,hoje:0};
     const g={id,nome:mpLimpo(m.nome)||'Amigo '+id.slice(1),head:typeof m.head==='string'&&m.head.length<120000&&m.head.startsWith('data:image')?m.head:null,link,
       p:{x:state.p.x+.9,y:state.p.y+.4,dir:'down',walk:0,face:1},energy:maxEnergy(),hunger:80,forca:f,sujeira:0,sel:state.sel,testoUntil:m.testo>0?absNow()+Math.min(+m.testo,600000):0,fomeT:0,coins:Math.max(0,Math.min(1e9,Math.round((+m.coins||0)*100)/100))};
-    {const pp=(state.mpPos||{})[nvChave(g.nome)];if(pp&&canStand(pp.x,pp.y,.28)){g.p.x=pp.x;g.p.y=pp.y}}      // volta onde estava da última vez
+    Object.assign(g,progDoJogador(nvChave(g.nome)));      // mochila, peixes, nível… dele neste mundo
+    {const pp=(state.mpPos=state.mpPos||{})[nvChave(g.nome)];if(pp&&canStand(pp.x,pp.y,.28)){g.p.x=pp.x;g.p.y=pp.y}}      // volta onde estava da última vez
     if(!canStand(g.p.x,g.p.y,.28)){g.p.x=state.p.x;g.p.y=state.p.y}
     link.id=id;MP.players[id]=g;MP.links[id]=link;mpImg(g);
     mpSend(link,{t:'welcome',id,code:MP.code,world:mpMundo(),me:Object.assign(mpPessoal(g),{p:g.p}),infos:Object.values(MP.players).map(mpInfo)});
     mpBroadcast(mpInfo(g),id);toast(`🌐 ${g.nome} entrou na sala!`,5000);if(m.ver!==JOGO_VERSAO){const av=`⚠️ ${g.nome} está com uma versão diferente do jogo. Os dois precisam atualizar (Ctrl+F5 ou o arquivo novo), senão a mesa e outras coisas podem falhar.`;toast(av,12000);mpSend(link,{t:'fx',toasts:[[`⚠️ Sua versão do jogo é diferente da do dono da sala. Atualizem os dois (Ctrl+F5 / arquivo novo).`,12000]],beeps:[],floats:[]})}sfx.coin();if(panelKind==='mp')openMP();return}
   const g=MP.players[link.id];if(!g)return;
-  if(m.t==='pos'){if(isFinite(m.x)&&isFinite(m.y)){g.tx=+m.x;g.ty=+m.y;if(!g.p0){g.p.x=g.tx;g.p.y=g.ty;g.p0=1}}g.p.dir=['up','down','left','right'].includes(m.d)?m.d:g.p.dir;g.mov=!!m.m;g.rd=typeof m.rd==='string'?m.rd.slice(0,20):''}
+  if(m.t==='pos'){if(isFinite(m.x)&&isFinite(m.y)){g.tx=+m.x;g.ty=+m.y;if(!g.p0){g.p.x=g.tx;g.p.y=g.ty;g.p0=1}}g.p.dir=['up','down','left','right'].includes(m.d)?m.d:g.p.dir;g.mov=!!m.m;if(m.e||clock-(g.ekT||0)>.4)g.ek=!!m.e;g.rd=typeof m.rd==='string'?m.rd.slice(0,20):'';if(g.mov&&g.dorme){g.dorme=false;MP.dormeChk=1}}
   else if(m.t==='e'){if(isFinite(m.x)&&isFinite(m.y)){g.p.x=+m.x;g.p.y=+m.y}if(m.d)g.p.dir=m.d;if(m.sel&&CROPS[m.sel])g.sel=m.sel;
-    mpComo(g,()=>{const t=findTarget();if(t&&(t.k==='fish'||t.k==='animal')){toast(t.k==='fish'?'🎣 No multiplayer só o dono da sala pesca (por enquanto).':t.k==='animal'?'🤠 No multiplayer só o dono da sala laça os bichos (por enquanto).':'🚌 No multiplayer só o dono pega o ônibus (ele passa o tempo de todo mundo).');return}interact()})}
+    g.ek=true;g.ekT=clock;mpComo(g,()=>{if(g.lasso)return;interact()})}      // apertou E: segura até a posição dizer que soltou
   else if(m.t==='act'){const a=String(m.a||'');if(!ACT[a]||MP_LOCAL.has(a))return;
     if(a==='busgo'){busConvidado(g,String(m.v||''));return}
-    if(MP_BLOQ.has(a)){mpComo(g,()=>toast(a==='sleep'||a==='nap'||a==='treinar'||a==='banho'||a==='busgo'?'⏰ No multiplayer só o dono pode passar o tempo (dormir, cochilar, treinar, banho, ônibus).':'🔒 No multiplayer isso é só para o dono da sala.'));return}
+    if(MP_BLOQ.has(a)){mpComo(g,()=>toast('🔒 Isso é só para o dono da sala (salvar, trocar de mundo ou mexer na sala).'));return}
     mpComo(g,()=>ACT[a](m.v))}
   else if(m.t==='open'){const fn={inv:openInv,bolsa:openBolsa,func:openFunc}[m.w];if(fn)mpComo(g,()=>fn())}
   else if(m.t==='seed'){if(m.sel&&CROPS[m.sel])g.sel=m.sel}
@@ -3511,22 +3530,61 @@ function mpHostMsg(link,m){
   else if(m.t==='mesa'){mesaAcao(g.id,String(m.a||''),m.v)}
   else if(m.t==='pesca2'){if((ITEMS[m.k]||m.k==='bota'))mpComo(g,()=>{if(state.energy<2*energyMult())return;state.energy-=2*energyMult();pescaPremio(String(m.k),m.tes&&TREASURE[m.tes]?String(m.tes):null,!!m.perf,!!m.c)})}
   else if(m.t==='pesca'){if(isFinite(m.x)&&isFinite(m.y)&&isWaterAt(+m.x,+m.y))mpComo(g,()=>{if(state.energy<2*energyMult())return;state.energy-=2*energyMult();fish={x:+m.x,y:+m.y,st:'bite',cardume:!!m.c};reel()})}
+  else if(m.t==='moedas'){const d=+m.d;if(isFinite(d)&&Math.abs(d)<1e8){g.coins=Math.max(0,Math.round((g.coins+d)*100)/100);MP.tT=99}}
+  else if(m.t==='plow'){mpComo(g,()=>{const ok=v=>Array.isArray(v)&&v.length===2&&v.every(n=>Number.isInteger(n));
+      if(m.tipo==='plow'&&ok(m.a)&&ok(m.b)&&(m.mode==='arar'||m.mode==='tirar')){plow={a:m.a,b:m.b,mode:m.mode};doPlow()}
+      else if(m.tipo==='extra'&&m.obra&&isObra(m.obra.t)&&Number.isInteger(m.obra.x)&&Number.isInteger(m.obra.y)){plow={a:null,b:null,mode:m.obra.t,obra:{t:m.obra.t,x:m.obra.x,y:m.obra.y}};doExtra()}
+      else if(m.tipo==='venda'&&m.alvo){const al=sellAlvos().find(q=>q.t===m.alvo.t&&(m.alvo.e?q.e&&q.e.id===m.alvo.e:!q.e));if(al){plow={a:null,b:null,mode:'vender',alvo:al};doVenda()}}
+      plow=null;MP.cap.plow=1})}
+  else if(m.t==='empurra'){if(isFinite(m.x)&&isFinite(m.y)){g.p.x=+m.x;g.p.y=+m.y}if(m.d)g.p.dir=m.d;mpComo(g,()=>{const c=shoveCd;shoveCd=0;shove();shoveCd=c})}
+  else if(m.t==='trator'){if(isFinite(m.x)&&isFinite(m.y)&&m.k&&state.tratores&&state.tratores[m.k]){g.p.x=+m.x;g.p.y=+m.y;
+      mpComo(g,()=>{const tk=state.trator;state.trator=m.k;state.riding=true;state.rideKind='trator';tractorTile=-1;tractorWork();state.trator=tk})}}
   else if(m.t==='pix'){pixPedido(g.id,String(m.para||''),m.valor)}
   else if(m.t==='pixok'){pixResposta(String(m.id||''),!!m.ok,g.id)}
   else if(m.t==='bye'){mpPerdeu(link)}}
 const mpLimpo2=s=>String(s||'').replace(/[<>]/g,'').slice(0,80).trim();
 // executa uma ação "como se fosse" o convidado: troca a posição, energia, fome… dele no lugar do dono e depois desfaz
-function mpComo(g,fn){const keep={};for(const k of MP_PESSOAL)keep[k]=state[k];const rd=[state.riding,state.rideKind],pk=panelKind,pz=paused,fi=fish,la=lasso,le=led,pl=plow,kk=Object.assign({},keys);
-  for(const k of MP_PESSOAL)state[k]=g[k];state.riding=false;fish=null;lasso=null;led=null;plow=null;
-  const cap={panel:null,close:false,toasts:[],beeps:[],f0:floats.length};MP.cap=cap;
+function mpComo(g,fn){const keep={};for(const k of MP_PESSOAL)keep[k]=state[k];const rd=[state.riding,state.rideKind],pk=panelKind,pz=paused,fi=fish,la=lasso,le=led,pl=plow,kk=Object.assign({},keys),tt=tractorTile;
+  for(const k of MP_PESSOAL)state[k]=g[k];state.riding=false;fish=null;lasso=null;led=g.led||null;plow=null;
+  const cap={panel:null,close:false,toasts:[],beeps:[],f0:floats.length,g};MP.cap=cap;
   try{fn()}catch(e){console.error(e)}finally{
-    if(fish)cap.toasts.push(['🎣 No multiplayer só o dono da sala pesca (por enquanto).']);if(lasso||led)cap.toasts.push(['🤠 No multiplayer só o dono da sala laça os bichos (por enquanto).']);
+    if(lasso&&!g.lasso){g.lasso=lasso;lasso.a.lassoBy=g.id;lasso.a.lt=0}      // o convidado começou a laçar: o dono segue o laço dele
     for(const k of MP_PESSOAL)g[k]=state[k];for(const k of MP_PESSOAL)state[k]=keep[k];state.riding=rd[0];state.rideKind=rd[1];
-    fish=fi;lasso=la;led=le;plow=pl;panelKind=pk;paused=pz;Object.assign(keys,kk);MP.cap=null}
+    fish=fi;lasso=la;led=le;plow=pl;panelKind=pk;paused=pz;Object.assign(keys,kk);tractorTile=tt;MP.cap=null;if(pl!==plow||cap.plow)plowBar()}
   mpSend(g.link,{t:'fx',panel:cap.panel,close:cap.close,toasts:cap.toasts,beeps:cap.beeps,floats:floats.slice(cap.f0).map(f=>[f.x,f.y,f.text,f.col]),me:mpPessoal(g)});
   MP.wT=99}      // manda as mudanças do mundo logo
-function mpPosGuarda(){if(!state)return;const P=state.mpPos=state.mpPos||{};if(MP.nome)P[nvChave(MP.nome)]={x:+state.p.x.toFixed(2),y:+state.p.y.toFixed(2)};for(const id in MP.players){const g=MP.players[id];if(!g.me&&g.p&&g.nome)P[nvChave(g.nome)]={x:+g.p.x.toFixed(2),y:+g.p.y.toFixed(2)}}}
-function mpPerdeu(link){if(MP.role==='host'){const g=link&&link.id&&MP.players[link.id];if(!g)return;if(g.p&&g.nome){(state.mpPos=state.mpPos||{})[nvChave(g.nome)]={x:+g.p.x.toFixed(2),y:+g.p.y.toFixed(2)};save()}if(NV.on&&g.nome){NV.pend[nvChave(g.nome)]=nvPessDe(g,(g.testoUntil||0)-absNow());NV.upT=0}delete MP.players[g.id];delete MP.links[g.id];try{link.close()}catch(e){}
+function mpPosGuarda(){if(!state)return;for(const id in MP.players){const g=MP.players[id];if(!g.me&&g.nome&&g.inv)progGuarda(nvChave(g.nome),g)}const P=state.mpPos=state.mpPos||{};if(MP.nome)P[nvChave(MP.nome)]={x:+state.p.x.toFixed(2),y:+state.p.y.toFixed(2)};for(const id in MP.players){const g=MP.players[id];if(!g.me&&g.p&&g.nome)P[nvChave(g.nome)]={x:+g.p.x.toFixed(2),y:+g.p.y.toFixed(2)}}}
+// ---------- laço dos convidados (o dono simula, igual ao dele) ----------
+const mpMeuLed=()=>MP.role==='guest'&&MP.myId?wild.find(a=>a.ledBy===MP.myId)||null:null;
+const mpPosDe=id=>MP.role==='guest'&&id===MP.myId?state.p:MP.players[id]&&MP.players[id].p;
+const mpConv=()=>MP.role==='host'?Object.values(MP.players).filter(g=>!g.me&&g.link):[];
+function mpFx(g,toasts,beeps){if(g.link)mpSend(g.link,{t:'fx',panel:null,close:false,toasts:toasts||[],beeps:beeps||[],floats:[],me:mpPessoal(g)})}
+function mpSolta(g){if(g.lasso){const a=g.lasso.a;a.lassoBy='';a.lt=0;g.lasso=null}if(g.led){g.led.led=false;g.led.ledBy='';g.led=null}}
+function mpLacos(dt){for(const g of mpConv()){
+  if(g.lasso){const L=g.lasso,a=L.a,sp=SPECIES[a.sp],d=Math.hypot(a.x-g.p.x,a.y-g.p.y);
+    if(!g.ek||d>2.4||!wild.includes(a)){a.flee=1.5;a.lassoBy='';a.lt=0;g.lasso=null}
+    else{L.t+=dt;a.lt=Math.round(Math.min(1,L.t/sp.need)*100)/100;const ang=Math.atan2(a.y-g.p.y,a.x-g.p.x);move(a,Math.cos(ang)*sp.spd*dt,Math.sin(ang)*sp.spd*dt,.3);a.face=Math.cos(ang)>0?1:-1;
+      if(L.t>=sp.need){g.energy=Math.max(0,g.energy-4*energyMult());a.led=true;a.flee=0;a.lassoBy='';a.lt=0;a.ledBy=g.id;g.led=a;g.lasso=null;
+        mpFx(g,[[`${sp.nome} no laço! Arraste até o ${BLD[sp.pen].nome}.`]],SX[a.sp]?[['sx:'+a.sp]]:[]);toast(`🤠 ${g.nome} laçou ${animFem(a.sp)?'uma':'um'} ${sp.nome.toLowerCase()}!`)}}}
+  if(g.led){const a=g.led,sp=SPECIES[a.sp],p=g.p;if(!wild.includes(a)){g.led=null;continue}
+    let d=Math.hypot(p.x-a.x,p.y-a.y);const ang=Math.atan2(p.y-a.y,p.x-a.x);a.moving=false;
+    if(d>1.1){move(a,Math.cos(ang)*Math.min(d-1.1,5*dt),Math.sin(ang)*Math.min(d-1.1,5*dt),.3);a.face=Math.cos(ang)>=0?1:-1;a.moving=true;d=Math.hypot(p.x-a.x,p.y-a.y);if(d>2){a.x=p.x-Math.cos(ang)*2;a.y=p.y-Math.sin(ang)*2}}
+    const perto=[...(state.b[sp.pen]>0?[BLD[sp.pen].lot]:[]),...extrasDe(sp.pen).map(extraLot)].some(([x,y,w,h])=>Math.hypot(Math.max(x-p.x,0,p.x-(x+w)),Math.max(y-p.y,0,p.y-(y+h)))<1);
+    if(perto&&penCount(sp.pen)<capTotal(sp.pen)){wild.splice(wild.indexOf(a),1);g.led=null;state.animals.push({sp:a.sp,fed:0,prog:0,cor:a.cor|0});if(animTier(a)>=5)state.toefdWild=false;state.flags.captured=1;syncPens();
+      mpFx(g,[[`${sp.nome} entregue no ${BLD[sp.pen].nome}. Não esqueça de alimentar!`]],[['sx:get']]);toast(`🤠 ${g.nome} trouxe ${animFem(a.sp)?'uma':'um'} ${animName(a)} para o ${BLD[sp.pen].nome}!`);sfx.coin();MP.wT=99;save()}}}}
+// ---------- dormir no multiplayer: a noite passa quando todo mundo deitou ----------
+const mpDormindo=()=>(MP.dorme?1:0)+mpConv().filter(g=>g.dorme).length;
+function openDormindo(){const tot=mpConv().length+1,n=mpDormindo(),dono=MP.role==='host'&&!MP.cap;
+  showPanel('dormindo',`<h2>💤 Dormindo…</h2><p>A noite só passa quando <b>todos</b> forem deitar.</p><p style="font-size:20px;text-align:center"><b>${n}/${tot}</b> dormindo</p>
+    <div class="row"><button class="alt" data-a="levantar">Levantar</button><div class="g"></div>${dono?'<button data-a="dormeforca">Dormir mesmo assim 🌙</button>':''}</div>${dono?'<p><small>Como dono você pode passar a noite sem esperar (todo mundo acorda em casa).</small></p>':''}`)}
+function mpDormeTudo(){if(MP.role!=='host')return;const conv=mpConv();if(!MP.dorme&&!conv.some(g=>g.dorme))return;
+  if(MP.dorme&&conv.every(g=>g.dorme)){mpDormeFim(false);return}
+  if(MP.dorme)openDormindo();for(const g of conv)if(g.dorme)mpComo(g,openDormindo)}
+function mpDormeFim(forca){MP.dorme=false;if(!isNight())return;const conv=mpConv();
+  for(const g of conv){g.dorme=false;mpComo(g,()=>{state.hunger=Math.max(8,state.hunger-12);state.energy=maxEnergy();state.p.x=HOME[0]+.8;state.p.y=HOME[1]+.3;MP.cap.close=true;toast(forca?'🌙 O dono passou a noite. Você acordou em casa.':'☀️ Todo mundo dormiu. Bom dia!')});mpSolta(g);
+    mpSend(g.link,{t:'tp',x:HOME[0]+.8,y:HOME[1]+.3})}
+  panelKind=null;closePanel();sleepUntilMorning('sono')}
+function mpPerdeu(link){if(MP.role==='host'){const g=link&&link.id&&MP.players[link.id];if(!g)return;if(g.p&&g.nome){(state.mpPos=state.mpPos||{})[nvChave(g.nome)]={x:+g.p.x.toFixed(2),y:+g.p.y.toFixed(2)};if(g.inv)progGuarda(nvChave(g.nome),g);save()}if(NV.on&&g.nome){NV.pend[nvChave(g.nome)]=nvPessDe(g,(g.testoUntil||0)-absNow());NV.upT=0}mpSolta(g);delete MP.players[g.id];delete MP.links[g.id];try{link.close()}catch(e){}mpDormeTudo();
     mpBroadcast({t:'saiu',id:g.id});mesaSaiu(g.id);toast(`🌐 ${g.nome} saiu da sala.`,5000);if(panelKind==='mp')openMP()}
   else if(MP.role==='guest'&&link===MP.host){const nv=MP.nuvem;mpParar('A conexão com o dono da sala caiu.');if(nv){MP.nuvem=nv;NV.status='A conexão com o dono caiu. Tentando de novo…';setTimeout(nvDonoSaiu,8000)}}}
 // ---------- entrar numa sala ----------
@@ -3560,9 +3618,10 @@ function mpGuestMsg(m){
     if(m.th)thieves=m.th;
     const vivos=new Set();for(const[id,x,y,d,mv,rd]of m.pl||[]){if(id===MP.myId)continue;vivos.add(id);const r=MP.players[id]||(MP.players[id]={id,nome:'…',p:{x,y,dir:'down',walk:0}});r.tx=x;r.ty=y;r.p.dir=d;r.mov=mv;r.rd=rd||''}
     for(const id in MP.players)if(!vivos.has(id))delete MP.players[id];return}
-  if(m.t==='w'){const d=m.d;for(const k in d)state[k]=d[k];
+  if(m.t==='prog'){for(const k in m.d)if(MP_PROG.includes(k))state[k]=m.d[k];if('roupas' in m.d||'visual' in m.d){applyOutfit();pPortK=''}updateHUD();return}
+  if(m.t==='w'){const d=m.d;for(const k in d)if(!MP_PESSOAL.includes(k))state[k]=d[k];
     if('b' in d||'extras' in d||'animals' in d){applyExtras();syncPens()}if('b' in d)syncNPCs();if('soil' in d||'b' in d||'extras' in d||'depleted' in d)miniBase=null;return}
-  if(m.t==='fx'){if(m.me)Object.assign(state,m.me);for(const[f,d,ty,v]of m.beeps||[])beep(f,d,ty,v);for(const[x,y,tx,c]of m.floats||[])float(x,y,tx,c);for(const[t,ms]of m.toasts||[])toast(t,ms);
+  if(m.t==='fx'){if(m.me){Object.assign(state,m.me);if(m.me.roupas)applyOutfit()}for(const[f,d,ty,v]of m.beeps||[])beep(f,d,ty,v);for(const[x,y,tx,c]of m.floats||[])float(x,y,tx,c);for(const[t,ms]of m.toasts||[])toast(t,ms);
     if(m.panel){MP.incoming=true;showPanel(m.panel.kind,m.panel.html);MP.incoming=false}else if(m.close&&MP.remote)closePanel();updateHUD();return}
   if(m.t==='chat'){mpFala(m.id,m.m);return}
   if(m.t==='pixreq'){pixPainel(m);sfx.coin();return}
@@ -3584,18 +3643,24 @@ function mpParar(msg){const era=MP.role;if(era==='host')mesaFecha();else MESA_V=
   MP.nuvem=null;if(era==='guest'&&!joined&&nuv){nvFalhou(nuv,msg);return}
   if(msg)toast('🌐 '+msg,7000);if(panelKind==='mp')openMP()}
 // ---------- a cada quadro: rede e bonecos dos outros ----------
-function mpTick(dt){if(!MP.role)return;
-  for(const id in MP.players){const r=MP.players[id];if(r.me||!r.p)continue;if(r.tx!=null){const k=Math.min(1,dt*10);r.p.x+=(r.tx-r.p.x)*k;r.p.y+=(r.ty-r.p.y)*k}r.p.walk=r.mov?(r.p.walk||0)+dt*6:0;if(r.say){r.say.t-=dt;if(r.say.t<=0)r.say=null}}
+function mpTick(dt){if(!MP.role)return;if(MP.role==='host'){mpLacos(dt);if(MP.dormeChk){MP.dormeChk=0;mpDormeTudo()}}
+  for(const id in MP.players){const r=MP.players[id];if(r.me||!r.p)continue;const ox=r.p.x,oy=r.p.y;if(r.tx!=null){const k=Math.min(1,dt*10);r.p.x+=(r.tx-r.p.x)*k;r.p.y+=(r.ty-r.p.y)*k}r.p.walk=r.mov?(r.p.walk||0)+dt*6:0;if(r.say){r.say.t-=dt;if(r.say.t<=0)r.say=null}
+    const noBus=!!(r.rd&&r.rd[0]==='b'),era=!!r.noBus;r.noBus=noBus;
+    if(noBus){const fl=r.rd==='b:1';r.busV=dt>0?Math.hypot(r.p.x-ox,r.p.y-oy)/dt:0;r.busFum=busFumaca(r.busFum||[],r.p.x,r.p.y+.45,fl,dt,r.busV>.3?9:3);
+      r.busPo=(r.busPo||[]).filter(d=>(d.t+=dt)<1.2);if(r.busV>.5&&Math.random()<dt*14)r.busPo.push({x:r.p.x+(fl?1.6:-1.6),y:r.p.y+(Math.random()-.5)*.4,t:0});
+      if(!era&&state&&Math.hypot(r.p.x-state.p.x,r.p.y-state.p.y)<18)[392,330].forEach((f,i)=>setTimeout(()=>beep(f,.22,'square',.04),i*260))}      // buzina quando o ônibus do amigo sai perto de você
+    else if(era){r.busFum=null;r.busPo=null;if(!busFx&&state){let b=BUS[0],bd=1e9;for(const q of BUS){const d=Math.hypot(q.x-r.p.x,q.y-r.p.y);if(d<bd){bd=d;b=q}}if(bd<8)busFx={x:b.x,y:b.y,t:0}}}}      // desceu: o ônibus vai embora do ponto
   if(MP.role==='guest'){for(const a of wild)if(a.tx!=null){const k=Math.min(1,dt*8);a.x+=(a.tx-a.x)*k;a.y+=(a.ty-a.y)*k}
     if(MP.relay&&MP.host&&MP.myId&&Date.now()-(MP.host.rx||0)>20000){mpPerdeu(MP.host);return}
     if(MP.host&&MP.myId&&(MP.pT+=dt)>=(MP.relay?.25:.1)){MP.pT=0;const p=state.p,mv=keys.a||keys.d||keys.w||keys.s||keys.arrowleft||keys.arrowright||keys.arrowup||keys.arrowdown;
-      mpSend(MP.host,{t:'pos',x:Math.round(p.x*100)/100,y:Math.round(p.y*100)/100,d:p.dir,m:mv?1:0,rd:mpVeic()})}}
+      mpSend(MP.host,{t:'pos',x:Math.round(p.x*100)/100,y:Math.round(p.y*100)/100,d:p.dir,m:mv?1:0,e:keys.e?1:0,rd:mpVeic()})}}
   if(MP.role==='host'&&Object.keys(MP.links).length){
     if(MP.relay){const agora=Date.now();for(const id in MP.links){const l=MP.links[id];if(l.relay&&agora-(l.rx||agora)>20000)mpPerdeu(l)}}
     if((MP.tT+=dt)>=(MP.relay?.25:.12)){MP.tT=0;MP.n=(MP.n||0)+1;for(const a of wild)if(!a.mid)a.mid=MP.mid++;
       const base={t:'tick',min:state.min,day:state.day,rain:state.rain,clima:state.clima,hp,pl:mpPub()};
       if(MP.n%2===0){base.wild=wild.map(a=>{const o={};for(const k in a)if(typeof a[k]!=='function'&&typeof a[k]!=='object')o[k]=a[k];o.x=Math.round(a.x*100)/100;o.y=Math.round(a.y*100)/100;return o});base.th=thieves}
-      for(const id in MP.links){const g=MP.players[id];mpSend(MP.links[id],Object.assign({},base,{me:g?mpPessoal(g):null}))}}
+      for(const id in MP.links){const g=MP.players[id];mpSend(MP.links[id],Object.assign({},base,{me:g?mpPessoal(g,1):null}))}
+      for(const id in MP.links){const g=MP.players[id];if(!g)continue;const d={};let n=0;g.progJ=g.progJ||{};for(const k of MP_PROG){let j;try{j=JSON.stringify(g[k])}catch(e){continue}if(g.progJ[k]!==j){g.progJ[k]=j;d[k]=g[k];n++}}if(n)mpSend(MP.links[id],{t:'prog',d})}}
     if((MP.wT+=dt)>=1){MP.wT=0;const d={};let n=0;for(const k in state){if(MP_FORA_DIFF.has(k))continue;let j;try{j=JSON.stringify(state[k])}catch(e){continue}if(MP.lastJ[k]!==j){MP.lastJ[k]=j;d[k]=state[k];n++}}
       if(n)mpBroadcast({t:'w',d})}}
   if((MP.pillT+=dt)>=.5){MP.pillT=0;mpPill()}}
@@ -3607,8 +3672,12 @@ function mpFala(id,txt){const r=MP.players[id];const nome=r?r.nome:'?';mpAddLog(
 function mpChat(txt){txt=mpLimpo2(txt);if(!txt||!MP.role)return;playerSay={text:txt,t:5};mpAddLog(MP.role==='host'?'h':(MP.myId||'g1'),MP.nome||'Você',txt);
   if(MP.role==='host')mpBroadcast({t:'chat',id:'h',m:txt});else mpSend(MP.host,{t:'chat',m:txt})}
 // desenho dos outros jogadores (no mundo de quem está vendo)
-function pushMpPlayers(list){if(!MP.role)return;for(const id in MP.players){const r=MP.players[id];if(r.me||!r.p)continue;list.push({k:38,y:r.p.y+.28,r})}}
+function pushMpPlayers(list){if(!MP.role)return;for(const id in MP.players){const r=MP.players[id];if(r.me||!r.p)continue;list.push({k:38,y:r.p.y+(r.rd&&r.rd[0]==='b'?.45:.28),r})}}
 function drawMpPlayer(r){const e={x:r.p.x,y:r.p.y,dir:r.p.dir||'down',walk:r.p.walk||0};
+  if(r.rd&&r.rd[0]==='b'){const fl=r.rd==='b:1',vel=r.busV||0;      // o amigo está viajando de ônibus: aparece o ônibus inteiro na estrada
+    for(const d of r.busPo||[]){const a=1-d.t/1.2;ctx.fillStyle=state.rain?`rgba(110,80,50,${.45*a})`:`rgba(190,160,120,${.4*a})`;ctx.beginPath();ctx.arc(d.x*T-camx,(d.y+.3)*T-camy-d.t*14,6+d.t*16,0,7);ctx.fill()}
+    if(r.busFum)drawFumaca(r.busFum);drawBusAt(r.p.x,r.p.y+.45,fl,vel>.3?Math.round(Math.sin(clock*18)*1.5):0,clock*(4+10*Math.min(1,vel/4)));
+    tag('🚌 '+r.nome+(r.id==='h'?' 👑':''),r.p.x,r.p.y-1.9,'#bfe6ff');if(r.say)bubbles.push([r.say.text,r.p.x*T-camx,(r.p.y-2.5)*T-camy]);return}
   if(r.rd){const[k,v]=r.rd.split(':'),vs=k==='t'?SPR.trator&&SPR.trator[v]:SPR.moto&&SPR.moto[v];if(vs){const sx=Math.round(r.p.x*T-camx),gy=Math.round((r.p.y+.28)*T-camy),bump=r.mov&&Math.floor(clock*18)%2?1:0;shadow(sx,gy-2,k==='t'?44:36,k==='t'?8:6);blit(vs,sx,gy-bump,r.p.dir==='left');
     drawPerson(r.img?SPR.player:SPR.npc[(r.id.charCodeAt(1)||0)%4],{x:r.p.x,y:r.p.y-(k==='t'?.55:.35),dir:'side',walk:0},r.img||undefined);tag(r.nome+(r.id==='h'?' 👑':''),r.p.x,r.p.y-1.7,'#bfe6ff');if(r.say)bubbles.push([r.say.text,r.p.x*T-camx,(r.p.y-2.2)*T-camy]);return}}
   drawPerson(r.img?SPR.player:SPR.npc[(r.id.charCodeAt(1)||0)%4],e,r.img||undefined);
@@ -3644,7 +3713,7 @@ function openMP(){if(MP.cap)return;
     <div class="mpticket"><div class="l"><small>${NV.on||MP.nuvem?'Código do mundo na nuvem':MP.role==='host'?'Passe este código aos amigos':'Código da sala'}</small><b>${mpEsc(NV.on||MP.nuvem?NV.id:MP.code||'')}</b>${NV.on?'<small style="display:block;margin:2px 0 4px">No outro aparelho: ☁️ Mundos na nuvem → Entrar → digite este código</small>':''}${st}</div>${MP.role==='host'?`<button class="mpbig alt" data-a="mpcopy">📋 Copiar</button>`:''}</div>
     <div class="mpsec">Jogadores <span>${todos.length}/${MP_MAX}</span></div><div class="mpslots">${slots}</div>
     ${conectado?`<div class="mpsec">Conversa <span>Enter envia</span></div><div class="mpchat"><div id="mplog" class="mplog"></div><div class="row"><input id="mpmsg" maxlength="80" placeholder="Escreva uma mensagem…"><button data-a="mpchat">Enviar</button></div></div>`:''}
-    <details class="mpregras"><summary>📜 Regras da sala</summary><p>Todos cortam, quebram, colhem, plantam, regam, compram e vendem com o dinheiro da fazenda. Só o dono passa o tempo (dormir, ônibus, academia, banho), pesca, laça bichos, ara terra, constrói pelo L e anda de moto/trator.</p></details>
+    <details class="mpregras"><summary>📜 Regras da sala</summary><p>Todo mundo faz praticamente tudo: corta, quebra, planta, colhe, pesca, laça bicho, ara terra e constrói pelo L, anda de moto e trator (o trator colhe de verdade), treina, toma banho, cochila, joga no cassino e na roleta, compra e vende. Cada um tem o <b>seu progresso</b>: dinheiro, mochila (peixes, itens, sementes), nível, roupas, veículos, energia e fome. O progresso de cada amigo fica guardado no mundo e volta igual quando ele entrar de novo.</p><p>A noite passa quando <b>todos</b> forem dormir (o dono pode passar a noite sem esperar). Treino, banho e cochilo do convidado não adiantam o relógio da sala.</p><p>Só o <b>dono</b> mexe na sala (abrir, fechar, expulsar), salva e troca de mundo. Ninguém troca o dono.</p></details>
     <div class="mpfim"><small>${MP.role==='host'?(NV.on?`Mundo na nuvem · código <b>${mpEsc(NV.id)}</b>. Ao sair, salva e outro assume.`:'Fechar a sala manda todo mundo de volta pro seu mundo.'):'Seu mundo está guardado e volta quando você sair.'}</small><button class="red" data-a="mpsair">${MP.role==='host'?(NV.on?'☁️ Salvar e sair':'Fechar a sala'):MP.myId?'Sair da sala':'Cancelar'}</button></div></div>`;
   }
   MP.incoming=false;showPanel('mp',h);mpLogUI();nickBind();
@@ -3732,7 +3801,7 @@ function nvCriar(n){if(!NV.url){NV.status='Primeiro cole o endereço do banco (p
   if(n==null||n==='')n=curSlot;n=+n;if(!(n>=0&&n<3)){NV.status='Escolha um dos seus mundos (espaço 1, 2 ou 3).';openNuvem();return}
   if(n===curSlot)save();const sv=load(n);if(!sv){NV.status='Esse espaço está vazio.';openNuvem();return}
   const dur=(sv.testoUntil||0)-((sv.day-1)*1440+((sv.min-360+1440)%1440));
-  const id=nvNovoId(),nick=nvChave(MP.nome||'Dono'),jog={};jog[nick]=nvPessDe(sv,dur);const nome=sv.nome||'Mundo '+(n+1);
+  const id=nvNovoId(),nick=nvChave(MP.nome||'Dono'),jog={};sv.progDono=nick;jog[nick]=nvPessDe(sv,dur);const nome=sv.nome||'Mundo '+(n+1);
   NV.status='Enviando o mundo…';openNuvem();
   nvReq(id,'PUT',{info:{nome,criado:NV_AGORA,por:MP.nome||'',dia:sv.day},save:JSON.stringify(sv),jogadores:jog})
     .then(()=>{NV.lista=[{id,url:NV.url,nome,por:MP.nome||''},...NV.lista.filter(w=>w.id!==id)];nvGuardar();NV.convite=nvConvite(id);
@@ -3762,7 +3831,7 @@ function nvAssumir(id,info,nick){const meu=Math.random().toString(36).slice(2,10
        let s=null;try{s=JSON.parse(sv)}catch(e){}if(!s||!s.b){throw new Error('save')}
        try{localStorage.setItem(SLOT_KEYS[NV_SLOT],JSON.stringify(s))}catch(e){}const w=load(NV_SLOT);if(!w)throw new Error('save');
        NV.tentando=false;NV.id=id;NV.on=true;NV.lockId=meu;NV.pend={};NV.upT=0;NV.jog=jog||{};
-       if(panelKind)closePanel();curSlot=NV_SLOT;titleMode=null;startGame(w);nvAplicarPess((jog||{})[nick]);
+       if(panelKind)closePanel();curSlot=NV_SLOT;titleMode=null;startGame(w);nvAplicarPess((jog||{})[nick]);progTroca(nick);
        {const pp=(w.mpPos||{})[nick];if(pp&&canStand(pp.x,pp.y,.28)){state.p.x=pp.x;state.p.y=pp.y}else{state.p.x=HOME[0];state.p.y=HOME[1]+1.2}}      // volta onde estava da última vez (ou na frente de casa)
        clearInterval(NV.hb);NV.hb=setInterval(nvBatida,NV_BATIDA);
        mpHospedar(sala);toast(`☁️ Você abriu o mundo ${w.nome||''}. Código para os amigos: ${id}`,9000);sfx.coin()})})
@@ -3839,7 +3908,7 @@ function openBus(b){const d=BUS.find(q=>q.id===b.dest),ok=busAberto()&&state.coi
 function busConvidado(g,id){const b=BUS.find(q=>q.id===id),d=b&&BUS.find(q=>q.id===b.dest);
   const avisa=t=>mpSend(g.link,{t:'fx',toasts:[[t,6000]],beeps:[],floats:[],close:true,me:mpPessoal(g)});
   if(!d)return;if(!busAberto())return avisa('🚌 O ônibus só passa das 6h às 21h.');if((g.coins||0)<BUS_PRECO)return avisa('🚌 Falta dinheiro para a passagem.');
-  g.coins=Math.round((g.coins-BUS_PRECO)*100)/100;g.p.x=d.x;g.p.y=d.y+1;g.tx=g.p.x;g.ty=g.p.y;
+  g.coins=Math.round((g.coins-BUS_PRECO)*100)/100;      // a posição dele vem do próprio ônibus, andando pela estrada (todo mundo vê)
   mpSend(g.link,{t:'tp',x:g.p.x,y:g.p.y,bus:b.id});avisa(`🚌 Boa viagem! (−${brl(BUS_PRECO)})`)}
 function busGo(id){const b=BUS.find(q=>q.id===id),d=b&&BUS.find(q=>q.id===b.dest);if(!d||!busAberto()||state.riding||led||state.coins<BUS_PRECO)return;
   state.coins-=BUS_PRECO;busViagem(id,false)}
@@ -4050,7 +4119,7 @@ function planThieves(){     // 2 ou 3 visitas de ladrão por dia, espalhadas pel
 function respawnRocks(){let n=0;for(const k in state.depleted)if(objs[k]==='rock'){delete state.depleted[k];delete hp[k];n++}return n}      // pedras quebradas voltam a cada meio dia
 function morning(){          // 6h: começa um novo dia
   if(MP.role==='host')for(const id in MP.players){const g=MP.players[id];if(!g.me)g.energy=Math.max(g.energy,maxEnergy())}
-  state.napHoje=0;
+  state.napHoje=0;if(MP.role==='host')for(const id in MP.players){const g=MP.players[id];if(!g.me)g.napHoje=0}
   respawnRocks();      // dormindo, a meia-noite passa durante o sono
   state.forca.hoje=0;
   // lavoura: o que estava molhado cresce um dia
@@ -4134,7 +4203,7 @@ function updateThieves(dt){
   }
 }
 const SHOVES_TO_FALL=4;      // empurrões até o ladrão cair (depois são 4 pisões para expulsar)
-function shove(){if(MP.role==='guest')return;            // Espaço: empurrão; se o ladrão estiver no chão, pisão
+function shove(){if(MP.role==='guest'){if(MP.host&&MP.myId){const p=state.p;mpSend(MP.host,{t:'empurra',x:p.x,y:p.y,d:p.dir})}return}            // Espaço: empurrão; se o ladrão estiver no chão, pisão
   if(shoveCd>0)return;const p=state.p;let best=null,bd=1.5;
   for(const t of thieves){const d=Math.hypot(t.x-p.x,t.y-p.y);if(d<bd){bd=d;best=t}}
   shoveCd=.45;
@@ -4477,7 +4546,7 @@ function findTarget(){return expGate(findTarget0())}
 function findTarget0(){
   const p=state.p;let best=null,bd=1.6;
   {const o=objPerto(p);if(o&&o.d<.6)return o}      // encostado numa árvore/pedra/mato: é isso que o E faz, mesmo com bicho, terra ou água perto
-  for(const a of wild){if(a.led)continue;const d=Math.hypot(a.x-p.x,a.y-p.y);if(d<bd){bd=d;best={k:'animal',a}}}
+  for(const a of wild){if(a.led||a.lassoBy)continue;const d=Math.hypot(a.x-p.x,a.y-p.y);if(d<bd){bd=d;best={k:'animal',a}}}
   if(best)return best;
   {const sx=Math.floor(p.x),sy=Math.floor(p.y),ax=p.dir==='left'?-1:p.dir==='right'?1:0,ay=p.dir==='up'?-1:p.dir==='down'?1:0;
     for(const[x,y]of[[sx,sy],[sx+ax,sy+ay]]){if(x<XMIN||y<0||x>=MW||y>=MH)continue;const i=y*AW-XMIN+x,act=soilAction(i);if(act)return{k:'soil',i,act,x,y}}}
@@ -4789,14 +4858,14 @@ function openMenu(sure){const conv=MP.role==='guest'&&MP.myId;
       <button class="m-btn" data-a="${conv?'mpopen':'func'}" data-v="func">${I('👷','#ffe3c2')}<span>Funcionários<small>tratador e lavrador · tecla F</small></span></button>
       <button class="m-btn" data-a="zoomin">${I('🔍','#d9ecff')}<span>Aproximar<small>tudo maior · tecla +</small></span></button>
       <button class="m-btn" data-a="zoomout">${I('🗺️','#d9ecff')}<span>Afastar<small>ver mais mapa · tecla −</small></span></button>
-      <button class="m-btn" data-a="mapa">${I('🗺️','#cdeccb')}<span>Mapa<small>tecla N</small></span></button>
+      <button class="m-btn" data-a="mapa">${I('🗺️','#cdeccb')}<span>Mapa<small>tecla M</small></span></button>
       ${conv?'':`<button class="m-btn" data-a="savenow">${I('💾','#cfe2ff')}<span>Salvar<small>salva sozinho também</small></span></button>`}
-      <button class="m-btn" data-a="mute">${I(muted?'🔇':'🔈','#ffd6cc')}<span>${muted?'Ligar som':'Desligar som'}<small>tecla M</small></span></button>
+      <button class="m-btn" data-a="mute">${I(muted?'🔇':'🔈','#ffd6cc')}<span>${muted?'Ligar som':'Desligar som'}<small>tecla N</small></span></button>
       <button class="m-btn" data-a="musica">${I(musicaOff?'🔇':'🎵','#d9f2ff')}<span>${musicaOff?'Ligar música':'Desligar música'}<small>trilha de fundo</small></span></button>
     </div>
     <details><summary>Como jogar</summary>
       <div class="keys"><kbd>W A S D</kbd><span>ou setas: andar</span><kbd>E</kbd><span>interagir · segurar perto de um animal para laçar · plantar, regar, colher · pescar</span>
-        <kbd>Espaço</kbd><span>empurrão no ladrão; pisão quando ele cai</span><kbd>Q</kbd><span>trocar a semente em uso</span><kbd>L</kbd><span>arar terra: escolha as duas pontas e pague por canteiro</span><kbd>R</kbd><span>montar e descer da moto (loja do Alison, ao lado da ponte)</span><kbd>T</kbd><span>subir e descer do trator (concessionária do outro lado da ponte)</span><kbd>I</kbd><span>mochila</span><kbd>N</kbd><span>mapa geral</span><kbd>M</kbd><span>ligar ou desligar o som</span><kbd>Esc</kbd><span>este menu</span></div>
+        <kbd>Espaço</kbd><span>empurrão no ladrão; pisão quando ele cai</span><kbd>Q</kbd><span>trocar a semente em uso</span><kbd>L</kbd><span>arar terra: escolha as duas pontas e pague por canteiro</span><kbd>R</kbd><span>montar e descer da moto (loja do Alison, ao lado da ponte)</span><kbd>T</kbd><span>subir e descer do trator (concessionária do outro lado da ponte)</span><kbd>I</kbd><span>mochila</span><kbd>M</kbd><span>mapa geral</span><kbd>N</kbd><span>ligar ou desligar o som</span><kbd>Esc</kbd><span>este menu</span></div>
       <ul class="tips">
         <li><b>Recursos:</b> corte árvores e quebre pedras para construir e melhorar a vila.</li>
         <li><b>Animais:</b> lace, arraste até o Galinheiro ou o Curral da sua fazenda (Imbuial), alimente com ração (2 capim) e venda o que produzem para o <b>Mateus</b>, que fica ao lado da sua casa.</li>
@@ -4938,7 +5007,7 @@ function openTitle(){
   <div class="row"><div class="g"><small>Jogar com amigos</small></div><button class="alt" data-a="config" title="Personalizar (Esc)">⚙️</button><button class="alt" data-a="nuvem">☁️ Mundos na nuvem</button><button class="alt" data-a="mp">🌐 Entrar numa sala</button></div>
   <p><small>💾 <b>Exportar</b> guarda o mundo num arquivo (para fazer cópia ou levar para outro celular/PC). 📥 <b>Importar</b> traz esse arquivo de volta.</small></p>
   <div class="row" style="margin-top:12px;justify-content:flex-end"><button class="red" data-a="fecharjogo">✖ Fechar jogo</button></div>
-  <p><small>${isTouch?'No celular: use o controle da esquerda para andar e os botões da direita para as ações.':'<kbd>WASD</kbd>/setas andam · <kbd>E</kbd> interage · <kbd>Espaço</kbd> empurrão · <kbd>I</kbd> mochila · <kbd>N</kbd> mapa · <kbd>Esc</kbd> menu'}</small></p>`);
+  <p><small>${isTouch?'No celular: use o controle da esquerda para andar e os botões da direita para as ações.':'<kbd>WASD</kbd>/setas andam · <kbd>E</kbd> interage · <kbd>Espaço</kbd> empurrão · <kbd>I</kbd> mochila · <kbd>M</kbd> mapa · <kbd>Esc</kbd> menu'}</small></p>`);
   nickBind();
   const inp=$('worldname');if(inp&&inp.focus){inp.focus();inp.select&&inp.select()}}
 /* ---------- Exportar / importar mundo (arquivo .json) ---------- */
@@ -5009,12 +5078,16 @@ const ACT={
     if(id==='casa')state.energy=maxEnergy();syncNPCs();sfx.build();save();
     toast(l===0?`${BLD[id].nome} construído(a)! A vila agora é: ${vilaTitle()}.`:`${BLD[id].nome} melhorado(a) para o nível ${l+1}!`);
     closePanel()},      // fecha a janela para ver a obra subindo
-  sleep(){if(!isNight()||thieves.length)return;panelKind=null;closePanel();sleepUntilMorning('sono')},
+  sleep(){if(!isNight()||thieves.length)return;panelKind=null;closePanel();
+    if(MP.role==='host'&&mpConv().length){if(MP.cap&&MP.cap.g){MP.cap.g.dorme=true;MP.dormeChk=1;toast(`💤 Você deitou. A noite passa quando todos estiverem dormindo (${mpDormindo()}/${mpConv().length+1}).`,6000)}else{MP.dorme=true;mpDormeTudo()}return}
+    sleepUntilMorning('sono')},
+  levantar(){if(MP.cap&&MP.cap.g)MP.cap.g.dorme=false;else MP.dorme=false;panelKind=null;closePanel();MP.dormeChk=1},
+  dormeforca(){if(MP.role!=='host'||MP.cap)return;mpDormeFim(true)},
   acordar(){if(MP.role==='guest'){morte=null;closePanel();faintFx=1.2;state.p.x=HOME[0];state.p.y=HOME[1];state.p.dir='down';state.vida=100;if(MP.host)mpSend(MP.host,{t:'act',a:'acordarMP'});sndAcordar();return}
     const perda=Math.round(state.coins*MORTE_PERDA*100)/100;state.coins=Math.round((state.coins-perda)*100)/100;state.vida=100;state.hunger=Math.max(state.hunger,35);state.energy=Math.max(state.energy,Math.round(maxEnergy()*.5));
     state.p.x=HOME[0];state.p.y=HOME[1];state.p.dir='down';state.riding=false;morte=null;closePanel();faintFx=1.2;toast(`☀️ Você acordou em casa. Perdeu ${brl(perda)} (5% do dinheiro).`);sndAcordar();save()},
   acordarMP(){const perda=Math.round(state.coins*MORTE_PERDA*100)/100;state.coins=Math.round((state.coins-perda)*100)/100;state.vida=100;state.hunger=Math.max(state.hunger,35);state.energy=Math.max(state.energy,Math.round(maxEnergy()*.5))},
-  nap(){if(isNight()||state.napHoje>=NAP_MAX)return;state.napHoje+=120;advanceAnimals(120);if(state.min<720&&state.min+120>=720)respawnRocks();state.min+=120;state.hunger=Math.max(0,state.hunger-6);state.energy=Math.min(maxEnergy(),state.energy+Math.round(maxEnergy()*.4));
+  nap(){if(isNight()||state.napHoje>=NAP_MAX)return;state.napHoje+=120;if(!MP.cap){advanceAnimals(120);if(state.min<720&&state.min+120>=720)respawnRocks();state.min+=120}state.hunger=Math.max(0,state.hunger-6);state.energy=Math.min(maxEnergy(),state.energy+Math.round(maxEnergy()*.4));
     closePanel();toast('Você cochilou 2 horas e recuperou um pouco de energia.')},
   sell(k){const pr=Math.round(ITEMS[k].preco*marketBonus(state.b.mercado));if(state.inv[k]>0){state.inv[k]--;state.coins+=pr;state.flags.sold=1;sfx.coin()}openBld('mercado')},
   sellall(k){const pr=Math.round(ITEMS[k].preco*marketBonus(state.b.mercado));if(state.inv[k]>0){state.coins+=pr*state.inv[k];state.inv[k]=0;state.flags.sold=1;sfx.coin()}openBld('mercado')},
@@ -5039,25 +5112,25 @@ const ACT={
   barclose(){if(slotSpin)return;closePanel()},bartab(v){if(slotSpin)return;if(v==='slot'&&!lojaOk('slot')){lojaTrava('slot');return}openBar(v)},
   barbuy(k){const e=BAR_MENU.find(x=>x[0]===k),pr=barPreco(k);if(!e||state.coins<pr)return;state.coins=Math.round((state.coins-pr)*100)/100;state.inv[k]=(state.inv[k]||0)+1;sfx.coin&&sfx.coin();barSay=k==='linguica'?'Essa linguiça é da boa!':k==='raiska'||k==='vinho_pet'?'Vai com calma, hein!':'Bom apetite!';openBar('menu')},
   slotbet(v){if(slotSpin)return;slotBet=Math.max(1,Math.min(state.coins||1,slotBet+(+v)));openBar('slot')},
-  slotspin(){if(slotSpin||!lojaOk('slot'))return;const bet=slotBet;if(bet<1||state.coins<bet)return;state.coins-=bet;slotSpin=true;slotMsg='Girando...';openBar('slot');
+  slotspin(){if(slotSpin||!lojaOk('slot'))return;const bet=slotBet;if(bet<1||state.coins<bet)return;coinsAdd(-bet);slotSpin=true;slotMsg='Girando...';openBar('slot');
     const res=[slotRoll(),slotRoll(),slotRoll()],stop=[900,1400,1900],t0=performance.now();
     const iv=setInterval(()=>{const el=performance.now()-t0;for(let i=0;i<3;i++){const r=$('reel'+i);if(!r)continue;if(el<stop[i]){r.textContent=SLOT_SYM[Math.random()*SLOT_SYM.length|0][0];r.classList.add('spin')}else{r.textContent=res[i];r.classList.remove('spin')}}
       if(!muted)beep(500+Math.random()*500,.025,'square',.012);
       if(el>stop[2]){clearInterval(iv);slotSpin=false;slotLast=res;const m=slotPay(res);
-        if(m){const win=bet*m;state.coins+=win;slotMsg=`🎉 ${res.join(' ')} — ganhou ${brl(win)} (×${m})!`;barSay=m>=30?'EITA! Quebrou a banca!':'Olha a sorte dele!';if(!muted)[0,120,240].forEach((d,i)=>setTimeout(()=>beep(880+i*220,.12,'triangle',.04),d))}
+        if(m){const win=bet*m;coinsAdd(win);slotMsg=`🎉 ${res.join(' ')} — ganhou ${brl(win)} (×${m})!`;barSay=m>=30?'EITA! Quebrou a banca!':'Olha a sorte dele!';if(!muted)[0,120,240].forEach((d,i)=>setTimeout(()=>beep(880+i*220,.12,'triangle',.04),d))}
         else{slotMsg=`${res.join(' ')} — não foi dessa vez.`;barSay='A máquina tá de mau humor hoje.'}openBar('slot')}},80)},
   trigbet(v){const inp=$('tbet');trigBet=clamp((+(inp&&inp.value)||trigBet)+(+v),1,Math.max(1,state.coins));openTrig()},
   trigset(v){trigBet=v==='all'?state.coins:v==='half'?Math.max(1,Math.floor(state.coins/2)):Math.min(+v,state.coins);openTrig()},
   trigspin(){if(trigSpin||!trigOpen())return;const inp=$('tbet');let bet=Math.floor(+(inp&&inp.value)||trigBet);
     if(!(bet>=1)){toast('Digite quantos reais quer apostar.');return}if(bet>state.coins){toast('Você não tem tudo isso de dinheiro!');return}
-    trigBet=bet;const total=state.coins;state.coins-=bet;trigSpin=true;
+    trigBet=bet;const total=state.coins;coinsAdd(-bet);trigSpin=true;
     const pk=trigPick(),fim=pk.fim,ang=trigAng-(trigAng%360)+360*6+fim;trigAng=ang;      // setor sorteado (50% verde), parando no meio dele
     const sector=trigUnder(ang),verde=trigVerde(sector);trigLast=null;
     openTrig('Girou! Vai, vai, vai...');const wh=$('twheel');if(wh){wh.style.transition='none';wh.style.transform=`rotate(${ang-360*6}deg)`;void wh.offsetWidth;wh.style.transition='transform 5s cubic-bezier(.12,.62,.16,1)';wh.style.transform=`rotate(${ang}deg)`}
     trigWatch.s=-1;if(typeof requestAnimationFrame==='function')requestAnimationFrame(trigWatch);
     setTimeout(()=>{trigSpin=false;let msg;
-      if(verde){state.coins+=bet*2;msg=`🟢 Deu ${sector+1}, VERDE! Você ganhou ${brl(bet*2)} (lucro de ${brl(bet)}).`;[523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.14,'square',.05),i*110));float(state.p.x,state.p.y-1,`+${fmt(bet)}`,'#5aff8a')}
-      else{const multa=Math.min(state.coins,Math.round(total*.05));state.coins-=multa;msg=`🔴 Deu ${sector+1}, VERMELHO... perdeu ${brl(bet)} da aposta e mais ${brl(multa)} (5% do seu dinheiro).`;beep(220,.3,'sawtooth',.05);setTimeout(()=>beep(150,.45,'sawtooth',.05),250)}
+      if(verde){coinsAdd(bet*2);msg=`🟢 Deu ${sector+1}, VERDE! Você ganhou ${brl(bet*2)} (lucro de ${brl(bet)}).`;[523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.14,'square',.05),i*110));float(state.p.x,state.p.y-1,`+${fmt(bet)}`,'#5aff8a')}
+      else{const multa=Math.min(state.coins,Math.round(total*.05));coinsAdd(-multa);msg=`🔴 Deu ${sector+1}, VERMELHO... perdeu ${brl(bet)} da aposta e mais ${brl(multa)} (5% do seu dinheiro).`;beep(220,.3,'sawtooth',.05);setTimeout(()=>beep(150,.45,'sawtooth',.05),250)}
       trigHist.push({c:verde?'g':'r',n:sector+1});trigLast={s:sector};save();updateHUD();
       openTrig(verde?['AÍ SIM! Verde na cabeça!','O Junior paga, o Junior paga... tá aqui o seu.','Sortudo demais, parceiro!'][Math.random()*3|0]+' '+msg:['Vermelho... faz parte.','Hoje não foi seu dia. Mais uma?','A roleta é assim mesmo.'][Math.random()*3|0]+' '+msg)},5050)},
   hudedit(){openHudEdit()},
@@ -5092,19 +5165,19 @@ const ACT={
   estudar(k){if(studyPoints()<1||state.estudos[k]>=STUDY_MAX)return;state.estudos[k]++;sfx.build();save();openUni()},
   tocarsino(){ringBell(3);openChurch()},
   plowstart(){startPlow()},
-  plowok(){doPlow()},
+  plowok(){if(mpPlowManda('plow'))return;doPlow()},
   plowmode(){if(!plow)return;plow={a:null,b:null,mode:plow.mode==='tirar'?'arar':'tirar'};plowBar()},
   plowset(v){if(!plow)startPlow(v);else{plow={a:null,b:null,mode:v};plowBar()}},
-  extraok(){doExtra()},vendaok(){doVenda()},
+  extraok(){if(mpPlowManda('extra'))return;doExtra()},vendaok(){if(mpPlowManda('venda'))return;doVenda()},
   extraup(v){const e=(state.extras||[]).find(q=>q.id===v);if(!e)return;const c=costOf(e.t,e.l+1);if(!c||!canPay(c)||state.nivel.lvl<bldNivel(e.t,e.l+1))return;
     state.coins-=c.c;state.inv.madeira-=c.m;state.inv.pedra-=c.p;e.gasto.c+=c.c;e.gasto.m+=c.m;e.gasto.p+=c.p;e.l++;e.fx=clock;sfx.build();syncPens();toast(`${BLD[e.t].nome} extra agora é nível ${e.l}!`);save();openExtra(e)},
   extraanimais(v){openBld(v)},
   extravender(v){const e=(state.extras||[]).find(q=>q.id===v);if(!e)return;closePanel();startPlow('vender');openVenda({t:e.t,lot:extraLot(e),e})},
-  plowredo(){plow.a=null;plow.b=null;panelKind=null;closePanel();plowBar()},
+  plowredo(){if(!plow)return;plow.a=null;plow.b=null;panelKind=null;closePanel();plowBar()},
   plowcancel(){endPlow();panelKind=null;closePanel()},
   mapa(){openMap()},
   treinar(k){train(k)},
-  banho(){if(state.sujeira<1)return;state.sujeira=0;advanceAnimals(20);state.min=Math.min(state.min+20,1439.9);state.energy=Math.min(maxEnergy(),state.energy+5);
+  banho(){if(state.sujeira<1)return;state.sujeira=0;if(!MP.cap){advanceAnimals(20);state.min=Math.min(state.min+20,1439.9)}state.energy=Math.min(maxEnergy(),state.energy+5);
     for(let k=0;k<6;k++)setTimeout(()=>beep(1800+Math.random()*1500,.05,'sine',.012),k*90);toast('Banho tomado! Cheirosinho de novo. 🚿');save();openBld('casa')},
   lavar(v){const[kind,k]=v.split(':');lavarVeiculo(kind,k)},
   abastecer(v){const[kind,k,type]=v.split(':');fillTank(kind,k,type)},
@@ -5221,7 +5294,10 @@ function drawMini(dt){const box=$('minimap'),c=$('minicv');if(!box||!c||!c.getCo
   for(const t2 of thieves)dot(t2.x,t2.y,2.6,'#ff3030','#000');
   dot(MATEUS_POS[0],MATEUS_POS[1],2,'#ffe066');
   if(trigOpen())dot(JUNIOR_POS[0],JUNIOR_POS[1],2,'#5aff8a');
-  if(MP.players)for(const id in MP.players){const o=MP.players[id];if(o&&!o.me&&o.p)dot(o.p.x,o.p.y,2.4,'#5fb0e6','#fff')}
+  if(MP.role&&MP.players)for(const id in MP.players){const o=MP.players[id];if(!o||o.me||!o.p)continue;const c=mpCor(id),sx=(o.p.x-x0)*k,sy=(o.p.y-y0)*k;
+    if(sx>=2&&sy>=2&&sx<=W-2&&sy<=H-2){dot(o.p.x,o.p.y,3,c,'#fff');g.fillStyle='#1c1c1c';g.font='bold 7px Poppins,sans-serif';g.textAlign='center';g.fillText((o.nome||'?')[0].toUpperCase(),sx,sy+2.5);g.textAlign='left'}
+    else{const cx=W/2,cy=H/2,an=Math.atan2(sy-cy,sx-cx),ex=clamp(cx+Math.cos(an)*W,7,W-7),ey=clamp(cy+Math.sin(an)*H,7,H-7);      // longe: setinha na borda apontando para ele
+      g.save();g.translate(ex,ey);g.rotate(an);g.fillStyle='#fff';g.beginPath();g.moveTo(6,0);g.lineTo(-4,-5);g.lineTo(-4,5);g.closePath();g.fill();g.fillStyle=c;g.beginPath();g.moveTo(4.2,0);g.lineTo(-2.8,-3.4);g.lineTo(-2.8,3.4);g.closePath();g.fill();g.restore()}}
   // você: setinha apontando para onde está olhando
   const sx=(p.x-x0)*k,sy=(p.y-y0)*k,pul=1+Math.sin(clock*6)*.12;
   {const mx=p.x-(miniAng.px??p.x),my=p.y-(miniAng.py??p.y);miniAng.px=p.x;miniAng.py=p.y;
@@ -5277,7 +5353,7 @@ function updateHUD(){updateTouchVis();placeMini();placeToast();
 function update(dt){
   const p=state.p;let dx=0,dy=0;if(morte)return;
   if(keys.a||keys.arrowleft)dx-=1;if(keys.d||keys.arrowright)dx+=1;if(keys.w||keys.arrowup)dy-=1;if(keys.s||keys.arrowdown)dy+=1;if(pescaTrava()){dx=0;dy=0}
-  if(dx||dy){const n=Math.hypot(dx,dy),sp=(state.hunger<=0?2.4:3.6)*rideSpeed()*(state.rain&&ground[Math.floor(p.y)*AW-XMIN+Math.floor(p.x)]===4?.75:1)*(led?Math.min(.95,.9/Math.sqrt(SPECIES[led.sp].scale)):1)*dt;
+  if(dx||dy){const n=Math.hypot(dx,dy),sp=(state.hunger<=0?2.4:3.6)*rideSpeed()*(state.rain&&ground[Math.floor(p.y)*AW-XMIN+Math.floor(p.x)]===4?.75:1)*((led||mpMeuLed())?Math.min(.95,.9/Math.sqrt(SPECIES[(led||mpMeuLed()).sp].scale)):1)*dt;
     p.dir=dx<0?'left':dx>0?'right':dy<0?'up':'down';if(dx)p.face=dx>0?1:-1;{const x0=p.x,y0=p.y;move(p,dx/n*sp,dy/n*sp,.28);const dd=Math.hypot(p.x-x0,p.y-y0);if(state.riding)burnFuel(dd);updateDirt(dt,dd);if(state.riding&&state.rideKind==='moto'&&dd>0){trackAcc+=dd;if(trackAcc>.07){trackAcc=0;tracks.push({x:p.x-(p.face||1)*.47,y:p.y+.25,t:0});if(tracks.length>300)tracks.shift()}}}p.walk+=dt*8}else p.walk=0;
   updateEngine(!!(dx||dy));
   if(state.riding&&state.rideKind==='trator'&&state.trator)tractorWork();else tractorTile=-1;
@@ -5319,7 +5395,7 @@ function update(dt){
   else if((thiagoT-=dt)<=0){thiagoT=12+Math.random()*10;if(Math.hypot(THIAGO_POS[0]-p.x,THIAGO_POS[1]-p.y)<12)thiagoSay={text:THIAGO_LINES[Math.random()*THIAGO_LINES.length|0],t:4.5}}
   updateWolf(dt);updateDonkey(dt);updateGrau(dt);updateHzn(dt);updateTracks(dt);updateBuildFx(dt);updatePinhoes(dt);updateUniWins(dt,p);if(MP.role!=='guest')updateThieves(dt);if(shoveCd>0)shoveCd-=dt;if(pfx){pfx.t-=dt;if(pfx.t<=0)pfx=null}
   // animais soltos
-  if(MP.role!=='guest')for(const a of wild){if(a.led||(lasso&&lasso.a===a))continue;const sp=SPECIES[a.sp],ox=a.x,oy=a.y;
+  if(MP.role!=='guest')for(const a of wild){if(a.led||a.lassoBy||(lasso&&lasso.a===a))continue;const sp=SPECIES[a.sp],ox=a.x,oy=a.y;
     if(a.flee>0){a.flee-=dt;const ang=Math.atan2(a.y-p.y,a.x-p.x);move(a,Math.cos(ang)*3*dt,Math.sin(ang)*3*dt,.3);a.face=Math.cos(ang)>0?1:-1}
     else wander(a,dt,.8,sp.zone);
     if((inFarm(a.x,a.y)&&!inFarm(ox,oy))||(inVila(a.x,a.y)&&!inVila(ox,oy))){a.x=ox;a.y=oy;a.timer=0;a.flee=0;a.vx=-a.vx;a.vy=-a.vy}}      // os soltos não entram na fazenda nem na vila (só puxados pelo laço)      // os soltos não entram na fazenda (só puxados pelo laço)
@@ -6405,6 +6481,9 @@ function render(){
     ctx.strokeStyle='#e5c592';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(ax,ay-10);ctx.stroke();
     ctx.beginPath();ctx.ellipse(ax,ay-10,16,9,0,0,7);ctx.stroke();
     const f=lasso.t/SPECIES[a.sp].need;ctx.fillStyle='#3b2a1a';ctx.fillRect(ax-26,ay-66,52,10);ctx.fillStyle='#f5c542';ctx.fillRect(ax-24,ay-64,48*clamp(f,0,1),6)}
+  if(MP.role)for(const a of wild){const id=a.ledBy||a.lassoBy;if(!id)continue;const q=mpPosDe(id);if(!q)continue;const ax=a.x*T-camx,ay=a.y*T-camy-14,px=q.x*T-camx,py=q.y*T-camy-24;      // laço dos outros jogadores
+    ctx.strokeStyle='#e5c592';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(px,py);ctx.quadraticCurveTo((px+ax)/2,Math.max(py,ay)+(a.ledBy?(a.moving?2:12):-18),ax,ay);ctx.stroke();
+    if(a.lassoBy){ctx.fillStyle='#3b2a1a';ctx.fillRect(ax-26,ay-52,52,10);ctx.fillStyle='#f5c542';ctx.fillRect(ax-24,ay-50,48*clamp(a.lt||0,0,1),6)}}
   if(led){const ax=led.x*T-camx,ay=led.y*T-camy-14,px=p.x*T-camx,py=p.y*T-camy-24;
     ctx.strokeStyle='#e5c592';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(px,py);ctx.quadraticCurveTo((px+ax)/2,Math.max(py,ay)+(led.moving?2:12),ax,ay);ctx.stroke()}
   drawWindLeaves();drawPetalas();drawMini(1/60);
@@ -6556,11 +6635,11 @@ addEventListener('keydown',ev=>{
   if(busRide){if(k===' '||k==='enter'||k==='escape'||k==='e')busEnd();return}      // pular a viagem de ônibus
   if(MP.role&&k==='enter'&&!panelKind){openMP();setTimeout(()=>{const i=$('mpmsg');if(i&&i.focus)i.focus()},50);return}      // Enter: conversar com a sala
   if(MP.role==='guest'&&MP.myId){const op={i:'inv',b:'bolsa',f:'func'}[k];if(op){if(panelKind)closePanel();else mpSend(MP.host,{t:'open',w:op});return}}
-  if(k==='m'){muted=!muted;musicaAplica();toast(muted?'Som desligado':'Som ligado');return}
+  if(k==='n'){muted=!muted;musicaAplica();toast(muted?'Som desligado (N liga de novo)':'Som ligado');return}      // N: som
   if(k==='+'||k==='='||k==='add'){setZoom(-1);return}if(k==='-'||k==='_'||k==='subtract'){setZoom(1);return}      // + aproxima, − afasta
   if(k==='escape'){if(panelKind==='arar'){ACT.plowcancel();return}if(plow&&!panelKind){endPlow();return}if(panelKind)closePanel();else openMenu();return}
   if(k==='i'){if(panelKind==='inv')closePanel();else if(!panelKind)openInv();return}
-  if(k==='n'){if(panelKind==='mapa')closePanel();else if(!panelKind)openMap();return}
+  if(k==='m'){if(panelKind==='mapa')closePanel();else if(!panelKind)openMap();return}      // M: mapa
   if(k==='b'){if(panelKind==='bolsa')closePanel();else if(!panelKind)openBolsa();return}
   if(k==='f'){if(panelKind==='func')closePanel();else if(!panelKind)openFunc();return}
   if(paused)return;
