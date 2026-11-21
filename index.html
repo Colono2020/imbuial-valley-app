@@ -3308,9 +3308,11 @@ const inFarm=(x,y,m)=>{m=m||0;return x>=FARM[0]-m&&x<=FARM[2]+1+m&&y>=FARM[1]-m&
 function penBox(pen,sp){const hw=SPR[sp]?SPR[sp].width*S/T/2:.5;      // [xmin,xmax,ymin,ymax] para o animal caber inteiro dentro da cerca
   return[pen[0]+.15+hw,pen[0]+pen[2]-.15-hw,pen[1]+.95,pen[1]+pen[3]-.75]}
 function syncPens(){const ins={},used={};for(const t of['galinheiro','curral']){ins[t]=penInsts(t);used[t]=ins[t].map(()=>0)}
-  penAnim=state.animals.map(a=>{const t=SPECIES[a.sp].pen,L=ins[t]||[];let k=L.findIndex((q,j)=>used[t][j]<q.cap);if(k<0)k=0;if(L.length)used[t][k]++;      // enche um cercado e passa para o próximo
-    const pen=L.length?L[k].pen:BLD[t].pen,b=penBox(pen,a.sp),old=penAnim.find(p=>p.ref===a);
-    if(old&&old.pen&&old.pen[0]===pen[0]&&old.pen[1]===pen[1])return old;
+  const velhos=penAnim.slice(),pego=new Set();      // no multiplayer a lista de bichos chega nova toda hora: reaproveita o mesmo bicho (sem teletransportar)
+  penAnim=state.animals.map((a,i)=>{const t=SPECIES[a.sp].pen,L=ins[t]||[];let k=L.findIndex((q,j)=>used[t][j]<q.cap);if(k<0)k=0;if(L.length)used[t][k]++;      // enche um cercado e passa para o próximo
+    const pen=L.length?L[k].pen:BLD[t].pen,b=penBox(pen,a.sp),mesmo=p=>!pego.has(p)&&p.sp===a.sp&&(p.cor|0)===(a.cor|0)&&p.pen&&p.pen[0]===pen[0]&&p.pen[1]===pen[1];
+    const old=velhos.find(p=>p.ref===a&&mesmo(p))||(velhos[i]&&mesmo(velhos[i])?velhos[i]:null)||velhos.find(mesmo);
+    if(old){pego.add(old);old.ref=a;return old}
     return{ref:a,sp:a.sp,cor:a.cor|0,pen,x:b[0]+Math.random()*(b[1]-b[0]),y:b[2]+Math.random()*(b[3]-b[2]),vx:0,vy:0,timer:Math.random()*2,face:1}})}
 function syncNPCs(){const n=Math.min(16,state.b.praca*2);while(npcs.length<n)npcs.push({x:24.5,y:23.5,vx:0,vy:0,timer:0,dir:'down',walk:0,look:npcs.length%4});npcs.length=Math.min(npcs.length,n)}
 function wander(e,dt,speed,zone){
@@ -3376,7 +3378,7 @@ function drawClimaWorld(W,H){const hr=state.min/60,c=state.clima;
 /* ================= MULTIPLAYER: cooperativo no mundo do dono, até 4 jogadores, pela internet com código de sala =================
    Ligação: WebRTC (canal de dados direto entre os aparelhos). Para os aparelhos se acharem usa o servidor público grátis do PeerJS
    só como "telefonista" (sinalização). Quem hospeda manda no mundo; os convidados mandam o que fazem e o dono aplica e espalha. */
-const JOGO_VERSAO='2026-11-21j';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
+const JOGO_VERSAO='2026-11-21k';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
 const MP_MAX=4,MP_PREFIX=SLOT_KEYS[0].replace(/_slot_1$/,'').replace(/_/g,''),MP_SERVER='wss://0.peerjs.com:443/peerjs?key=peerjs';
 const MP_ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']},{urls:'stun:global.stun.twilio.com:3478'}]};
 const MP_LEVE=['p','energy','hunger','vida','forca','sujeira','sel','testoUntil','fomeT','coins','xpUntil','monster','napHoje'];      // muda toda hora: vai junto em cada batida
@@ -3617,7 +3619,7 @@ function mpGuestMsg(m){
   if(m.t==='tick'){if(m.day>state.day)toast(`Amanheceu — dia ${m.day}.`);state.min=m.min;state.day=m.day;state.rain=m.rain;state.clima=m.clima;if(m.hp)hp=m.hp;
     if(m.me)Object.assign(state,m.me);
     if(m.wild){const by={};for(const a of wild)by[a.mid]=a;wild=m.wild.map(n=>{n.vx=n.mv?.01:0;n.vy=0;n.moving=!!n.mv;for(const k of['led','ledBy','lassoBy','lt'])if(!(k in n))n[k]=k==='led'?false:k==='lt'?0:'';const o=by[n.mid];if(o){const x=o.x,y=o.y;Object.assign(o,n);o.tx=n.x;o.ty=n.y;o.x=x;o.y=y;return o}n.tx=n.x;n.ty=n.y;return n})}
-    if(m.th)thieves=m.th;
+    if(m.th){const vel=thieves;thieves=m.th.map((n,i)=>{const o=vel[i];n.tx=n.x;n.ty=n.y;if(o&&Math.hypot(o.x-n.x,o.y-n.y)<3){n.x=o.x;n.y=o.y}return n})}      // ladrão anda liso também
     const vivos=new Set();for(const[id,x,y,d,mv,rd]of m.pl||[]){if(id===MP.myId)continue;vivos.add(id);const r=MP.players[id]||(MP.players[id]={id,nome:'…',p:{x,y,dir:'down',walk:0}});r.tx=x;r.ty=y;r.p.dir=d;r.mov=mv;r.rd=rd||''}
     for(const id in MP.players)if(!vivos.has(id))delete MP.players[id];return}
   if(m.t==='prog'){for(const k in m.d)if(MP_PROG.includes(k))state[k]=m.d[k];if('roupas' in m.d||'visual' in m.d){applyOutfit();pPortK=''}updateHUD();return}
@@ -3653,6 +3655,7 @@ function mpTick(dt){if(!MP.role)return;if(MP.role==='host'){mpLacos(dt);if(!paus
       if(!era&&state&&Math.hypot(r.p.x-state.p.x,r.p.y-state.p.y)<18)[392,330].forEach((f,i)=>setTimeout(()=>beep(f,.22,'square',.04),i*260))}      // buzina quando o ônibus do amigo sai perto de você
     else if(era){r.busFum=null;r.busPo=null;if(!busFx&&state){let b=BUS[0],bd=1e9;for(const q of BUS){const d=Math.hypot(q.x-r.p.x,q.y-r.p.y);if(d<bd){bd=d;b=q}}if(bd<8)busFx={x:b.x,y:b.y,t:0}}}}      // desceu: o ônibus vai embora do ponto
   if(MP.role==='guest'){for(const a of wild)if(a.tx!=null){const k=Math.min(1,dt*8);a.x+=(a.tx-a.x)*k;a.y+=(a.ty-a.y)*k}
+    for(const t of thieves)if(t.tx!=null){const k=Math.min(1,dt*8);t.x+=(t.tx-t.x)*k;t.y+=(t.ty-t.y)*k}
     if(MP.relay&&MP.host&&MP.myId&&Date.now()-(MP.host.rx||0)>20000){mpPerdeu(MP.host);return}
     if(MP.host&&MP.myId&&(MP.pT+=dt)>=(MP.relay?.25:.1)){MP.pT=0;const p=state.p,mv=keys.a||keys.d||keys.w||keys.s||keys.arrowleft||keys.arrowright||keys.arrowup||keys.arrowdown;
       mpSend(MP.host,{t:'pos',x:Math.round(p.x*100)/100,y:Math.round(p.y*100)/100,d:p.dir,m:mv?1:0,e:keys.e?1:0,rd:mpVeic()})}}
