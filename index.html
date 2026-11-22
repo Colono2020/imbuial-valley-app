@@ -949,7 +949,7 @@ function genMap(s1,s2){
   genSouth(s2);
   for(let i=0;i<lotAt.length;i++)if(lotAt[i]==='velho')lotAt[i]=null;
   genWest(s1);
-  {const[lx,ly,w,h]=ACC_LOT;for(let y=ly;y<ly+h;y++)for(let x=lx;x<lx+w;x++){lotAt[y*AW-XMIN+x]='acc';objs[y*AW-XMIN+x]=null}for(let x=lx;x<lx+w;x++)objs[(ly+h)*AW-XMIN+x]=null;objs[Math.floor(MAIK_POS[1])*AW-XMIN+Math.floor(MAIK_POS[0])]=null;for(let y=18;y<=23;y++)for(let x=BARB_LOT[0]-1;x<=9;x++)objs[y*AW-XMIN+x]=null;for(const[hx,hy]of CASAS_V)for(let y=hy-1;y<=hy+3;y++)for(let x=hx-2;x<=hx+3;x++){const i=y*AW-XMIN+x;objs[i]=null;if(y>=hy&&y<hy+2&&x>=hx&&x<hx+3)lotAt[i]='casav'}{const[bx,by,bw,bh]=BARB_LOT;for(let y=by;y<by+bh;y++)for(let x=bx;x<bx+bw;x++)lotAt[y*AW-XMIN+x]='barbearia';{const i=(by+bh)*AW-XMIN+bx+2;if(ground[i]===0)ground[i]=1}}for(let y=26;y<=28;y++)for(let x=38;x<=42;x++)objs[y*AW-XMIN+x]=null}      // A.C.C.P.U.V (depois do sorteio, para não mudar o resto do mapa)
+  {const[lx,ly,w,h]=ACC_LOT;for(let y=ly;y<ly+h;y++)for(let x=lx;x<lx+w;x++){lotAt[y*AW-XMIN+x]='acc';objs[y*AW-XMIN+x]=null}for(let x=lx;x<lx+w;x++)objs[(ly+h)*AW-XMIN+x]=null;objs[Math.floor(MAIK_POS[1])*AW-XMIN+Math.floor(MAIK_POS[0])]=null;for(let y=-1;y<=1;y++)for(let x=-1;x<=1;x++)objs[(Math.floor(DOZE_POS[1])+y)*AW-XMIN+Math.floor(DOZE_POS[0])+x]=null;for(let y=18;y<=23;y++)for(let x=BARB_LOT[0]-1;x<=9;x++)objs[y*AW-XMIN+x]=null;for(const[hx,hy]of CASAS_V)for(let y=hy-1;y<=hy+3;y++)for(let x=hx-2;x<=hx+3;x++){const i=y*AW-XMIN+x;objs[i]=null;if(y>=hy&&y<hy+2&&x>=hx&&x<hx+3)lotAt[i]='casav'}{const[bx,by,bw,bh]=BARB_LOT;for(let y=by;y<by+bh;y++)for(let x=bx;x<bx+bw;x++)lotAt[y*AW-XMIN+x]='barbearia';{const i=(by+bh)*AW-XMIN+bx+2;if(ground[i]===0)ground[i]=1}}for(let y=26;y<=28;y++)for(let x=38;x<=42;x++)objs[y*AW-XMIN+x]=null}      // A.C.C.P.U.V (depois do sorteio, para não mudar o resto do mapa)
   genExpand(s1);finishNature(s1);genSakura(s1);for(const[hx,hy]of CASAS_V)for(let y=hy-3;y<=hy+12;y++)for(let x=hx-3;x<=hx+5;x++){const i=y*AW-XMIN+x,o=objs[i];if(o==='pine'||(o==='tree'||o==='bush')&&y<=hy+7)objs[i]=null}PROF=null;NAT_I.clear();PINE_I.clear();
 }
 // ---- mapa maior (leste e sul) e a Pedreirinha, no canto de baixo à direita ----
@@ -3392,7 +3392,7 @@ function drawClimaWorld(W,H){const hr=state.min/60,c=state.clima;
 /* ================= MULTIPLAYER: cooperativo no mundo do dono, até 4 jogadores, pela internet com código de sala =================
    Ligação: WebRTC (canal de dados direto entre os aparelhos). Para os aparelhos se acharem usa o servidor público grátis do PeerJS
    só como "telefonista" (sinalização). Quem hospeda manda no mundo; os convidados mandam o que fazem e o dono aplica e espalha. */
-const JOGO_VERSAO='2026-11-21o';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
+const JOGO_VERSAO='2026-11-22b';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
 const MP_MAX=4,MP_PREFIX=SLOT_KEYS[0].replace(/_slot_1$/,'').replace(/_/g,''),MP_SERVER='wss://0.peerjs.com:443/peerjs?key=peerjs';
 const MP_ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']},{urls:'stun:global.stun.twilio.com:3478'}]};
 const MP_LEVE=['p','energy','hunger','vida','forca','sujeira','sel','testoUntil','fomeT','coins','xpUntil','monster','napHoje','doze'];      // muda toda hora: vai junto em cada batida
@@ -3716,6 +3716,14 @@ function drawDoze(x,y,dir,face){const sx=Math.round(x*T-camx),sy=Math.round((y-.
   const R2=(a,b,w,h,c)=>{ctx.fillStyle=c;ctx.fillRect(a*k,b*k,w*k,h*k)};
   R2(-5,-1,5,3,'#7a4a22');R2(-5,1,2,1,'#5a3416');R2(-1,-1,2,2,'#3a3a3a');R2(1,-1,9,1,'#1c1c1c');R2(1,0,8,1,'#2e2e2e');R2(3,1,3,1,'#6b4a2a');R2(9,-1,1,1,'#555');      // coronha, gatilho, cano duplo e telha
   ctx.restore()}
+function drawDozeLoja(p){const[x,y]=DOZE_POS,sx=Math.round(x*T-camx),sy=Math.round((y+.28)*T-camy),u=T/16;
+  ctx.fillStyle='#5a3416';ctx.fillRect(sx-22*u,sy-30*u,2*u,30*u);ctx.fillRect(sx+20*u,sy-30*u,2*u,30*u);      // postes
+  ctx.fillStyle='#2f5d34';ctx.fillRect(sx-25*u,sy-36*u,50*u,7*u);ctx.fillStyle='#e8d9b0';for(let i=0;i<5;i++)ctx.fillRect(sx-25*u+i*10*u,sy-36*u,5*u,7*u);      // toldo listrado
+  drawPerson(SPR.npc[1],{x,y:y-.2,dir:'down',walk:0});
+  ctx.fillStyle='#8a5a2b';ctx.fillRect(sx-20*u,sy-12*u,40*u,10*u);ctx.fillStyle='#6b4420';ctx.fillRect(sx-20*u,sy-3*u,40*u,3*u);      // balcão
+  ctx.save();ctx.translate(sx-8*u,sy-14*u);ctx.fillStyle='#7a4a22';ctx.fillRect(-6*u,-1*u,6*u,3*u);ctx.fillStyle='#1c1c1c';ctx.fillRect(0,-1*u,14*u,2*u);ctx.restore();      // doze em cima do balcão
+  ctx.fillStyle='#f5e6c0';ctx.fillRect(sx+6*u,sy-11*u,11*u,7*u);ctx.fillStyle='#7a2a1a';ctx.font=`bold ${Math.max(7,Math.round(4*u))}px sans-serif`;ctx.textAlign='center';ctx.fillText('R$',sx+11.5*u,sy-6*u);ctx.textAlign='left';
+  if(Math.hypot(x-p.x,y-p.y)<6)tag('Seu Ademir · Caça & Pesca',x,y-2.35,'#ffd27a')}
 function drawMpPlayer(r){const e={x:r.p.x,y:r.p.y,dir:r.p.dir||'down',walk:r.p.walk||0};
   if(r.rd&&r.rd[0]==='b'){const fl=r.rd==='b:1',vel=r.busV||0;      // o amigo está viajando de ônibus: aparece o ônibus inteiro na estrada
     for(const d of r.busPo||[]){const a=1-d.t/1.2;ctx.fillStyle=state.rain?`rgba(110,80,50,${.45*a})`:`rgba(190,160,120,${.4*a})`;ctx.beginPath();ctx.arc(d.x*T-camx,(d.y+.3)*T-camy-d.t*14,6+d.t*16,0,7);ctx.fill()}
@@ -4287,7 +4295,7 @@ function thiefGo(t,st){t.st=st;const g=st==='come'?PEN_SPOT[t.pen]:t.exit;t.fl=f
 const DOZE_R=9;      // distância para sacar a doze quando o ladrão começa a roubar
 function dozeArma(){const ativos=thieves.filter(t=>t.st==='steal'||t.st==='segurado'||(t.st==='flee'&&t.carry));
   const pessoas=[{o:state,g:null}];for(const id in MP.players){const g=MP.players[id];if(!g.me&&g.p)pessoas.push({o:g,g})}
-  for(const{o,g}of pessoas){const perto=ativos.some(t=>Math.hypot(t.x-o.p.x,t.y-o.p.y)<DOZE_R);
+  for(const{o,g}of pessoas){const perto=!!(o.flags&&o.flags.doze)&&ativos.some(t=>Math.hypot(t.x-o.p.x,t.y-o.p.y)<DOZE_R);
     if(perto&&!o.doze){o.doze=1;const fn=()=>{toast('🔫 Você sacou a doze! Aperte Espaço para atirar sal grosso no ladrão.',6000);sx('engatilha')};if(g)mpComo(g,fn);else fn()}
     if(!ativos.length&&o.doze)o.doze=0}}
 function updateThieves(dt){
@@ -4681,6 +4689,7 @@ function findTarget0(){
   if(Math.hypot(LUAN_POS[0]-p.x,LUAN_POS[1]-p.y)<1.4)return{k:'pitol'};
   {const bt=barTarget(p);if(bt)return bt}
   {const at=accTarget(p);if(at)return at}
+  if(Math.hypot(DOZE_POS[0]-p.x,DOZE_POS[1]-p.y)<1.5)return{k:'doze'};
   {const bb=barbTarget(p);if(bb)return bb}
   if(Math.hypot(JUNIOR_POS[0]-p.x,JUNIOR_POS[1]-p.y)<1.5)return{k:'trig'};
   {const[x,y,w,h]=TRIG_LOT,dx=Math.max(x-p.x,0,p.x-(x+w)),dy=Math.max(y-p.y,0,p.y-(y+h));if(Math.hypot(dx,dy)<.75)return{k:'trig'}}
@@ -4709,6 +4718,7 @@ function targetLabel(t){
   if(t.k==='pitol')return'E — Pitol Calçados (roupas com o Luan)';
   if(t.k==='bar')return 'E — Bar do Xande (comida, bebida e caça-níquel)';
   if(t.k==='acc')return 'E — A.C.C.P.U.V (suplementos da Maikelen)';
+  if(t.k==='doze')return 'E — 🔫 Caça & Pesca do Seu Ademir';
   if(t.k==='mesa')return 'E — Mesa do Xande (truco e fodinha)';
   if(t.k==='trig')return trigOpen()?'E — Triguinho (apostas com o Junior Amaral)':'Triguinho fechado · abre às 18:00';
   if(t.k==='tratores')return'E — Concessionária de tratores';
@@ -4762,6 +4772,7 @@ function interact(){idleT=0;
   if(t.k==='pitol'){openClothes('loja');return}
   if(t.k==='bar'){barSay=null;openBar('menu');return}
   if(t.k==='acc'){openAcc();return}
+  if(t.k==='doze'){openDozeLoja();return}
   if(t.k==='mesa'){openMesa();return}
   if(t.k==='trig'){if(trigOpen())openTrig();else toast('🎰 O Triguinho está fechado. Abre às 18:00 e fica aberto a noite inteira, até as 6:00.');return}
   if(t.k==='tratores'){openTractorShop();return}
@@ -5165,6 +5176,7 @@ const ACT={
   mpsair(){if(NV.on){nvSair(()=>{if(panelKind)closePanel();curSlot=null;titleMode=null;openTitle()});return}mpParar(MP.role==='host'?'Sala fechada.':'Você saiu da sala.')},
   nuvem(){openNuvem()},
   accbuy(k){accBuy(k)},
+  dozebuy(){dozeBuy()},
   barbtab(v){openBarb(v)},
   barbfaz(v){barbFaz(v)},
   mesa(v){const p=String(v||'').split(':'),a=p[0];
@@ -5988,6 +6000,7 @@ function mesaFecha(){const G=MESA.G;if(G&&!G.fim&&MESA.pote&&MESA.ids){const par
 
 /* ---------- A.C.C.P.U.V — loja de suplementos da Maikelen (centro de Videira) ---------- */
 const ACC_LOT=[2,20,4,3],MAIK_POS=[4.1,23.3];
+const DOZE_POS=[97.5,91.4],DOZE_PRECO=300000;      // Caça & Pesca do Seu Ademir, na praça de Iomerê: o único lugar que vende a doze
 const ACC_MENU=[
   {k:'estimulante',nome:'Estimulante cerebral',preco:100,ico:'🧠',desc:'XP em dobro por 5 horas (do jogo).'},
   {k:'monster',nome:'Energético Monster',preco:85,ico:'🥤',desc:'Sobe aos poucos +50 de energia e +50 de fome.'},
@@ -6134,6 +6147,14 @@ function barbFaz(v){const[a,val]=v.split(':'),P={corte:BARB_P.corte,cor:BARB_P.c
   let custo=P;if(a==='pele'){const i=BARB_TONS.indexOf(pVis().skin),j=BARB_TONS.indexOf(val);if(j<0)return;custo=P*Math.max(1,Math.abs(j-(i<0?3:i)));if(state.coins<custo){toast(`Precisa de ${brl(custo)}.`);return}vis.skin=val}
   state.coins=Math.round((state.coins-custo)*100)/100;applyOutfit();pPortK='';sfx.build&&sfx.build();sx&&sx('tesoura');save();
   openBarb.keep=1;openBarb(null,['Ficou show de bola!','Agora sim, tá na régua!','Olha no espelho, ficou nos trinques!','Esse aí vai fazer sucesso no baile!'][Math.random()*4|0])}
+function openDozeLoja(){const tem=state.flags&&state.flags.doze;
+  let h=`${X}<h2>🔫 Caça & Pesca do Seu Ademir</h2><p><small>Praça de Iomerê</small></p><p>"Ladrão de galinha aqui não se cria. Sal grosso nele, que não machuca de verdade mas ele nunca mais volta!"</p>
+    <div class="bar-it acc-it"><span class="acc-ic">🔫</span><div style="flex:1"><b>Doze de sal grosso</b><br><small>Quando um ladrão começa a roubar perto de você, você saca a doze. Espaço atira de longe e derruba o ladrão na hora; depois são só 2 pisões. Dura para sempre.</small></div>
+    ${tem?'<b style="color:#5cbf6a">✅ Você já tem</b>':`<button class="mini" data-a="dozebuy" ${state.coins<DOZE_PRECO?'disabled':''}>${brl(DOZE_PRECO)}</button>`}</div>`;
+  if(!tem&&state.coins<DOZE_PRECO)h+=`<p><small>Faltam ${brl(DOZE_PRECO-state.coins)}.</small></p>`;
+  showPanel('dozeloja',h)}
+function dozeBuy(){if(state.flags.doze||state.coins<DOZE_PRECO){sfx.no&&sfx.no();return}state.coins=Math.round((state.coins-DOZE_PRECO)*100)/100;state.flags.doze=1;sx('engatilha');
+  toast('🔫 Você comprou a doze de sal! Quando um ladrão vier roubar perto de você, ela aparece na mão.',7000);save();openDozeLoja()}
 function openAcc(){const xpL=state.xpUntil?Math.max(0,state.xpUntil-absNow()):0,mo=state.monster;
   let h=`${X}<div class="acc-head"><span class="acc-logo">A.C.C.P.U.V</span><small>Suplementos · centro de Videira</small></div>
     <div class="acc-maik"><img src="${PORTRAIT.maikelen||''}" alt=""><div><b>Maikelen</b><p>"Não é CPU! É Gabinete." 👍</p></div></div>`;
@@ -6456,9 +6477,11 @@ function gTileCode(x,y,sea){const i=y*AW-XMIN+x,g=ground[i];if(isWaterAt(x,y))re
   if(g===3)return 2;
   if(g===1||g===4||g===5){let m=0;for(let k=0;k<4;k++){const nx=x+D4[k][0],ny=y+D4[k][1],j=ny*AW-XMIN+nx;if(nx>=XMIN&&ny>=0&&nx<MW&&ny<MH&&ground[j]===0&&!lotAt[j]&&!soilOn(j))m|=1<<k}return(g===1?16:g===5?32:state.rain?48:64)+m}
   if(soilOn(i))return(state.crops[i]?isWet(state.crops[i]):state.rain)?3:4;
+  if(exChao(i))return state.rain?8:7;
   return!objs[i]&&!lotAt[i]?5:6}
+const exChao=i=>{const l=lotAt[i];return typeof l==='string'&&l.charCodeAt(0)===101&&l.startsWith('ex:')};      // chão embaixo das construções extras: terra (sem sobra de grama verde na borda)
 function gDrawTile(c,x,y,px,py,sea){const i=y*AW-XMIN+x,g=ground[i];if(isWaterAt(x,y))return;
-  const img=g===5?SPR.gravel[(Math.imul(x,40503)^Math.imul(y,9973))>>>2&7]:g===4?(state.rain?SPR.mud:SPR.dirt)[(Math.imul(x,40503)^Math.imul(y,9973))>>>2&7]:g===1?SPR.path[(Math.imul(x,40503)^Math.imul(y,9973))>>>2&3]:g===3?SPR.bridge:soilOn(i)?((state.crops[i]?isWet(state.crops[i]):state.rain)?SPR.soilw:SPR.soil):SPR.grass[sea][(Math.imul(x,73856093)^Math.imul(y,19349663))>>>3&7];
+  const img=g===0&&exChao(i)?(state.rain?SPR.mud:SPR.dirt)[(Math.imul(x,40503)^Math.imul(y,9973))>>>2&7]:g===5?SPR.gravel[(Math.imul(x,40503)^Math.imul(y,9973))>>>2&7]:g===4?(state.rain?SPR.mud:SPR.dirt)[(Math.imul(x,40503)^Math.imul(y,9973))>>>2&7]:g===1?SPR.path[(Math.imul(x,40503)^Math.imul(y,9973))>>>2&3]:g===3?SPR.bridge:soilOn(i)?((state.crops[i]?isWet(state.crops[i]):state.rain)?SPR.soilw:SPR.soil):SPR.grass[sea][(Math.imul(x,73856093)^Math.imul(y,19349663))>>>3&7];
   c.drawImage(img,px,py,T,T);
   if(g===1||g===4||g===5){for(let k=0;k<4;k++){const nx=x+D4[k][0],ny=y+D4[k][1],j=ny*AW-XMIN+nx;if(nx>=XMIN&&ny>=0&&nx<MW&&ny<MH&&ground[j]===0&&!lotAt[j]&&!soilOn(j))rustEdge(c,px,py,x,y,k)}}
   else if(g===0&&!objs[i]&&!lotAt[i]&&!soilOn(i)){     // flores, pedrinhas e cogumelos
@@ -6504,7 +6527,7 @@ function render(){
   if(funcOnDuty())for(const n of funcNpcs)list.push({k:32,y:n.y+.28,n});
   for(const d of VDECOR)list.push({k:26,y:d[2],d});
   list.push({k:29,y:BAR_LOT[1]+BAR_LOT[3]-.01});if(expOn('xande'))list.push({k:30,y:XANDE_POS[1]+.28});
-  list.push({k:39,y:ACC_LOT[1]+ACC_LOT[3]-.01});if(expOn('maikelen'))list.push({k:40,y:MAIK_POS[1]+.28});
+  list.push({k:39,y:ACC_LOT[1]+ACC_LOT[3]-.01});if(expOn('maikelen'))list.push({k:40,y:MAIK_POS[1]+.28});if(Math.abs(DOZE_POS[0]-p.x)<30&&Math.abs(DOZE_POS[1]-p.y)<22)list.push({k:48,y:DOZE_POS[1]+.28});
   list.push({k:24,y:TRIG_LOT[1]+TRIG_LOT[3]-.01});if(trigOpen()&&expOn('junior'))list.push({k:25,y:JUNIOR_POS[1]+.28});
   list.push({k:19,y:PITOL_LOT[1]+PITOL_LOT[3]-.01});if(expOn('luan'))list.push({k:20,y:LUAN_POS[1]+.28});
   list.push({k:16,y:GAS_LOT[1]+GAS_LOT[3]-.01},{k:17,y:TRATOR_LOT[1]+TRATOR_LOT[3]-.01},{k:45,y:LAVA_LOT[1]+LAVA_LOT[3]-.01});if(postoAnim)list.push({k:46,y:POSTO_VEH()[1]+.28});if(lavaAnim)list.push({k:47,y:LAVA_VEH()[1]+.28});if(expOn('thiago'))list.push({k:18,y:THIAGO_POS[1]+.28});
@@ -6563,6 +6586,7 @@ function render(){
     else if(d.k===43){const img=barbSprite(),L=BARB_LOT,ox=L[0]*T-camx,oy=L[1]*T-camy-LT*S;ctx.drawImage(img,ox,oy,img.width*S,img.height*S);drawBarbPole(ox,oy);drawShine(img,L);
       if(!expOn('gabriel','barb')&&Math.hypot(L[0]+2-p.x,L[1]+3-p.y)<6)tag('Barbearia · abre às 16:00',L[0]+2,L[1]+.2,'#ffd27a')}
     else if(d.k===44){const img=casaVSprite(d.i),[hx,hy]=CASAS_V[d.i];ctx.drawImage(img,hx*T-camx,hy*T-camy-LT*S,img.width*S,img.height*S)}
+    else if(d.k===48)drawDozeLoja(p);
     else if(d.k===40){const img=greetOn('maikelen')?greetFr('maikelen'):SPR.maikelen.down[0],sx=Math.round(MAIK_POS[0]*T-camx),gy=Math.round((MAIK_POS[1]+.28)*T-camy);shadow(sx,gy-2,15,5);blit(img,sx,gy,false);
       if(Math.hypot(MAIK_POS[0]-p.x,MAIK_POS[1]-p.y)<5)tag('Maikelen · A.C.C.P.U.V',MAIK_POS[0],MAIK_POS[1]-1.35,'#7dff9a');if(greetOn('maikelen'))bubbles.push([greetSt.maikelen.text,sx,gy-70])}
     else if(d.k===30){const img=SPR.xandeFr[Math.floor(clock*2.5)%2],sx=Math.round(XANDE_POS[0]*T-camx),gy=Math.round((XANDE_POS[1]+.28)*T-camy);shadow(sx,gy-2,15,5);blit(img,sx,gy,false);
