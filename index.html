@@ -3105,6 +3105,8 @@ const SX={
   pisao:(c,t)=>{sxT(c,t,110,45,.18,'sine',.12);sxN(c,t,.12,'lowpass',500,120,1,.14);sxT(c,t+.05,420,260,.12,'square',.02)},      // pisão no ladrão
   empurrao:(c,t)=>{sxN(c,t,.1,'bandpass',900,400,2,.12);sxT(c,t,180,90,.12,'square',.05)},      // empurrão
   ladraoCai:(c,t)=>{sxT(c,t,140,50,.25,'sine',.12);sxN(c,t,.2,'lowpass',400,100,1,.12);sxT(c,t+.3,520,300,.5,'sawtooth',.03);sxT(c,t+.85,460,260,.6,'sawtooth',.03)},      // tombo e o choro "ai, ai"
+  tiro:(c,t)=>{sxN(c,t,.35,'lowpass',2600,300,.7,.5);sxT(c,t,120,40,.25,'sine',.35);sxN(c,t+.05,.6,'bandpass',900,200,1.5,.08)},      // POW da doze
+  engatilha:(c,t)=>{sxN(c,t,.05,'highpass',3000,3000,1,.18);sxN(c,t+.16,.06,'highpass',2200,2200,1,.2);sxT(c,t+.16,900,600,.05,'square',.03)},      // tchec-tchec
   ladraoGrito:(c,t)=>{sxT(c,t,320,520,.25,'sawtooth',.035);sxT(c,t+.27,520,300,.35,'sawtooth',.035)},      // "Faz o L!" sintetizado (sem áudio próprio)
   expulso:(c,t)=>{[523,659,784,1047].forEach((f,i)=>sxT(c,t+i*.09,f,f,.18,'triangle',.05))},
   erro:(c,t)=>{sxT(c,t,220,140,.25,'square',.04)},
@@ -3390,10 +3392,10 @@ function drawClimaWorld(W,H){const hr=state.min/60,c=state.clima;
 /* ================= MULTIPLAYER: cooperativo no mundo do dono, até 4 jogadores, pela internet com código de sala =================
    Ligação: WebRTC (canal de dados direto entre os aparelhos). Para os aparelhos se acharem usa o servidor público grátis do PeerJS
    só como "telefonista" (sinalização). Quem hospeda manda no mundo; os convidados mandam o que fazem e o dono aplica e espalha. */
-const JOGO_VERSAO='2026-11-21n';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
+const JOGO_VERSAO='2026-11-21o';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
 const MP_MAX=4,MP_PREFIX=SLOT_KEYS[0].replace(/_slot_1$/,'').replace(/_/g,''),MP_SERVER='wss://0.peerjs.com:443/peerjs?key=peerjs';
 const MP_ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']},{urls:'stun:global.stun.twilio.com:3478'}]};
-const MP_LEVE=['p','energy','hunger','vida','forca','sujeira','sel','testoUntil','fomeT','coins','xpUntil','monster','napHoje'];      // muda toda hora: vai junto em cada batida
+const MP_LEVE=['p','energy','hunger','vida','forca','sujeira','sel','testoUntil','fomeT','coins','xpUntil','monster','napHoje','doze'];      // muda toda hora: vai junto em cada batida
 const MP_PROG=['inv','seeds','nivel','flags','roupas','visual','estudos','found','motos','moto','tratores','trator','fuel','vsuj'];      // progresso de cada jogador: mochila, peixes, sementes, nível, roupas, veículos…
 const MP_PESSOAL=[...MP_LEVE,...MP_PROG];      // cada jogador tem o seu; o resto do state é o mundo do dono
 const MP_FORA_DIFF=new Set([...MP_PESSOAL,'saved','min','day','rain','clima','riding','rideKind','jogs','progDono']);
@@ -3522,7 +3524,7 @@ function mpPessoal(g,leve){const o={};for(const k of leve?MP_LEVE:MP_PESSOAL)if(
 function mpMundo(){const o={};for(const k in state)if(!MP_FORA_DIFF.has(k)||k==='min'||k==='day'||k==='rain'||k==='clima')o[k]=state[k];return o}
 function mpHeadUrl(){try{return!skinOn()&&HEADS.player&&HEADS.player.cv&&HEADS.player.cv.toDataURL?HEADS.player.cv.toDataURL():null}catch(e){return null}}
 const mpVeic=()=>busRide?'b:'+(busRide.flip?1:0):state&&state.riding?(state.rideKind==='trator'?'t:'+state.trator:'m:'+state.moto):'';      // b = dentro do ônibus
-function mpPub(){const a=[];for(const id in MP.players){const r=MP.players[id],p=r.me?state.p:r.p;if(p)a.push([id,Math.round(p.x*100)/100,Math.round(p.y*100)/100,p.dir,r.me?(keys.a||keys.d||keys.w||keys.s||keys.arrowleft||keys.arrowright||keys.arrowup||keys.arrowdown?1:0):(r.mov?1:0),r.me?mpVeic():(r.rd||'')])}return a}
+function mpPub(){const a=[];for(const id in MP.players){const r=MP.players[id],p=r.me?state.p:r.p;if(p)a.push([id,Math.round(p.x*100)/100,Math.round(p.y*100)/100,p.dir,r.me?(keys.a||keys.d||keys.w||keys.s||keys.arrowleft||keys.arrowright||keys.arrowup||keys.arrowdown?1:0):(r.mov?1:0),r.me?mpVeic():(r.rd||''),(r.me?state.doze:r.doze)?1:0])}return a}
 function mpInfo(r){return{t:'pinfo',id:r.id,nome:r.nome,head:r.me?mpHeadUrl():r.head||null}}
 function mpHostMsg(link,m){
   if(m.t==='hello'){if(link.id)return;const n=Object.keys(MP.players).length;if(n>=MP_MAX){mpSend(link,{t:'bye',r:'A sala está cheia (máximo 4 jogadores).'});setTimeout(()=>link.close(),300);return}
@@ -3557,7 +3559,7 @@ function mpHostMsg(link,m){
       else if(m.tipo==='extra'&&m.obra&&isObra(m.obra.t)&&Number.isInteger(m.obra.x)&&Number.isInteger(m.obra.y)){plow={a:null,b:null,mode:m.obra.t,obra:{t:m.obra.t,x:m.obra.x,y:m.obra.y}};doExtra()}
       else if(m.tipo==='venda'&&m.alvo){const al=sellAlvos().find(q=>q.t===m.alvo.t&&(m.alvo.e?q.e&&q.e.id===m.alvo.e:!q.e));if(al){plow={a:null,b:null,mode:'vender',alvo:al};doVenda()}}
       plow=null;MP.cap.plow=1})}
-  else if(m.t==='empurra'){if(isFinite(m.x)&&isFinite(m.y)){g.p.x=+m.x;g.p.y=+m.y}if(m.d)g.p.dir=m.d;mpComo(g,()=>{const c=shoveCd;shoveCd=0;shoveAlvo=isFinite(m.tx)&&isFinite(m.ty)&&m.tx!==null?{x:+m.tx,y:+m.ty}:null;try{shove()}finally{shoveAlvo=null}shoveCd=c})}
+  else if(m.t==='empurra'){if(isFinite(m.x)&&isFinite(m.y)){g.p.x=+m.x;g.p.y=+m.y}if(m.d)g.p.dir=m.d;mpComo(g,()=>{const c=shoveCd;shoveCd=0;shoveAlvo=isFinite(m.tx)&&isFinite(m.ty)&&m.tx!==null?{x:+m.tx,y:+m.ty}:null;shovePred=!!m.pr;try{shove()}finally{shoveAlvo=null;shovePred=false}shoveCd=c})}
   else if(m.t==='trator'){if(isFinite(m.x)&&isFinite(m.y)&&m.k&&state.tratores&&state.tratores[m.k]){g.p.x=+m.x;g.p.y=+m.y;
       mpComo(g,()=>{const tk=state.trator;state.trator=m.k;state.riding=true;state.rideKind='trator';tractorTile=-1;tractorWork();state.trator=tk})}}
   else if(m.t==='pix'){pixPedido(g.id,String(m.para||''),m.valor)}
@@ -3645,9 +3647,10 @@ function mpGuestMsg(m){
     if(m.me)Object.assign(state,m.me);
     if(m.wild){const by={};for(const a of wild)by[a.mid]=a;wild=m.wild.map(n=>{n.vx=n.mv?.01:0;n.vy=0;n.moving=!!n.mv;for(const k of['led','ledBy','lassoBy','lt'])if(!(k in n))n[k]=k==='led'?false:k==='lt'?0:'';const o=by[n.mid];if(o){const x=o.x,y=o.y;Object.assign(o,n);o.tx=n.x;o.ty=n.y;o.x=x;o.y=y;return o}n.tx=n.x;n.ty=n.y;return n})}
     if(m.th){const vel=thieves;thieves=m.th.map((n,i)=>{const o=vel[i];n.tx=n.x;n.ty=n.y;if(o&&Math.hypot(o.x-n.x,o.y-n.y)<3){n.x=o.x;n.y=o.y}return n})}      // ladrão anda liso também
-    const vivos=new Set();for(const[id,x,y,d,mv,rd]of m.pl||[]){if(id===MP.myId)continue;vivos.add(id);const r=MP.players[id]||(MP.players[id]={id,nome:'…',p:{x,y,dir:'down',walk:0}});r.tx=x;r.ty=y;r.p.dir=d;r.mov=mv;r.rd=rd||''}
+    const vivos=new Set();for(const[id,x,y,d,mv,rd,dz]of m.pl||[]){if(id===MP.myId)continue;vivos.add(id);const r=MP.players[id]||(MP.players[id]={id,nome:'…',p:{x,y,dir:'down',walk:0}});r.tx=x;r.ty=y;r.p.dir=d;r.mov=mv;r.rd=rd||'';r.dz=dz?1:0}
     for(const id in MP.players)if(!vivos.has(id))delete MP.players[id];return}
   if(m.t==='aviso'){toast(String(m.txt||'').slice(0,240),m.ms||5000);if(m.snd==='no')sfx.no();else if(m.snd&&SX[m.snd])sxPlay(m.snd);return}
+  if(m.t==='tiro'){if(m.by!==MP.myId&&[m.x1,m.y1,m.x2,m.y2].every(isFinite)){dozeTiroFx(+m.x1,+m.y1,+m.x2,+m.y2);const dd=Math.hypot(m.x1-state.p.x,m.y1-state.p.y);if(dd<22)sxPlay('tiro')}return}
   if(m.t==='bencao'){playerSay={text:String(m.fr||'').slice(0,80),t:5};float(state.p.x+.9,state.p.y-.6,'+50 energia','#f5d76e');sfx.coin();setTimeout(()=>toast('🔔 Bênção do meio-dia: +50 de energia!'),1600);return}
   if(m.t==='prog'){for(const k in m.d)if(MP_PROG.includes(k))state[k]=m.d[k];if('roupas' in m.d||'visual' in m.d){applyOutfit();pPortK=''}updateHUD();return}
   if(m.t==='w'){const d=m.d;for(const k in d)if(!MP_PESSOAL.includes(k))state[k]=d[k];
@@ -3707,6 +3710,12 @@ function mpChat(txt){txt=mpLimpo2(txt);if(!txt||!MP.role)return;playerSay={text:
   if(MP.role==='host')mpBroadcast({t:'chat',id:'h',m:txt});else mpSend(MP.host,{t:'chat',m:txt})}
 // desenho dos outros jogadores (no mundo de quem está vendo)
 function pushMpPlayers(list){if(!MP.role)return;for(const id in MP.players){const r=MP.players[id];if(r.me||!r.p)continue;list.push({k:38,y:r.p.y+(r.rd&&r.rd[0]==='b'?.45:.28),r})}}
+// a doze (espingarda de sal) na mão: cano preto, coronha de madeira
+function drawDoze(x,y,dir,face){const sx=Math.round(x*T-camx),sy=Math.round((y-.42)*T-camy),k=Math.max(2,Math.round(T/16));
+  const esq=dir==='left'||(dir!=='right'&&face<0),cima=dir==='up';ctx.save();ctx.translate(sx,sy);if(esq)ctx.scale(-1,1);if(dir==='down')ctx.rotate(.35);if(cima)ctx.rotate(-.55);
+  const R2=(a,b,w,h,c)=>{ctx.fillStyle=c;ctx.fillRect(a*k,b*k,w*k,h*k)};
+  R2(-5,-1,5,3,'#7a4a22');R2(-5,1,2,1,'#5a3416');R2(-1,-1,2,2,'#3a3a3a');R2(1,-1,9,1,'#1c1c1c');R2(1,0,8,1,'#2e2e2e');R2(3,1,3,1,'#6b4a2a');R2(9,-1,1,1,'#555');      // coronha, gatilho, cano duplo e telha
+  ctx.restore()}
 function drawMpPlayer(r){const e={x:r.p.x,y:r.p.y,dir:r.p.dir||'down',walk:r.p.walk||0};
   if(r.rd&&r.rd[0]==='b'){const fl=r.rd==='b:1',vel=r.busV||0;      // o amigo está viajando de ônibus: aparece o ônibus inteiro na estrada
     for(const d of r.busPo||[]){const a=1-d.t/1.2;ctx.fillStyle=state.rain?`rgba(110,80,50,${.45*a})`:`rgba(190,160,120,${.4*a})`;ctx.beginPath();ctx.arc(d.x*T-camx,(d.y+.3)*T-camy-d.t*14,6+d.t*16,0,7);ctx.fill()}
@@ -3714,7 +3723,7 @@ function drawMpPlayer(r){const e={x:r.p.x,y:r.p.y,dir:r.p.dir||'down',walk:r.p.w
     tag('🚌 '+r.nome+(r.id==='h'?' 👑':''),r.p.x,r.p.y-1.9,'#bfe6ff');if(r.say)bubbles.push([r.say.text,r.p.x*T-camx,(r.p.y-2.5)*T-camy]);return}
   if(r.rd){const[k,v]=r.rd.split(':'),vs=k==='t'?SPR.trator&&SPR.trator[v]:SPR.moto&&SPR.moto[v];if(vs){const sx=Math.round(r.p.x*T-camx),gy=Math.round((r.p.y+.28)*T-camy),bump=r.mov&&Math.floor(clock*18)%2?1:0;shadow(sx,gy-2,k==='t'?44:36,k==='t'?8:6);blit(vs,sx,gy-bump,r.p.dir==='left');
     drawPerson(r.img?SPR.player:SPR.npc[(r.id.charCodeAt(1)||0)%4],{x:r.p.x,y:r.p.y-(k==='t'?.55:.35),dir:'side',walk:0},r.img||undefined);tag(r.nome+(r.id==='h'?' 👑':''),r.p.x,r.p.y-1.7,'#bfe6ff');if(r.say)bubbles.push([r.say.text,r.p.x*T-camx,(r.p.y-2.2)*T-camy]);return}}
-  drawPerson(r.img?SPR.player:SPR.npc[(r.id.charCodeAt(1)||0)%4],e,r.img||undefined);
+  drawPerson(r.img?SPR.player:SPR.npc[(r.id.charCodeAt(1)||0)%4],e,r.img||undefined);if(r.dz||r.doze)drawDoze(r.p.x,r.p.y,r.p.dir,r.p.dir==='left'?-1:1);
   tag(r.nome+(r.id==='h'?' 👑':''),r.p.x,r.p.y-1.35,'#bfe6ff');if(r.say)bubbles.push([r.say.text,r.p.x*T-camx,(r.p.y-1.9)*T-camy])}
 // ---------- janela do multiplayer ----------
 function mpLogUI(){const el=$('mplog');if(!el)return;const L=MP.log||[];el.innerHTML=L.length?L.slice(-6).map(c=>`<div class="mpmsg"><b style="color:${c.cor}">${mpEsc(c.nome)}</b> ${mpEsc(c.m)}</div>`).join(''):'<div class="mpvazio">Ninguém falou nada ainda. Diga oi! 👋</div>';el.scrollTop=1e6}
@@ -4230,7 +4239,7 @@ function fomeAviso(){const h=state.hunger,f=state.flags;for(const lim of[25,10,1
 function vidaTick(dt){if(!state)return;if(MP.role!=='guest')fomeAviso();
   if(MP.role==='host')for(const id in MP.players){const g=MP.players[id];if(!g.me)vidaPasso(g,dt)}      // o dono cuida do coração dos convidados
   if(morte||busRide)return;if(state.vida==null)state.vida=100;
-  if(MP.role==='guest'){if(state.vida<=0)morrer();return}      // no convidado o coração vem do dono
+  if(MP.role==='guest'){if(state.vida<=0&&Date.now()-(MP.acordouT||0)>5000)morrer();return}      // no convidado o coração vem do dono
   if(state.hunger<=0){state.vida=Math.max(0,state.vida-dt*100/VIDA_SEG);if(state.vida<=0)morrer()}
   else if(state.vida<100)state.vida=Math.min(100,state.vida+dt*100/90)}      // comendo, o coração enche de novo (1,5 min)
 function morrer(){if(morte)return;morte={t:0};state.riding=false;lasso=null;if(led){led.led=false;led=null}fish=null;keysOff();sndMorte();
@@ -4275,6 +4284,12 @@ function spawnThief(){
 function dropCarry(t,quiet){const a=t.carry;if(!a)return;t.carry=null;state.animals.push(a);syncPens();
   if(!quiet)toast(`${SPECIES[a.sp].nome} voltou correndo para o ${BLD[SPECIES[a.sp].pen].nome}!`)}
 function thiefGo(t,st){t.st=st;const g=st==='come'?PEN_SPOT[t.pen]:t.exit;t.fl=flow(g[0],g[1])}
+const DOZE_R=9;      // distância para sacar a doze quando o ladrão começa a roubar
+function dozeArma(){const ativos=thieves.filter(t=>t.st==='steal'||t.st==='segurado'||(t.st==='flee'&&t.carry));
+  const pessoas=[{o:state,g:null}];for(const id in MP.players){const g=MP.players[id];if(!g.me&&g.p)pessoas.push({o:g,g})}
+  for(const{o,g}of pessoas){const perto=ativos.some(t=>Math.hypot(t.x-o.p.x,t.y-o.p.y)<DOZE_R);
+    if(perto&&!o.doze){o.doze=1;const fn=()=>{toast('🔫 Você sacou a doze! Aperte Espaço para atirar sal grosso no ladrão.',6000);sx('engatilha')};if(g)mpComo(g,fn);else fn()}
+    if(!ativos.length&&o.doze)o.doze=0}}
 function updateThieves(dt){
   for(const t of thieves.slice()){
     if(t.say>0)t.say-=dt;t.sayT-=dt;if(t.sayT<=0&&(t.st==='come'||t.st==='flee'||t.st==='steal'||t.st==='segurado')){t.say=sndDur('ladrao_grito',2.2,5);t.sayT=t.say+3+Math.random()*3;playSound('ladrao_grito',distVol(t))}
@@ -4292,12 +4307,26 @@ function updateThieves(dt){
       if(r){if(t.carry){mpAviso(`😩 O ladrão fugiu com ${animFem(t.carry.sp)?'uma':'um'} ${SPECIES[t.carry.sp].nome.toLowerCase()}...`,6000,'no');t.carry=null;save()}thieves.splice(thieves.indexOf(t),1)}}
     if(r===null){if(t.carry)dropCarry(t);thieves.splice(thieves.indexOf(t),1)}
   }
-}
+  dozeArma()}
 const SHOVES_TO_FALL=4;      // empurrões até o ladrão cair (depois são 4 pisões para expulsar)
-let shoveAlvo=null;      // convidado: o ladrão que ele viu na tela dele (pela internet a posição chega um pouco atrasada)
+let shoveAlvo=null,shovePred=false,dozeFx=[];
+function dozeVira(p,t){const dx=t.x-p.x,dy=t.y-p.y;p.dir=Math.abs(dx)>Math.abs(dy)?(dx<0?'left':'right'):(dy<0?'up':'down');if(dx)p.face=dx<0?-1:1}
+function dozeAlvo(p,alvo){let best=null,bd=8;for(const t of thieves){if(t.st==='down')continue;const d=Math.hypot(t.x-p.x,t.y-p.y);if(d<bd){bd=d;best=t}}
+  if(alvo){let ad=3.2,b2=null;for(const t of thieves){if(t.st==='down')continue;const d=Math.hypot(t.x-alvo.x,t.y-alvo.y);if(d<ad&&Math.hypot(t.x-p.x,t.y-p.y)<10){ad=d;b2=t}}if(b2)best=b2}return best}
+function dozeTiroFx(x1,y1,x2,y2){dozeFx.push({x1,y1,x2,y2,t:.45,fum:[0,1,2,3].map(i=>({x:x1+(Math.random()-.5)*.3,y:y1-.1-Math.random()*.2,r:.15+Math.random()*.15,v:.3+Math.random()*.4}))})}
+      // convidado: o ladrão que ele viu na tela dele (pela internet a posição chega um pouco atrasada)
 function shove(){if(MP.role==='guest'){if(MP.host&&MP.myId){const p=state.p;let al=null,ad=1.7;for(const t of thieves){const d=Math.hypot(t.x-p.x,t.y-p.y);if(d<ad){ad=d;al=t}}
-      mpSend(MP.host,{t:'empurra',x:p.x,y:p.y,d:p.dir,tx:al?Math.round((al.tx!=null?al.tx:al.x)*100)/100:null,ty:al?Math.round((al.ty!=null?al.ty:al.y)*100)/100:null})}return}            // Espaço: empurrão; se o ladrão estiver no chão, pisão
+      if(state.doze){const dz=dozeAlvo(p);if(dz){al=dz;dozeVira(p,dz);dozeTiroFx(p.x,p.y-.45,dz.x,dz.y-.5);sxPlay('tiro');float(dz.x,dz.y-1,'POW!','#ffd27a');state.doze=0;dz.st='down'}}      // na hora, na tela do convidado (o dono confirma depois)
+      else if(shoveCd<=0){shoveCd=.3;const fx0=p.dir==='left'?-1:p.dir==='right'?1:0,fy0=p.dir==='up'?-1:p.dir==='down'?1:0;pfx={x:p.x+fx0*.7,y:p.y+fy0*.7-.3,t:.18,stomp:!!(al&&al.st==='down')};
+        if(al){sxPlay(al.st==='down'?'pisao':'empurrao');float(al.x,al.y-.6,al.st==='down'?'Pisão!':'Empurrão!',al.st==='down'?'#ffb3a8':'#fff')}}
+      mpSend(MP.host,{t:'empurra',pr:1,x:p.x,y:p.y,d:p.dir,tx:al?Math.round((al.tx!=null?al.tx:al.x)*100)/100:null,ty:al?Math.round((al.ty!=null?al.ty:al.y)*100)/100:null})}return}            // Espaço: empurrão; se o ladrão estiver no chão, pisão
   if(shoveCd>0)return;const p=state.p;let best=null,bd=1.5;
+  if(state.doze){const t=dozeAlvo(p,shoveAlvo);if(t){shoveCd=.6;state.doze=0;dozeVira(p,t);const ang=Math.atan2(t.y-p.y,t.x-p.x);for(let i=0;i<4;i++)move(t,Math.cos(ang)*.2,Math.sin(ang)*.2,.28);
+      dropCarry(t);t.st='down';t.t=Math.max(6,sndDur('ladrao_choro',5,8));t.shoves=0;t.say=0;t.hp=Math.min(t.hp,2);stopSound('ladrao_grito');
+      const amigo=MP.cap&&MP.cap.g,by=amigo?amigo.id:'h';dozeTiroFx(p.x,p.y-.45,t.x,t.y-.5);if(!shovePred)sx('tiro');
+      if(amigo&&Math.hypot(MP.cap.hostP.x-p.x,MP.cap.hostP.y-p.y)<22)sxPlay('tiro');      // o dono ouve o tiro do amigo
+      if(MP.role==='host')mpBroadcast({t:'tiro',by,x1:p.x,y1:p.y-.45,x2:t.x,y2:t.y-.5});
+      setTimeout(()=>{if(!playSound('ladrao_choro',1,true))sxPlay('ladraoCai')},350);float(t.x,t.y-1.1,'Caiu! Pise nele com Espaço','#fff');return}}
   for(const t of thieves){const d=Math.hypot(t.x-p.x,t.y-p.y);if(d<bd){bd=d;best=t}}
   if(shoveAlvo){let ad=3.2,b2=null;for(const t of thieves){const d=Math.hypot(t.x-shoveAlvo.x,t.y-shoveAlvo.y);if(d<ad&&Math.hypot(t.x-p.x,t.y-p.y)<4.5){ad=d;b2=t}}if(b2)best=b2}      // o convidado acertou o ladrão na tela dele: vale, mesmo que aqui ele já tenha andado um pouco
   shoveCd=.45;
@@ -4305,13 +4334,13 @@ function shove(){if(MP.role==='guest'){if(MP.host&&MP.myId){const p=state.p;let 
   const fx=p.dir==='left'?-1:p.dir==='right'?1:0,fy=p.dir==='up'?-1:p.dir==='down'?1:0;
   pfx={x:p.x+fx*.7,y:p.y+fy*.7-.3,t:.18,stomp:!!(best&&best.st==='down')};
   if(!best){beep(220,.06,'triangle');return}
-  if(best.st==='down'){best.hp--;best.t=Math.max(best.t,1);sx('pisao');float(best.x,best.y-.6,'Pisão!','#ffb3a8');
+  if(best.st==='down'){best.hp--;best.t=Math.max(best.t,1);if(!shovePred){sx('pisao');float(best.x,best.y-.6,'Pisão!','#ffb3a8')}
     if(best.hp<=0){const c=8+(Math.random()*10|0);state.coins+=c;state.flags.thief=1;thieves.splice(thieves.indexOf(best),1);if(donkey&&!thieves.length){donkey.fast=1;donkey.say=0;donkey.sayT=.3}
       float(best.x,best.y-1.1,`Ladrão expulso! +${brl(c)}`,'#f5c542');sx('expulso');mpAviso(`🚓 ${MP.cap&&MP.cap.g?MP.cap.g.nome:(MP.role?MP.nome||'O dono':'Você')} expulsou o ladrão!`,5000);save()}
     return}
   if(!useEnergy(1))return;
   const ang=Math.atan2(best.y-p.y,best.x-p.x);for(let i=0;i<6;i++)move(best,Math.cos(ang)*.22,Math.sin(ang)*.22,.28);
-  dropCarry(best);best.shoves++;sx('empurrao');
+  dropCarry(best);best.shoves++;if(!shovePred)sx('empurrao');
   if(best.shoves>=SHOVES_TO_FALL){best.st='down';best.t=Math.max(5,sndDur('ladrao_choro',5,8));best.shoves=0;best.say=0;float(best.x,best.y-1,'Caiu! Pise com Espaço','#fff');stopSound('ladrao_grito');if(!playSound('ladrao_choro',1,true)||MP.cap)sx('ladraoCai')}      // o grito é cortado na hora da queda
   else{best.st='stun';best.t=.8;float(best.x,best.y-1,`Empurrão! (${best.shoves}/${SHOVES_TO_FALL})`,'#fff')}
 }
@@ -5179,7 +5208,7 @@ const ACT={
     sleepUntilMorning('sono')},
   levantar(){if(MP.cap&&MP.cap.g)MP.cap.g.dorme=false;else MP.dorme=false;panelKind=null;closePanel();MP.dormeChk=1},
   dormeforca(){if(MP.role!=='host'||MP.cap)return;mpDormeFim(true)},
-  acordar(){if(MP.role==='guest'){morte=null;closePanel();faintFx=1.2;state.p.x=HOME[0];state.p.y=HOME[1];state.p.dir='down';state.vida=100;if(MP.host)mpSend(MP.host,{t:'act',a:'acordarMP'});sndAcordar();return}
+  acordar(){if(MP.role==='guest'){MP.acordouT=Date.now();morte=null;closePanel();faintFx=1.2;state.p.x=HOME[0];state.p.y=HOME[1];state.p.dir='down';state.vida=100;if(MP.host)mpSend(MP.host,{t:'act',a:'acordarMP'});sndAcordar();return}
     const perda=Math.round(state.coins*MORTE_PERDA*100)/100;state.coins=Math.round((state.coins-perda)*100)/100;state.vida=100;state.hunger=Math.max(state.hunger,35);state.energy=Math.max(state.energy,Math.round(maxEnergy()*.5));
     state.p.x=HOME[0];state.p.y=HOME[1];state.p.dir='down';state.riding=false;morte=null;closePanel();faintFx=1.2;toast(`☀️ Você acordou em casa. Perdeu ${brl(perda)} (5% do dinheiro).`);sndAcordar();save()},
   acordarMP(){const perda=Math.round(state.coins*MORTE_PERDA*100)/100;state.coins=Math.round((state.coins-perda)*100)/100;state.vida=100;state.hunger=Math.max(state.hunger,35);state.energy=Math.max(state.energy,Math.round(maxEnergy()*.5))},
@@ -5483,7 +5512,7 @@ function update(dt){
   if(before<1080&&state.min>=1080){toast('Está anoitecendo. Já dá para dormir em casa — ou vigiar os animais.');
   }
   while(thiefPlan&&thiefPlan.length&&dayElapsed()>=thiefPlan[0]&&dayElapsed()<thiefPlan[0]+120){thiefPlan.shift();
-    if(state.animals.length&&state.day>=2&&!thieves.length){let ok=false;for(let n=1+(vilaLevel()>=11)+(vilaLevel()>=30);n>0;n--)ok=spawnThief()||ok;
+    if(state.animals.length&&state.day>=2&&!thieves.length){let ok=false;for(let n=1+(vilaLevel()>=11&&Math.random()<.15)+(vilaLevel()>=30&&Math.random()<.05);n>0;n--)ok=spawnThief()||ok;      // quase sempre 1; às vezes 2 (raro), bem raro 3
       }}      // sem aviso na chegada: o alerta só vem quando ele começa a roubar
   }
   animalSndT-=dt;if(animalSndT<=0){animalSndT=5+Math.random()*7;const near=wild.concat(penAnim).filter(a=>(sndHas[a.sp]||SX[a.sp])&&Math.hypot(a.x-p.x,a.y-p.y)<8);
@@ -5500,7 +5529,7 @@ function update(dt){
     else if(dm>5)mateusNear=false}
   if(thiagoSay){thiagoSay.t-=dt;if(thiagoSay.t<=0)thiagoSay=null}
   else if((thiagoT-=dt)<=0){thiagoT=12+Math.random()*10;if(Math.hypot(THIAGO_POS[0]-p.x,THIAGO_POS[1]-p.y)<12)thiagoSay={text:THIAGO_LINES[Math.random()*THIAGO_LINES.length|0],t:4.5}}
-  updateWolf(dt);updateDonkey(dt);updateGrau(dt);updateHzn(dt);updateTracks(dt);updateBuildFx(dt);updatePinhoes(dt);updateUniWins(dt,p);if(MP.role!=='guest')updateThieves(dt);if(shoveCd>0)shoveCd-=dt;if(pfx){pfx.t-=dt;if(pfx.t<=0)pfx=null}
+  updateWolf(dt);updateDonkey(dt);updateGrau(dt);updateHzn(dt);updateTracks(dt);updateBuildFx(dt);updatePinhoes(dt);updateUniWins(dt,p);if(MP.role!=='guest')updateThieves(dt);if(shoveCd>0)shoveCd-=dt;if(pfx){pfx.t-=dt;if(pfx.t<=0)pfx=null}if(dozeFx.length){for(const f of dozeFx){f.t-=dt;for(const q of f.fum){q.y-=q.v*dt;q.r+=dt*.5}}dozeFx=dozeFx.filter(f=>f.t>0)}
   // animais soltos
   if(MP.role!=='guest')for(const a of wild){if(a.led||a.lassoBy||(lasso&&lasso.a===a))continue;const sp=SPECIES[a.sp],ox=a.x,oy=a.y;
     if(a.flee>0){a.flee-=dt;const ang=Math.atan2(a.y-p.y,a.x-p.x);move(a,Math.cos(ang)*3*dt,Math.sin(ang)*3*dt,.3);a.face=Math.cos(ang)>0?1:-1}
@@ -6573,13 +6602,17 @@ function render(){
       ctx.fillStyle='#000';ctx.fillText('T.O.E.F.D GYM',sx+1,sy+1);ctx.fillStyle='#ffffff';ctx.fillText('T.O.E.F.D GYM',sx,sy)}
     else if(d.k===8){blit(SPR.moto[d.m],(d.x)*T-camx,(d.y)*T-camy,d.fl)}
     else if(d.k===9){const ag=greetOn('alison');drawPerson(ag?{side:[greetFr('alison')]}:SPR.seller,{x:SELLER_POS[0],y:SELLER_POS[1],dir:'left',walk:0},HEADS.seller.cv);if(ag)bubbles.push([greetSt.alison.text,SELLER_POS[0]*T-camx,(SELLER_POS[1]-1.85-(HEADS.seller.cv?HEADS.seller.cv.width/T-.3:0))*T-camy]);tag('Alison',SELLER_POS[0],SELLER_POS[1]-1.35-(HEADS.seller.cv?HEADS.seller.cv.width/T-.3:0),'#ffd23f')}
-    else{const hd=skinOn()?null:HEADS.player.cv;if(morte){const sx=Math.round(p.x*T-camx),sy=Math.round((p.y+.28)*T-camy),a=Math.min(1,morte.t/.7)*Math.PI/2*(p.face<0?-1:1);shadow(sx,sy-2,24,6);ctx.save();ctx.translate(sx,sy-4);ctx.rotate(a);ctx.translate(-sx,-(sy-4));drawPerson(SPR.player,Object.assign({},p,{walk:0,noShadow:1}),hd);ctx.restore()}else if(state.riding&&vehDef())drawRider(p,hd);else drawPerson(SPR.player,Object.assign({},p,{lift:acaoLift()}),hd);drawAcao(p)}
+    else{const hd=skinOn()?null:HEADS.player.cv;if(morte){const sx=Math.round(p.x*T-camx),sy=Math.round((p.y+.28)*T-camy),a=Math.min(1,morte.t/.7)*Math.PI/2*(p.face<0?-1:1);shadow(sx,sy-2,24,6);ctx.save();ctx.translate(sx,sy-4);ctx.rotate(a);ctx.translate(-sx,-(sy-4));drawPerson(SPR.player,Object.assign({},p,{walk:0,noShadow:1}),hd);ctx.restore()}else if(state.riding&&vehDef())drawRider(p,hd);else drawPerson(SPR.player,Object.assign({},p,{lift:acaoLift()}),hd);drawAcao(p);if(state.doze&&!morte&&!state.riding)drawDoze(p.x,p.y,p.dir,p.face)}
   }
   if(MP.role&&MP.nome)tag(MP.nome+(MP.role==='host'?' 👑':''),p.x,p.y-1.35,'#ffe066');if(playerSay)bubbles.push([playerSay.text,p.x*T-camx,(p.y-1.95)*T-camy-(skinOn()?Math.max(0,SPR.player.down[0].height*SPR.player.down[0].sc-66):HEADS.player.cv?HEADS.player.cv.width-18:0)-(state.riding?20:0)]);
   for(const id in BLD)if(state.b[id]>3){const[lx,ly,lw]=BLD[id].lot;tag(`${BLD[id].nome} · Nv ${state.b[id]}`,lx+lw/2,ly-LT*S/T-.1,'#ffe066')}
   const near=a=>Math.hypot(a.x-p.x,a.y-p.y)<4;      // o nome do animal só aparece quando você chega perto
   for(const a of wild)if(near(a)){const t=animTier(a);tag(animName(a)+(t?' · '+rarName(a):''),a.x,tagY(a),t?RAR[t].c:'#fff')}
   {const used=[];for(const a of penAnim)if(near(a)&&!used.some(u=>Math.abs(u[0]-a.x)<1.3&&Math.abs(u[1]-a.y)<.8)){used.push([a.x,a.y]);const t=animTier(a);tag(animName(a)+(t?' · '+rarName(a):''),a.x,tagY(a),t?RAR[t].c:'#ffe9a8')}}
+  for(const f of dozeFx){const a=Math.min(1,f.t/.45),x1=f.x1*T-camx,y1=f.y1*T-camy,x2=f.x2*T-camx,y2=f.y2*T-camy;      // tiro: clarão, chumbinhos de sal e fumaça
+    ctx.save();if(f.t>.3){ctx.fillStyle='rgba(255,230,140,.95)';ctx.beginPath();ctx.arc(x1+(x2-x1)*.08,y1+(y2-y1)*.08,9*S/3+6,0,7);ctx.fill();ctx.fillStyle='rgba(255,150,40,.9)';ctx.beginPath();ctx.arc(x1+(x2-x1)*.08,y1+(y2-y1)*.08,5,0,7);ctx.fill()}
+    ctx.globalAlpha=a;ctx.fillStyle='#fff8e0';for(let i=0;i<7;i++){const k=Math.min(1,(.45-f.t)/.12)*(.4+i*.09),j=(i-3)*.06;ctx.fillRect(x1+(x2-x1)*k+j*(y2-y1)*.3-1,y1+(y2-y1)*k-j*(x2-x1)*.3-1,3,3)}
+    ctx.fillStyle='rgba(200,200,200,'+(.5*a)+')';for(const q of f.fum){ctx.beginPath();ctx.arc(q.x*T-camx,q.y*T-camy,q.r*T,0,7);ctx.fill()}ctx.restore()}
   if(pfx){const x=pfx.x*T-camx,y=pfx.y*T-camy;ctx.strokeStyle=pfx.stomp?'#ffb3a8':'#fff';ctx.lineWidth=4;ctx.globalAlpha=clamp(pfx.t/.18,0,1);
     ctx.beginPath();ctx.arc(x,y,Math.max(0,10+(.18-pfx.t)*90),0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1}
   if(fish&&fish.st!=='carga'){let bx=(fish.x+.5)*T-camx,by=(fish.y+.5)*T-camy+(fish.st==='bite'?5:fish.st==='jogo'?Math.sin(clock*30)*3:Math.sin(clock*4)*2);const px=p.x*T-camx,py=p.y*T-camy-34;
