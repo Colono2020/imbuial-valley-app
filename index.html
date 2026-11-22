@@ -3281,7 +3281,8 @@ const extraLot=e=>{const L=BLD[e.t].lot;return[e.x,e.y,L[2],L[3]]};
 function penInsts(t){const a=[];if(state.b[t]>0)a.push({pen:BLD[t].pen,cap:capOf(t,state.b[t])});      // o original e os extras, cada um com sua cerca
   for(const e of extrasDe(t)){const L=BLD[t].lot,Pn=BLD[t].pen;a.push({pen:[e.x+Pn[0]-L[0],e.y+Pn[1]-L[1],Pn[2],Pn[3]],cap:capOf(t,e.l),e})}return a}
 const capTotal=t=>penInsts(t).reduce((s,q)=>s+q.cap,0);
-function applyExtras(){for(let i=0;i<lotAt.length;i++)if(typeof lotAt[i]==='string'&&lotAt[i].startsWith('ex:'))lotAt[i]=null;
+function applyExtras(){for(const e of state.extras||[])if(e&&'fx' in e)delete e.fx;      // saves antigos tinham o tempo da animação de subir: com o relógio zerado ficavam invisíveis
+  for(let i=0;i<lotAt.length;i++)if(typeof lotAt[i]==='string'&&lotAt[i].startsWith('ex:'))lotAt[i]=null;
   for(const e of(state&&state.extras)||[]){const[x0,y0,w,hh]=extraLot(e);for(let y=y0;y<y0+hh;y++)for(let x=x0;x<x0+w;x++)lotAt[y*AW-XMIN+x]='ex:'+e.id}}
 const extraNivel=t=>bldNivel(t,1)+2;      // galinheiro extra: nível 3; curral extra: nível 4
 const extraPreco=t=>{const c=costOf(t,2),k=Math.pow(1.5,extrasDe(t).length);return{c:Math.round(c.c*k/10)*10,m:Math.round(c.m*k),p:Math.round(c.p*k)}};      // cada um a mais fica 50% mais caro
@@ -3389,7 +3390,7 @@ function drawClimaWorld(W,H){const hr=state.min/60,c=state.clima;
 /* ================= MULTIPLAYER: cooperativo no mundo do dono, até 4 jogadores, pela internet com código de sala =================
    Ligação: WebRTC (canal de dados direto entre os aparelhos). Para os aparelhos se acharem usa o servidor público grátis do PeerJS
    só como "telefonista" (sinalização). Quem hospeda manda no mundo; os convidados mandam o que fazem e o dono aplica e espalha. */
-const JOGO_VERSAO='2026-11-21l';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
+const JOGO_VERSAO='2026-11-21m';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
 const MP_MAX=4,MP_PREFIX=SLOT_KEYS[0].replace(/_slot_1$/,'').replace(/_/g,''),MP_SERVER='wss://0.peerjs.com:443/peerjs?key=peerjs';
 const MP_ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']},{urls:'stun:global.stun.twilio.com:3478'}]};
 const MP_LEVE=['p','energy','hunger','vida','forca','sujeira','sel','testoUntil','fomeT','coins','xpUntil','monster','napHoje'];      // muda toda hora: vai junto em cada batida
@@ -6506,7 +6507,7 @@ function render(){
     else if(d.k===35)drawBus();
     else if(d.k===36)drawBusRide();
     else if(d.k===38)drawMpPlayer(d.r);
-    else if(d.k===37){const e=d.e,img=lotSprite(e.t,e.l),a=e.fx!=null?Math.min(1,(clock-e.fx)/1.2):1;ctx.save();if(a<1){ctx.globalAlpha=.35+.65*a}ctx.drawImage(img,e.x*T-camx,e.y*T-camy-LT*S+Math.round((1-a)*20),img.width*S,img.height*S);ctx.restore();drawShine(img,extraLot(e))}
+    else if(d.k===37){const e=d.e,img=lotSprite(e.t,e.l),a=1;ctx.save();if(a<1){ctx.globalAlpha=.35+.65*a}ctx.drawImage(img,e.x*T-camx,e.y*T-camy-LT*S+Math.round((1-a)*20),img.width*S,img.height*S);ctx.restore();drawShine(img,extraLot(e))}
     else if(d.k===33){const img=lotSprite('praca',3);ctx.drawImage(img,d.f[0]*T-camx,d.f[1]*T-camy-LT*S,img.width*S,img.height*S)}
     else if(d.k===32)drawFuncNpc(d.n);
     else if(d.k===2)drawAnimal(d.a,d.a.led?d.a.moving:(d.a.vx||d.a.vy||d.a.flee>0||(lasso&&lasso.a===d.a)));
