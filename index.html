@@ -3318,10 +3318,11 @@ function spawnToefd(quiet){if(wild.some(a=>a.sp==='galinha'&&a.cor===TOEFD_COR))
     wild.push({sp:'galinha',x,y,vx:0,vy:0,timer:2,flee:0,face:1,cor:TOEFD_COR});state.toefdWild=true;
     if(!quiet){toast('🏆💪 Uma GALINHA T.O.E.F.D apareceu em algum lugar do mapa! Cada ovo dela vale R$ 3.000,00. Abra o mapa (M)!');for(let i=0;i<4;i++)setTimeout(()=>beep(520+i*130,.12,'square',.05),i*120)}return true}return false}
 function updateToefd(dt){state.toefdT=(state.toefdT||0)+dt;if(state.toefdT>=TOEFD_EVERY){state.toefdT=0;if(!state.toefdWild&&Math.random()<TOEFD_CHANCE)spawnToefd()}}
+const WILD_MULT=1.3;      // bichos soltos: 30% a mais que o limite de cada espécie (vaca 10, galinha 8, ovelha 8, pato 7, porco 5)
 function spawnWild(){
   const rn=Math.random;
-  for(const sp in SPECIES){const d=SPECIES[sp];let n=wild.filter(a=>a.sp===sp).length;
-    for(let t=0;t<60&&n<d.cap;t++){const z=d.zone2&&rn()<.6?d.zone2:d.zone,x=z[0]+rn()*(z[2]-z[0]),y=z[1]+rn()*(z[3]-z[1]);      // 60% perto da fazenda nova
+  for(const sp in SPECIES){const d=SPECIES[sp],cap=Math.round(d.cap*WILD_MULT);let n=wild.filter(a=>a.sp===sp).length;
+    for(let t=0;t<80&&n<cap;t++){const z=d.zone2&&rn()<.6?d.zone2:d.zone,x=z[0]+rn()*(z[2]-z[0]),y=z[1]+rn()*(z[3]-z[1]);      // 60% perto da fazenda nova
       if(inVila(x,y,1))continue;
       if(inFarm(x,y,1))continue;      // bicho solto não nasce dentro da fazenda
       if(!canStand(x,y,.3)||Math.hypot(x-state.p.x,y-state.p.y)<4)continue;
@@ -3402,7 +3403,7 @@ function drawClimaWorld(W,H){const hr=state.min/60,c=state.clima;
 /* ================= MULTIPLAYER: cooperativo no mundo do dono, até 4 jogadores, pela internet com código de sala =================
    Ligação: WebRTC (canal de dados direto entre os aparelhos). Para os aparelhos se acharem usa o servidor público grátis do PeerJS
    só como "telefonista" (sinalização). Quem hospeda manda no mundo; os convidados mandam o que fazem e o dono aplica e espalha. */
-const JOGO_VERSAO='2026-11-23b';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
+const JOGO_VERSAO='2026-11-23c';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
 const MP_MAX=4,MP_PREFIX=SLOT_KEYS[0].replace(/_slot_1$/,'').replace(/_/g,''),MP_SERVER='wss://0.peerjs.com:443/peerjs?key=peerjs';
 const MP_ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']},{urls:'stun:global.stun.twilio.com:3478'}]};
 const MP_LEVE=['p','energy','hunger','vida','forca','sujeira','sel','testoUntil','fomeT','coins','xpUntil','monster','napHoje','doze'];      // muda toda hora: vai junto em cada batida
