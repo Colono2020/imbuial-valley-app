@@ -326,17 +326,17 @@
   .r-head{background:linear-gradient(#2f6fd1,#1a4796);border-bottom-color:#123372}.skinbox.lock{background:#eef2f8;border-color:#8fa6c8}.provador{flex:none;background:rgba(255,255,255,.14);border-radius:10px;padding:6px 8px;text-align:center;margin-right:84px}.provador img{width:auto!important;height:80px!important;border:0!important;background:none}.provador small{display:block;font-size:11px}
 .ccard .cprev{width:auto;height:60px}.skinbox{display:flex;gap:16px;align-items:flex-start;background:#fbf2d8;border:2px solid #c9a26b;border-radius:10px;padding:12px}.skinprev{flex:none;width:110px;height:110px;display:flex;align-items:center;justify-content:center;border-radius:8px;border:2px solid #7a4a2a;background:#6fb552}.skinprev img{max-width:100px;max-height:100px;image-rendering:pixelated}.r-head .sub img,.ccard small img{width:16px!important;height:16px!important;border:0!important;border-radius:0!important;vertical-align:-3px}
   /* ---- tela de abertura ---- */
-  #splash{position:fixed;inset:0;z-index:60;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2vh;cursor:pointer;
+  #splash{position:fixed;inset:0;z-index:60;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:1.6vh;padding:5vh 0 21vh;box-sizing:border-box;cursor:pointer;
     background:linear-gradient(#2e1a50 0%,#54246e 22%,#8c3478 40%,#cc5268 55%,#f2804f 68%,#fab058 80%,#fdd678 100%)}
   #splash.hide{animation:spOut .6s forwards}@keyframes spOut{to{opacity:0;transform:scale(1.06)}}
-  #splash .sun{position:absolute;left:50%;top:52%;width:34vmin;height:34vmin;margin:-17vmin 0 0 -17vmin;border-radius:50%;background:radial-gradient(#fff8c8 0 45%,#ffec96 46% 70%,rgba(255,236,150,0) 71%);box-shadow:0 0 12vmin 4vmin rgba(255,220,130,.55);animation:spSun 6s ease-in-out infinite alternate}
+  #splash .sun{position:absolute;left:50%;top:47%;width:34vmin;height:34vmin;margin:-17vmin 0 0 -17vmin;border-radius:50%;background:radial-gradient(#fff8c8 0 45%,#ffec96 46% 70%,rgba(255,236,150,0) 71%);box-shadow:0 0 12vmin 4vmin rgba(255,220,130,.55);animation:spSun 6s ease-in-out infinite alternate}
   @keyframes spSun{to{transform:translateY(-1.5vmin) scale(1.03)}}
-  #splash .hills{position:absolute;left:0;right:0;bottom:0;width:100%;height:40vh;image-rendering:pixelated}#splash .spbg{height:64vh}
-  #splash .spsexo{position:relative;display:flex;gap:2vmin;z-index:2}#splash .spsx{display:flex;flex-direction:column;align-items:center;gap:.3vh;padding:.6vh 2vmin .8vh;border-radius:16px;background:rgba(30,16,40,.78);border:3px solid rgba(255,255,255,.35);box-shadow:none;color:#fff;font-size:min(2.6vmin,15px)}
+  #splash .spbg,#splash .spfx{position:absolute;left:0;top:0;width:100%;height:100%;image-rendering:pixelated;pointer-events:none}#splash .spgap{flex:1;min-height:2vh}
+  #splash .spsexo{position:relative;display:flex;gap:2vmin;z-index:2}#splash .spsx{display:flex;flex-direction:column;align-items:center;gap:.3vh;padding:.6vh 2vmin .8vh;border-radius:16px;background:rgba(30,16,40,.62);backdrop-filter:blur(2px);border:3px solid rgba(255,255,255,.35);box-shadow:none;color:#fff;font-size:min(2.6vmin,15px)}
   #splash .spsx img{height:min(9vh,80px);image-rendering:pixelated;filter:drop-shadow(0 3px 0 rgba(0,0,0,.35))}#splash .spsx.on{background:rgba(255,224,102,.28);border-color:#ffe066;transform:translateY(-.4vh)}#splash .spsx:hover{border-color:#fff}
   #splash .cloud{position:absolute;height:3vmin;border-radius:3vmin;background:rgba(255,226,214,.55);animation:spCloud linear infinite}
   @keyframes spCloud{from{transform:translateX(-30vw)}to{transform:translateX(130vw)}}
-  #splash .logo{position:relative;text-align:center;line-height:.9;margin-top:-4vh;animation:spLogo 3s ease-in-out infinite alternate}
+  #splash .logo{position:relative;text-align:center;line-height:.9;margin-top:0;animation:spLogo 3s ease-in-out infinite alternate}
   @keyframes spLogo{to{transform:translateY(-1.2vmin) rotate(-1deg)}}
   #splash .logo b{display:block;font-size:min(15vmin,120px);font-weight:700;letter-spacing:.02em;color:#ffe066;
     text-shadow:0 .06em 0 #b5532a,0 .12em 0 #6e2a1a,.04em .04em 0 #6e2a1a,-.04em .04em 0 #6e2a1a,0 .2em .3em rgba(0,0,0,.35)}
@@ -346,7 +346,7 @@
   #splash .play{position:relative;font-size:min(4.4vmin,28px);padding:.5em 2.2em;border-radius:40px;background:linear-gradient(#8fd45a,#4f9a2f);border:4px solid #2f5a1c;color:#fff;
     text-shadow:0 2px 0 #2f5a1c;box-shadow:0 6px 0 #234513,0 10px 20px rgba(0,0,0,.35);animation:spPulse 1.4s ease-in-out infinite}
   @keyframes spPulse{50%{transform:scale(1.07)}}
-  #splash .hint{position:relative;color:#fff;opacity:.85;font-size:min(2.4vmin,14px);text-shadow:0 1px 2px #000}
+  #splash .hint{position:relative;color:#fff;opacity:.9;background:rgba(20,12,30,.45);padding:3px 12px;border-radius:12px;font-size:min(2.4vmin,14px);text-shadow:0 1px 2px #000}
   #splash .leaf{position:absolute;top:-4vh;width:1.4vmin;height:.9vmin;border-radius:0 70% 0 70%;animation:spLeaf linear infinite}
   @keyframes spLeaf{to{transform:translate(18vw,112vh) rotate(720deg)}}
   #splash .spcv{position:absolute;left:0;bottom:0;width:100%;height:30vh;pointer-events:none;image-rendering:pixelated}
@@ -1452,7 +1452,7 @@ function bonecoHD(dir,f,L){return hdCanvas((r,px,e,seg)=>{
   const sk=L.skin,skD=shd(sk,-.18),skL=shd(sk,.12),hr=L.hair||'#3b2a1a',hrD=shd(hr,-.32),hrL=L.hairHi||shd(hr,.25);
   const nu=L.topStyle==='nu',top=nu?sk:(L.top||'#7a8a9a'),topD=shd(top,-.25),topL=shd(top,.16),coat=L.coat,pants=L.cueca?null:(L.pants||'#3b4a6b'),pD=pants?shd(pants,-.25):null,pL=pants?shd(pants,.15):null;
   const sh=L.shoes||{col:sk,style:'pe'},shC=sh.style==='pe'?skD:sh.col,shD=shd(shC,-.3);
-  const cx=17,G=45,walk=typeof f==='number'&&f>0,ph=walk?(f-1)/4*Math.PI*2:0,acena=typeof f==='string'&&f.startsWith('acena'),af=typeof f==='string'?+f.slice(-1)||0:0;
+  const cx=17,G=45,walk=typeof f==='number'&&f>0,ph=walk?(f-1)/4*Math.PI*2:0,acena=typeof f==='string'&&f.startsWith('acena'),af=typeof f==='string'?+f.slice(-1)||0:0,pose=typeof f==='string'&&!acena?f.slice(0,-1):'';      // pose: joinha, flex, camisa, moeda, acelera (o que cada vendedor faz)
   const bob=walk&&(f===2||f===4)?-1:0,B=bob;      // nos quadros de passagem o corpo sobe 1 px
   const yNeck=16+B,ySh=17.5+B,yWaist=28+B,yHip=29.5+B;
   // ---------------- pernas ----------------
@@ -1549,6 +1549,7 @@ function bonecoHD(dir,f,L){return hdCanvas((r,px,e,seg)=>{
     perna(hx-.5,yHip,P[2],P[3],false);      // perna de trás
     tronco(true);perna(hx+.5,yHip,P[0],P[1],true);
     if(L.book)r(18,ySh+6,4,5,'#6e3a1e');
+    if(pose==='acelera'){const[gx,gy]=braco(17.5,ySh+1,1.2,1.5,true);r(gx-1,gy-1.4,5,2.6,'#1c1c1c');r(gx+3.5,gy-1.8,1,3.4,'#3a3f47');px(gx+(af?2:0),gy-1.6,'#5a616b');cabeca(true);return}      // Alison acelerando a moto (mão no punho)
     const[hx2,hy2]=braco(17.5,ySh+1,armA,armA+(senta?.6:.35)+(L.book?.6:0),true);if(L.book){r(hx2-1,hy2-3,4,5,'#6e3a1e');r(hx2,hy2-2,2,3,'#f2ead8')}
     cabeca(true)}
   else{
@@ -1564,6 +1565,13 @@ function bonecoHD(dir,f,L){return hdCanvas((r,px,e,seg)=>{
     tronco(false);
     // braços nas laterais, balançando ao contrário das pernas (ou acenando)
     if(acena){braco(cx-8,ySh+1,.2,.08,true);const t=af?.5:-.2;braco(cx+8,ySh+1,Math.PI*.82,Math.PI*.95+t,true)}
+    else if(pose==='joinha'){const[a1,a2]=braco(cx-8,ySh+1,.2,.08,true);      // joinha (Maikelen e Thiago; o Thiago segura o bico da bomba)
+      if(L.bico){r(a1-1.6,a2+.6,3.2,4.4,'#1c1c1c');r(a1-3.4,a2+3.6,2.2,1.6,'#2b2f35');px(a1-3.6,a2+5.2,'#ffd23f');r(a1-.4,a2-3,1,3.6,'#2b2f35')}
+      const[b1,b2]=braco(cx+8,ySh+1,-.35,-Math.PI*.84-(af?.12:0),true);r(b1-.7,b2-3.4,1.6,2.8,sk);px(b1-.7,b2-3.4,skL)}
+    else if(pose==='flex'){const t=af?.1:0;braco(cx-8,ySh+1,-Math.PI*.5,-Math.PI*(.94+t),true);braco(cx+8,ySh+1,Math.PI*.5,Math.PI*(.94+t),true)}      // Gabriel mostrando o muque
+    else if(pose==='camisa'){braco(cx-8,ySh+1,.1,1.15,true);braco(cx+8,ySh+1,-.1,-1.15,true);const c=af?'#2f6fd1':'#3fb53a',cD=shd(c,-.25),y0=ySh+3;      // Luan mostrando a camisa da coleção nova
+      r(cx-6,y0,12,12,c);r(cx-9,y0,3,5,c);r(cx+6,y0,3,5,c);r(cx-6,y0+11,12,1,cD);r(cx-2,y0,4,1.6,'#ffffff');r(cx-4,y0+2,1,8,shd(c,.2));px(cx,y0-1.6,'#8a8f98');px(cx,y0-2.6,'#8a8f98');e(cx-6.5,y0+1,1.6,1.5,sk);e(cx+6.5,y0+1,1.6,1.5,sk)}
+    else if(pose==='moeda'){braco(cx-8,ySh+1,.2,.08,true);const[b1,b2]=braco(cx+8,ySh+1,.15,-Math.PI*.9,true);const cy=b2-(af?7:3),cx2=b1+1.2;e(cx2,cy,1.7,af?.7:1.7,'#f5c542');px(cx2-.6,cy-.6,'#fff3b0');px(cx2+.8,cy+.6,'#c99a1a')}      // Junior jogando a moedinha
     else{const[a1,a2]=braco(cx-8,ySh+1,.2+sw*.06,.08+sw*.1,true);const[b1,b2]=braco(cx+8,ySh+1,-.2-sw*.06,-.08-sw*.1,true);
       if(L.book&&!up){r(b1-1,b2-4,4,5,'#6e3a1e');r(b1,b2-3,2,3,'#f2ead8')}}
     if(L.laranjas&&!up){r(cx-6,yWaist-6,12,5,top);for(let i=0;i<7;i++){const x=cx-5+((i*3)%10),y=yWaist-9+((i*2)%4)-(af&&i%3===0?1:0);e(x+1,y+1,1.4,1.4,'#f27a1a');px(x+.5,y+.5,'#ffb36b');if(i%2)px(x+1,y-.6,'#3c8f45')}}
@@ -1621,9 +1629,24 @@ function playerPerson(dir,f,eq){return mk(16,20,r=>{
     r(5,15,2,l,leg);r(9,15,2,rr,leg);shoe(5,15+l,2);shoe(9,15+rr,2);
   }})}
 function playerSet(eq){return hdSet(lookPlayer(eq))}
+/* ---------- visual Sobrevivente do jogador (capacete, máscara de gás, mochila e roupa remendada) ---------- */
+const SOBREV={set:null,nu:null,src:['data:image/png;base64,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','data:image/png;base64,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','data:image/png;base64,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','data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACMAAAA4CAYAAAB3yEEBAAAFd0lEQVR4Xu1ZW2wUVRj+/jPTcispgWLbtbDttlBKUVpjjIkm6iYGUBMfiPjgLTHGp8ZEJQYffPHFgIDBYDSRJwQljYkxMQqISzQ8kCjrSrkVe1kovS0I5eLS3e6cY860szszO7szsy3IQ79ksnPOmfn/b77/P+fM/AvMYhb/A5oCi4U8putaLdWA2Xn1ogoEqyqkqSyhnqGr5Ne2bzIGCUlAomIu4db4JIdHmmrM/vVOP6R8sZdEJAkzATshe3t07JZnQsyrlOawSCUkIQNuba/5ROFwuCgfjYCR/m6hjd9GY83CbEjcFDGPS3VCtYswcOVfVDeuIgbF0aerMooAAsFmXQY3BdzG65YuwKX4ecEZL40MgWOgO6bnikFIonJ+uaVt9BnJbEBhZXqy9w2PIZnMFI2CqzIZyk04Kbfh9HoybTEsybn1JW6n0VQ1H8N/n3Fck1zJyDCp5TlCXpxeSabyr5szqWR/4qblAc1wJaOxCQSCbZSYktjt6Q3Yr1u5pAIkBGpDqykYWuW4pLiSUbgCzmSsc0l3zRYuo53NJW41K9Xsv5wG6e4KL22uZAqhWLi4mh9WjjTqQs1UzKHn7UCkJxPWSOLzQ1ctPGX/6Fiua3R88lz2lZUpqG1cS8KkrhM8kWFTygae3py1MfTzdkvbgL1ftmsbHyBzmAtBjUQiBQclzEv59cuDlmvt7Wzy2q67eC7madN0zCb7XvJH5zY8vOm9oqSLwel+p908L0ySyO431mN1a5NuP/z2btwYvKifb3o85JtQ57E+HD88qX7kkw7998zpHnTsOSjshEqeTXcCs2QK4Z5SxtM6UwzPP3dfdvj7HxLTSiVfZOTMsMNMxmncD3yRWddW52j71+MxPPFom2U8MZbUr/0zbt02isEXGSfsPXAJQBX2xuXv9OCbzKGY1alZLftYe/1iX+x8k3msubqgA/tYMjXhi0xJUzs2L6wfMw3fyki03S6+05eKkpS5U7inyPgOU8W8soLCmMeMdcYPVPmtTQIgyiAe7xKYend1QikO/EAPEwkFI70nxf6qlJ97Zxx6mDQGZDAX+x7aCFz6rqATP0t7KVA5aVAyaZEmDSm2QLdhvHIaWLRhM6Ibcl8GJWFPffY2u30DjEC40ncK3yxNgwnrx/zdBiMITNAcRIdvouHg/rvt3wK1p/svsaamEpkEQ4V2E8Bi/e3djN7e3hkhabdrB60I1oh1rQ347fQ5vKZcw+fj/nba6cD+qaICDN2XR5BiDBwK3pybxIk1YUS7TqAu1EpyDTIgT4cunBUHvv3RN4f29nbXyqoqayUX4lHRwW8BgoEojbWnI4iisqDD3z97H8sDVgUvThUCZL9x7hcswwiKVq4XcmThL6kKLMwA69dtxIW+swKUX5k0E5GOzc7NpOyE3aCvwGJKQMZVnHnmdSz5+AsMDA9CEXKuOZbfHLH1SBc+inS5+SwInYwmBLqffQWBrV/ixtA/+GDLFpw6eRzLQi1EwrlMKmFWZMeRKOpDTTRHFK9oFoMqn56YisM/HdIP+V9EfUMrCT1zrapInRTO8nJix+EY7m9ao98RaGilHUdj4t2n2rJ+vYaLcSWFQH0z5Y4WEnoNzwmE6lAL7TSFYlskiuCKB4mb5squl8LY+UsuXF4TmpFWBsaY6SBAOJfTZb/0yk2KlWtl0HgGzCTitmMjtCzYQtsjJws8lDM8vlzJ1OIQbAJD/T3i05ef1K117DuC5StXk9DyQyrfBLjgnkMk4fpHhgTnHInR69j5Qot466ujkIVCkrkGYNerYbzTeY7yS6oC6dSgAHF9lp6PD7suep7IAAoUJkMnA6RhZOBaNrl5wWKq5KdB/mex/cUWsf7Dr13J/AeFEVQnWCyBCAAAAABJRU5ErkJggg==']};      // [frente, costas, de cueca frente, de cueca costas]
+const estiloSobrev=()=>!!(SOBREV.set&&state&&state.roupas&&state.roupas.estilo!=='classico'&&!(SKIN.set&&state.roupas.skin&&skinUnlocked()));      // padrão: sobrevivente; "classico" volta para as roupas da Pitol
+function sobrevFrames(im){const W=im.width,H=im.height,SC=73.5/H,PERNA=H-12,MEIO=Math.round(W*.43);
+  const f=n=>{const c=document.createElement('canvas');c.width=W;c.height=H+1;const g=c.getContext('2d');
+    const bob=n===2||n===4?-1:0,ergue=n===1?'e':n===3?'d':'';
+    g.drawImage(im,0,0,W,PERNA,0,1+bob,W,PERNA);      // corpo (sobe 1 px nos quadros de passagem)
+    g.drawImage(im,0,PERNA,MEIO,H-PERNA,0,PERNA+1-(ergue==='e'?2:0),MEIO,H-PERNA);      // perna esquerda
+    g.drawImage(im,MEIO,PERNA,W-MEIO,H-PERNA,MEIO,PERNA+1-(ergue==='d'?2:0),W-MEIO,H-PERNA);      // perna direita
+    c.sc=SC;c.pad=1*SC/S;return c};
+  return[0,1,2,3,4].map(f)}
+function loadSobrev(){const ims=SOBREV.src.map(()=>new Image());let ok=0;
+  const mk2=(f,u)=>{const fr=sobrevFrames(f);return{hd:1,down:fr,side:fr.concat([fr[0]]),up:sobrevFrames(u)}};
+  ims.forEach((im,i)=>{im.onload=()=>{if(++ok<ims.length)return;SOBREV.set=mk2(ims[0],ims[1]);SOBREV.nu=mk2(ims[2],ims[3]);if(state)applyOutfit()};im.src=SOBREV.src[i]})}
+const sobrevNu=()=>{const eq=(state&&state.roupas&&state.roupas.eq)||{};return!eq.shirt&&!eq.pants};      // começo do jogo: só a mochila e de cueca (sem máscara), até comprar roupa
 const outfitCache={};
 function applyOutfit(){const eq=(state&&state.roupas&&state.roupas.eq)||{},key=['hat','shirt','pants','shoes','oculos'].map(k=>eq[k]||'-').join('|')+JSON.stringify(pVis());
-  SPR.player=skinOn()?SKIN.set:(outfitCache[key]||(outfitCache[key]=playerSet(eq)));outfitIcon={}}
+  SPR.player=skinOn()?SKIN.set:estiloSobrev()?SOBREV.set:(outfitCache[key]||(outfitCache[key]=playerSet(eq)));outfitIcon={}}
 let outfitIcon={};
 function outfitPreview(eq,sc,vis){const k=JSON.stringify(eq)+sc+JSON.stringify(vis||pVis());if(outfitIcon[k])return outfitIcon[k];const img=outline(bonecoHD('down',0,lookPlayer(eq,vis))),c=document.createElement('canvas');sc=sc*S/HDS/2;
   c.width=img.width*sc;c.height=img.height*sc;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.drawImage(img,0,0,c.width,c.height);let u='';try{u=c.toDataURL()}catch(e){}return outfitIcon[k]=u}
@@ -1760,7 +1783,8 @@ function mateusPerson(dir,f){return mk(16,21,r=>{
     r(4,9,7,8,coat);r(4,12,7,1,coat3);r(5,9,6,1,band);r(4,10,1,3,band);r(7,10,2,5,coat2);r(7,15,2,1,sk);r(9,12,2,3,book);r(10,13,1,1,'#f2ead8')}
 })}
 // ---- cumprimentos animados dos vendedores (2 quadros cada, no tema de cada um) ----
-function npcGreet(o,dir,fn){return hdFrames(lookNpc(o,npcKey(o)),dir,['acena0','acena1'])}
+const GREET_POSE={maikelen:'joinha',thiago:'joinha',gabriel:'flex',luan:'camisa',junior:'moeda',alison:'acelera'};      // cada vendedor faz o gesto da loja dele
+function npcGreet(o,dir,k){const L=lookNpc(o,npcKey(o)),ps=GREET_POSE[k];if(k==='thiago')L.bico=1;return hdFrames(L,dir,ps?[ps+'0',ps+'1']:['acena0','acena1'])}
 function npcGreetVelho(o,dir,fn){return[0,1].map(f=>{const c=npcPerson(dir,0,o),g=c.getContext('2d');const r=(x,y,w,h,col)=>{g.fillStyle=col;g.fillRect(x,y,w,h)},clr=(x,y,w,h)=>g.clearRect(x,y,w,h);
   fn(r,clr,f,o.skin,o.arm||o.top,o.top);return outline(ghibli(c,dir,o.skin))})}
 function maikExtra(r,dir){const hr='#a8784a',hi='#c49464',az='#2f6fd1';
@@ -2044,7 +2068,7 @@ function buildSprites(){
     r(10,13,3,2,'#f2a7b5');r(1,5,1,7,'#e0e0e0');r(1,12,1,2,'#262626');e(11,12,7,1,'#e0e0e0')}));
   SPR.player=personSet({hat:'#e8c860',shirt:'#e5533d',pants:'#3d6fb5',skin:'#f2c79c'});      // trocado pela roupa do save em applyOutfit()
   SPR.var={};for(const sp in ANIM_VARS)SPR.var[sp]=ANIM_VARS[sp].map(v=>recolor(SPR[sp],v));
-  SPR.seller=npcSet(NPC_LOOKS.alison);SPR.mateus=mateusSet();SPR.mateusGreet=hdFrames(lookNpc(NPC_LOOKS.mateus,'mateus'),'down',['acena0','acena1']);SPR.greet={};for(const k in GREET_DRAW)SPR.greet[k]=npcGreet(NPC_LOOKS[k],k==='alison'?'side':'down',GREET_DRAW[k]);SPR.giliard=npcSet(NPC_LOOKS.giliard);SPR.maikelen=npcSet(NPC_LOOKS.maikelen);SPR.xande=npcSet(NPC_LOOKS.xande);SPR.xandeFr=xandeFrames();SPR.gabriel=npcSet(NPC_LOOKS.gabriel);SPR.gabrielBarb=hdSet(Object.assign(lookNpc(NPC_LOOKS.gabriel,'gabriel'),{top:'#f4f4f4',sleeve:'longa',glasses:null,avental:'#2a1c14',gravata:'#8a1a24',pants:'#2a2a30',shoes:{col:'#1c1c1c',style:'tenis'}}));SPR.thiago=npcSet(NPC_LOOKS.thiago);SPR.everton=altoSet(hdSet(Object.assign(lookNpc(NPC_LOOKS.everton,'everton'),{gravata:'#c9a227',sleeve:'longa'})),1.14);SPR.luan=npcSet(NPC_LOOKS.luan);SPR.junior=npcSet(NPC_LOOKS.junior);
+  SPR.seller=npcSet(NPC_LOOKS.alison);SPR.mateus=mateusSet();SPR.mateusGreet=hdFrames(lookNpc(NPC_LOOKS.mateus,'mateus'),'down',['acena0','acena1']);SPR.greet={};for(const k in GREET_DRAW)SPR.greet[k]=npcGreet(NPC_LOOKS[k],k==='alison'?'side':'down',k);SPR.giliard=npcSet(NPC_LOOKS.giliard);SPR.maikelen=npcSet(NPC_LOOKS.maikelen);SPR.xande=npcSet(NPC_LOOKS.xande);SPR.xandeFr=xandeFrames();SPR.gabriel=npcSet(NPC_LOOKS.gabriel);SPR.gabrielBarb=hdSet(Object.assign(lookNpc(NPC_LOOKS.gabriel,'gabriel'),{top:'#f4f4f4',sleeve:'longa',glasses:null,avental:'#2a1c14',gravata:'#8a1a24',pants:'#2a2a30',shoes:{col:'#1c1c1c',style:'tenis'}}));SPR.thiago=npcSet(NPC_LOOKS.thiago);SPR.everton=altoSet(hdSet(Object.assign(lookNpc(NPC_LOOKS.everton,'everton'),{gravata:'#c9a227',sleeve:'longa'})),1.14);SPR.luan=npcSet(NPC_LOOKS.luan);SPR.junior=npcSet(NPC_LOOKS.junior);
   SPR.moto={};for(const k in MOTOS)SPR.moto[k]=motoSpriteHD(MOTOS[k]);
   SPR.trator={};for(const k in TRATORES)SPR.trator[k]=tratorSpriteHD(TRATORES[k]);
   SPR.thief=personSet({hat:'#26262e',shirt:'#3a3a46',pants:'#1f1f27',skin:'#d9b08c'});
@@ -2389,7 +2413,7 @@ function drawGym(){const c=$('gymcv');if(!c||!c.getContext)return;const g=c.getC
   const by=y0+30+ph*32;g.fillStyle='#c9ced6';g.fillRect(30,by,140,5);                                    // barra subindo e descendo
   for(const x of[22,160]){g.fillStyle='#1c1c1c';g.fillRect(x,by-14,18,33);g.fillStyle='#474d55';g.fillRect(x+3,by-10,3,25)}
   g.fillStyle='#f2c79c';g.fillRect(x0+8,by+5,8,y0+60-by>0?y0+60-by:4);g.fillRect(x0+w-16,by+5,8,y0+60-by>0?y0+60-by:4);   // braços
-  {const hd=skinOn()?null:HEADS.player.cv;if(hd){const D=hd.width*sc/S;g.imageSmoothingEnabled=true;g.drawImage(hd,100-D/2,y0+hh/2-D,D,D);g.imageSmoothingEnabled=false}}      // cabeça no lugar do rosto
+  {const hd=skinOn()||estiloSobrev()?null:HEADS.player.cv;if(hd){const D=hd.width*sc/S;g.imageSmoothingEnabled=true;g.drawImage(hd,100-D/2,y0+hh/2-D,D,D);g.imageSmoothingEnabled=false}}      // cabeça no lugar do rosto
   if(fast){g.globalAlpha=Math.min(1,liftT);g.font='bold 20px Poppins,sans-serif';g.textAlign='center';g.fillStyle='#000';g.fillText(`+${liftGain.toFixed(1).replace('.',',')}`,101,27-(1.6-liftT)*10);
     g.fillStyle='#ffd23f';g.fillText(`+${liftGain.toFixed(1).replace('.',',')}`,100,26-(1.6-liftT)*10);g.globalAlpha=1}}
 let gymCv=null;
@@ -2708,6 +2732,7 @@ function openClothes(mode,tab,say){if(tab)clothTab=tab;clothMode=mode;const loja
       ${own?(on?`<small class="ok">vestindo</small><button class="mini alt" data-a="rtirar" data-v="${t}:${mode}">Tirar</button>`:`<small>já é sua</small><button class="mini" data-a="rvestir" data-v="${k}:${mode}">Vestir</button>`)
         :`<small>${brl(c.preco)}</small><button class="mini" data-a="rcomprar" data-v="${k}" ${state.coins>=c.preco?'':'disabled'}>Comprar e vestir</button>`}</div>`}).join('');
   const tabs=CLOTH_SLOTS.map(([id,nm,ico])=>{const cur=eq[id]?CLOTHES[eq[id]].nome:'nada';return`<button class="itab${t===id?' on':''}" data-a="rtab" data-v="${id}:${mode}">${ico} ${nm} <small>${cur}</small></button>`}).join('')
+    +`<button class="itab" data-a="estilo" data-v="${mode}">🪖 Visual: ${state.roupas.estilo==='classico'?'Clássico <small>(roupas da Pitol)</small>':'Sobrevivente <small>(trocar)</small>'}</button>`
     +`<button class="itab${t==='skin'?' on':''}" data-a="rtab" data-v="skin:${mode}">🎨 Skin própria <small>${!skinUnlocked()?'🔒 bloqueada':skinOn()?'usando':SKIN.cfg?'pronta':'nenhuma'}</small></button>`;
   const skinBody=!skinUnlocked()?`<div class="skinbox lock"><div class="skinprev"><b style="font-size:46px">🔒</b></div><div class="g"><b>Skin própria bloqueada</b>
       <p><small>Para usar uma imagem do seu PC como personagem, você precisa de <b>uma</b> destas coisas:</small></p>
@@ -2722,7 +2747,7 @@ function openClothes(mode,tab,say){if(tab)clothTab=tab;clothMode=mode;const loja
   showPanel('roupas',`<div class="v-head r-head"><button class="close" data-a="close">Fechar ✕</button>${loja?`<img src="${PORTRAIT.luan}" alt="">`:''}
       <div style="flex:1"><h1>${loja?'Pitol Calçados':'👚 Guarda-roupa'}</h1><div class="sub">${loja?'Luan · roupas, calçados, chapéus e skins · centro de Videira':'suas roupas compradas na Pitol Calçados'} · saldo <b>${brl(state.coins)}</b></div>
       ${loja?`<div class="bubble dark">${clothSay}</div>`:''}</div>
-      <div class="provador"><img src="${skinOn()&&SKIN.prev?SKIN.prev:outfitPreview(eq,4)}" alt=""><small>${skinOn()?'skin própria':naked?'só de cueca 😳':'provador'}</small></div></div>
+      <div class="provador"><img src="${skinOn()&&SKIN.prev?SKIN.prev:estiloSobrev()?SOBREV.src[0]:outfitPreview(eq,4)}" alt="" style="image-rendering:pixelated"><small>${skinOn()?'skin própria':estiloSobrev()?'sobrevivente':naked?'só de cueca 😳':'provador'}</small></div></div>
     <div class="itabs">${tabs}</div>
     <div class="v-body">${t==='skin'?skinBody:ids.length?`<div class="sgrid">${cards}</div>`:'<p style="text-align:center">Nenhuma peça desse tipo ainda. Compre na <b>Pitol Calçados</b>, no centro de Videira.</p>'}
       <p><small>Blusas, calças e calçados custam por volta de R$ 50,00; chapéus, por volta de R$ 250,00. Peça comprada é sua para sempre: troque quando quiser no guarda-roupa (casa ou mochila).</small></p></div>`)}
@@ -3403,7 +3428,7 @@ function drawClimaWorld(W,H){const hr=state.min/60,c=state.clima;
 /* ================= MULTIPLAYER: cooperativo no mundo do dono, até 4 jogadores, pela internet com código de sala =================
    Ligação: WebRTC (canal de dados direto entre os aparelhos). Para os aparelhos se acharem usa o servidor público grátis do PeerJS
    só como "telefonista" (sinalização). Quem hospeda manda no mundo; os convidados mandam o que fazem e o dono aplica e espalha. */
-const JOGO_VERSAO='2026-11-23c';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
+const JOGO_VERSAO='2026-11-23i';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
 const MP_MAX=4,MP_PREFIX=SLOT_KEYS[0].replace(/_slot_1$/,'').replace(/_/g,''),MP_SERVER='wss://0.peerjs.com:443/peerjs?key=peerjs';
 const MP_ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']},{urls:'stun:global.stun.twilio.com:3478'}]};
 const MP_LEVE=['p','energy','hunger','vida','forca','sujeira','sel','testoUntil','fomeT','coins','xpUntil','monster','napHoje','doze'];      // muda toda hora: vai junto em cada batida
@@ -5053,9 +5078,9 @@ const CAPA='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAA
 function openSplash(){const sp=$('splash');if(!sp||!sp.classList){openTitle();return}
   let leaves='';const cols=['#7fb04f','#e8823a','#f2c218','#d4512a','#9bc65a'];for(let i=0;i<14;i++)leaves+=`<i class="leaf" style="left:${(i*7.3)%100}vw;background:${cols[i%5]};animation-duration:${7+i%5*1.7}s;animation-delay:-${i*1.3}s"></i>`;
   let clouds='';for(let i=0;i<4;i++)clouds+=`<i class="cloud" style="top:${10+i*8}vh;width:${14+i*6}vw;animation-duration:${38+i*11}s;animation-delay:-${i*13}s"></i>`;
-  sp.innerHTML=`<div class="sun"></div>${clouds}<canvas class="hills spbg" id="spbg"></canvas><canvas class="spcv" id="spcv"></canvas>${leaves}
+  sp.innerHTML=`<div class="sun"></div>${clouds}<canvas class="spbg" id="spbg"></canvas><canvas class="spfx" id="spfx"></canvas><canvas class="spcv" id="spcv"></canvas>${leaves}
     <div class="logo"><b>Imbuial</b><b>Valley</b><small>Um vale tranquilo em Videira · SC</small></div>
-    <img class="art" src="${CAPA}" alt="">
+    <div class="spgap"></div>
     <div class="spsexo" id="spsexo">${['h','m'].map(k=>`<button class="spsx${pSexo()===k?' on':''}" data-sx="${k}"><img src="${splashBoneco(k)}" alt=""><b>${k==='h'?'🎩 Cavalheiro':'👗 Dama'}</b></button>`).join('')}</div>
     <button class="play" id="splashplay">▶ JOGAR</button>
     <div class="hint">${isTouch?'toque em Jogar':'aperte Enter ou clique em Jogar'}</div><div class="ver">feito pelo Alison & Teus</div><button class="spquit" id="spquit">✖ Fechar jogo</button>
@@ -5073,32 +5098,74 @@ let splashGo=null;
 /* ---------- Fundo da tela de abertura desenhado com os gráficos do próprio jogo ---------- */
 function splashBoneco(k){const eq=k==='h'?{hat:'palha',shirt:'xadrez',pants:'jeans',shoes:'botina'}:{shirt:'cam_rosa',pants:'jeans',shoes:'tenis_branco'};
   return outfitPreview(eq,3,{skin:VIS_PELE,hair:k==='h'?VIS_CABELO:'#8a5a2a',hairStyle:k==='h'?'curto':'comprido',beard:null,stache:null,dama:k==='m'})}
+const SPL={casas:[],rio:null,cerca:null};      // o que o fundo desenhou, para as animações saberem onde ficam a fumaça, o rio e o cercado
 function drawSplashBg(){const cv=$('spbg');if(!cv||!cv.getContext)return;const W=cv.clientWidth|0,H=cv.clientHeight|0;if(!W||!H)return;cv.width=W;cv.height=H;
-  const g=cv.getContext('2d');g.imageSmoothingEnabled=false;const R=mulberry32(7),s=Math.max(2,Math.round(innerHeight/190)),sb=Math.max(2,s-1),T16=16*sb;
+  const g=cv.getContext('2d');g.imageSmoothingEnabled=false;const R=mulberry32(7),sb=Math.max(2,Math.round(Math.min(innerHeight,innerWidth*.6)/190)-1),T16=16*sb;
   const put=(img,x,footY,k)=>{if(!img)return;const sc=(img.sc||S)/S*k,w=img.width*sc,h=img.height*sc;g.drawImage(img,Math.round(x-w/2),Math.round(footY-h+(img.pad||0)*k),w,h)};
-  // morros do fundo com silhueta de araucária
-  const hz=H*.3;g.fillStyle='#603a5c';g.beginPath();g.moveTo(0,H);for(let x=0;x<=W;x+=8)g.lineTo(x,hz-6+Math.sin(x*.012)*7+Math.sin(x*.031+1)*4);g.lineTo(W,H);g.fill();
-  g.fillStyle='#3a1e3c';for(let x=10;x<W;x+=70+((x*7)%40)){const y=hz-4+Math.sin(x*.012)*7,hh=26+(x%3)*6;g.fillRect(x,y-hh,2,hh);for(const[dy,w]of[[0,9],[4,13],[8,15],[12,12]])g.fillRect(x-w/2+1,y-hh+dy,w,3)}
-  // campo com textura de grama do jogo
-  const gy0=H*.36;g.fillStyle='#4c9140';g.fillRect(0,gy0,W,H-gy0);
-  for(let y=gy0;y<H;y+=sb*2)for(let x=0;x<W;x+=sb*2){const v=R();if(v<.18){g.fillStyle=v<.08?'#3f7f35':'#5aa64a';g.fillRect(x,y,sb*2,sb*2)}}
-  g.fillStyle='#3a8634';g.beginPath();g.moveTo(0,gy0);for(let x=0;x<=W;x+=10)g.lineTo(x,gy0-4+Math.sin(x*.02)*5);g.lineTo(W,gy0+20);g.lineTo(0,gy0+20);g.fill();
-  // rio atravessando o campo
-  {const rx=W*.68;g.fillStyle='#3d7fb8';g.beginPath();g.moveTo(rx-30,gy0);g.bezierCurveTo(rx+20,H*.4,rx-80,H*.62,rx-10,H);g.lineTo(rx+70,H);g.bezierCurveTo(rx,H*.62,rx+60,H*.4,rx+10,gy0);g.fill();
-    g.fillStyle='rgba(255,255,255,.25)';for(let i=0;i<14;i++){const yy=gy0+R()*(H-gy0),xx=rx-10+Math.sin(yy*.02)*30+R()*30;g.fillRect(xx,yy,sb*4,sb)}}
-  // estrada de chão onde a turma passa
-  g.fillStyle='#c9a46a';g.fillRect(0,H*.9,W,H*.1);g.fillStyle='#b38a52';for(let x=0;x<W;x+=sb*6)g.fillRect(x+(x*7)%11,H*.9+((x*13)%9)*sb,sb*2,sb);g.fillStyle='#a07a46';g.fillRect(0,H*.9,W,sb)
-  // fileira de árvores do jogo (imbuias, araucárias e sakuras)
-  const back=[];for(let x=-20;x<W+40;x+=T16*.9+R()*T16*.7){const r=R();back.push([x,gy0+T16*.35+R()*T16*.5,r])}
-  back.sort((a,b)=>a[1]-b[1]);const kt=sb*.42;for(const[x,y,r]of back){if(Math.abs(x-W*.68)<T16*1.2)continue;const xi=Math.abs(x|0),im=r<.22?mkPine(2,1):r<.36?mkSakura(xi%4,1):mkTree(((xi/7)|0)%10,1+(xi%2),r>.85);put(im,x,y,kt)}
-  // Videira ao longe: lojas de verdade, encolhidas
-  try{const lojas=[barbSprite(),accSprite(),trigSprite(),pitolSprite(),gymSprite(),churchSprite()];let lx=W*.05;const ly=H*.6;
-    for(const im of lojas){const k=sb*.42;put(im,lx+im.width*k/2,ly,k);lx+=im.width*k+T16*.5;if(lx>W*.6)break}}catch(e){}
-  // árvores da frente, capim e flores
-  for(let i=0;i<16;i++){const x=R()*W,y=H*.62+R()*H*.24;if(Math.abs(x-W*.68)<T16*1.5)continue;const r=R();
-    put(r<.5?mkCapim((i%5),1+(i%2)):r<.8?mkBush(1,r<.6):mkRock(i%3,1,0),x,y,sb*.55)}
-  for(const x of[W*.03,W*.97]){put(mkTree(3,2,0),x,H*.97,sb*.75)}
-  for(let i=0;i<60;i++){g.fillStyle=['#f2c218','#e8823a','#ffffff','#e88fb5'][i%4];g.fillRect(R()*W,H*.6+R()*H*.28,sb,sb)}}
+  const onda=(y0,a1,f1,a2,f2,ph)=>x=>y0+Math.sin(x*f1+ph)*a1+Math.sin(x*f2+ph*2)*a2;
+  const morro=(fy,col)=>{g.fillStyle=col;g.beginPath();g.moveTo(0,H);for(let x=0;x<=W+8;x+=8)g.lineTo(x,fy(x));g.lineTo(W,H);g.fill()};
+  // 1) serra distante (roxa) com silhuetas de araucária
+  const f1=onda(H*.47,H*.018,.006,H*.009,.017,1);morro(f1,'#5c3558');
+  g.fillStyle='#43264a';for(let x=14;x<W;x+=46+((x*7)%38)){const y=f1(x)+2,hh=H*.03+(x%3)*H*.006;g.fillRect(x,y-hh,2,hh);for(const[dy,w]of[[0,9],[3,14],[6,16],[9,12]])g.fillRect(x-w/2+1,y-hh+dy,w,2)}
+  // 2) morro do meio (verde-escuro na luz do fim de tarde)
+  const f2=onda(H*.53,H*.012,.009,H*.006,.023,3);morro(f2,'#35573a');
+  g.fillStyle='rgba(255,170,110,.18)';g.beginPath();g.moveTo(0,H);for(let x=0;x<=W+8;x+=8)g.lineTo(x,f2(x));g.lineTo(W,H*.56);g.lineTo(0,H*.56);g.fill();      // luz do pôr do sol no alto do morro
+  // 3) campo
+  const gy0=H*.565;g.fillStyle='#4c9140';g.fillRect(0,gy0,W,H-gy0);
+  g.fillStyle='#3f8436';g.beginPath();g.moveTo(0,gy0+6);for(let x=0;x<=W+10;x+=10)g.lineTo(x,gy0-3+Math.sin(x*.02)*4);g.lineTo(W,gy0+14);g.lineTo(0,gy0+14);g.fill();
+  for(let y=gy0;y<H;y+=sb*2)for(let x=0;x<W;x+=sb*2){const v=R();if(v<.16){g.fillStyle=v<.07?'#3f7f35':'#5aa64a';g.fillRect(x,y,sb*2,sb*2)}}
+  // 4) rio que desce do morro (à direita) e passa debaixo da ponte da estrada
+  const rx=W*.8,ry=y=>rx+Math.sin((y-gy0)*.012)*W*.025+(y-gy0)*.06,rw=y=>8+(y-gy0)*.09;SPL.rio={x:ry,w:rw,y0:gy0,y1:H*.9};
+  g.fillStyle='#2f6ea6';g.beginPath();for(let y=gy0;y<=H;y+=6)g.lineTo(ry(y)-rw(y),y);for(let y=H;y>=gy0;y-=6)g.lineTo(ry(y)+rw(y),y);g.fill();
+  g.fillStyle='#4f93cc';g.beginPath();for(let y=gy0;y<=H;y+=6)g.lineTo(ry(y)-rw(y)*.55,y);for(let y=H;y>=gy0;y-=6)g.lineTo(ry(y)+rw(y)*.4,y);g.fill();
+  g.fillStyle='#d9c48a';for(let y=gy0+10;y<H*.9;y+=sb*3){g.fillRect(ry(y)-rw(y)-sb,y,sb,sb*2);g.fillRect(ry(y)+rw(y),y+sb,sb,sb*2)}      // areia da margem
+  // 5) estrada de chão com ponte de madeira sobre o rio
+  const ey=H*.895;g.fillStyle='#c9a46a';g.fillRect(0,ey,W,H-ey);g.fillStyle='#b38a52';for(let x=0;x<W;x+=sb*6)g.fillRect(x+(x*7)%11,ey+((x*13)%9)*sb+sb*2,sb*2,sb);g.fillStyle='#a07a46';g.fillRect(0,ey,W,sb);
+  {const bx=ry(ey)-rw(ey)-T16*.3,bw=rw(ey)*2+T16*.6,bh=H-ey;g.fillStyle='#7a5230';g.fillRect(bx,ey,bw,bh);g.fillStyle='#a8784a';for(let x=bx;x<bx+bw;x+=sb*4)g.fillRect(x,ey,sb*3,bh);      // ponte de tábuas
+    g.fillStyle='#4a2e1a';for(const yy of[ey-sb*3,H-sb*3]){g.fillRect(bx-sb,yy,bw+sb*2,sb*2)}for(let x=bx;x<=bx+bw;x+=Math.max(sb*6,bw/3)){g.fillRect(x-sb,ey-sb*6,sb*2,sb*6);g.fillRect(x-sb,H-sb*6,sb*2,sb*6)}}
+  // 6) tudo que fica de pé no campo, desenhado do fundo para a frente
+  const itens=[],livre=(x,y)=>Math.abs(x-ry(y))>rw(y)+T16*.6,meio=x=>x>W*.33&&x<W*.67;
+  for(let x=-10;x<W+30;x+=T16*.55+R()*T16*.5){const y=gy0+T16*.15+R()*T16*.45;if(!livre(x,y))continue;const r=R(),xi=Math.abs(x|0);
+    itens.push([y,r<.3?mkPine(1,xi%3===0):r<.42?mkSakura(xi%4,1):mkTree(((xi/7)|0)%10,1,r>.86),x,r<.3?sb*.26:sb*.36])}
+  // vila de Videira à esquerda: casinhas de colono e a igreja
+  try{const vila=[casaVSprite(0),churchSprite(),casaVSprite(2),casaVSprite(4),casaVSprite(5)],ys=[.66,.635,.67,.655,.685];let lx=W*.02;SPL.casas=[];
+    vila.forEach((im,k)=>{const sc=sb*.4,w=im.width*sc,y=H*ys[k];if(lx+w>W*.31)return;itens.push([y,im,lx+w/2,sc]);if(k!==1)SPL.casas.push([lx+w*.72,y-im.height*sc*.78]);lx+=w+T16*.25})}catch(e){}
+  // cercado com os bichos (os bichos andam no desenho animado)
+  {const cx0=W*.6,cy0=H*.64,cw=W*.14,ch=H*.1;SPL.cerca=[cx0,cy0,cw,ch];itens.push([cy0+ch,'cerca',cx0,cw,ch])}
+  // capim, moitas, pedras e flores na frente (fora do meio, onde ficam os botões)
+  for(let i=0;i<26;i++){const x=R()*W,y=H*.6+R()*H*.27;if(meio(x)||!livre(x,y))continue;const r=R();itens.push([y,r<.5?mkCapim(i%5,1+(i%2)):r<.8?mkBush(1,r<.6):mkRock(i%3,1,0),x,sb*.5])}
+  if(W>800)itens.push([H*1.02,mkTree(3,2,0),W*.015,sb*.62],[H*1.0,mkTree(6,2,1),W*.985,sb*.62]);
+  itens.sort((a,b)=>a[0]-b[0]);
+  for(const it of itens){if(it[1]==='cerca'){const[,,x0,cw,ch]=it,y0=it[0]-ch;g.fillStyle='#5aa64a';g.fillRect(x0,y0,cw,ch);
+      g.fillStyle='#6e4527';for(let x=x0;x<=x0+cw;x+=sb*7){g.fillRect(x,y0-sb*4,sb*2,sb*6);g.fillRect(x,y0+ch-sb*4,sb*2,sb*6)}for(const yy of[y0,y0+ch]){g.fillRect(x0,yy-sb*3,cw+sb*2,sb);g.fillRect(x0,yy-sb,cw+sb*2,sb)}
+      g.fillRect(x0,y0-sb*3,sb*2,ch+sb*3);g.fillRect(x0+cw,y0-sb*3,sb*2,ch+sb*3);continue}
+    put(it[1],it[2],it[0],it[3])}
+  for(let i=0;i<70;i++){const x=R()*W,y=H*.6+R()*H*.28;if(meio(x)||!livre(x,y))continue;g.fillStyle=['#f2c218','#e8823a','#ffffff','#e88fb5'][i%4];g.fillRect(x,y,sb,sb)}
+  // brilho do sol baixo sobre o campo
+  const lg=g.createLinearGradient(0,gy0,0,H);lg.addColorStop(0,'rgba(255,190,120,.22)');lg.addColorStop(.5,'rgba(255,190,120,0)');g.fillStyle=lg;g.fillRect(0,gy0,W,H-gy0)}
+/* animações do fundo: passarinhos, vaga-lumes, fumaça das chaminés, brilho do rio, bichos no cercado e o seu personagem */
+function splashFx(t){const cv=$('spfx');if(!cv||!cv.getContext)return;const W=cv.clientWidth|0,H=cv.clientHeight|0;if(!W||!H)return;if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H}
+  const g=cv.getContext('2d');g.imageSmoothingEnabled=false;g.clearRect(0,0,W,H);const sb=Math.max(2,Math.round(Math.min(innerHeight,innerWidth*.6)/190)-1);
+  // estrelinhas aparecendo no alto do céu
+  for(let i=0;i<40;i++){const x=(i*197.3)%W,y=(i*53.7)%(H*.2),a=.25+.45*Math.max(0,Math.sin(t*1.3+i*2.1));g.fillStyle=`rgba(255,246,220,${a.toFixed(2)})`;g.fillRect(x,y,i%5?2:3,i%5?2:3)}
+  // bandos de passarinhos atravessando o céu
+  for(let b=0;b<2;b++){const dur=26+b*9,p=((t+b*11)%dur)/dur,dir=b?-1:1,bx=dir>0?-80+p*(W+160):W+80-p*(W+160),by=H*(.36+b*.06)+Math.sin(t*.7+b)*8;
+    for(let i=0;i<5;i++){const x=bx-dir*(Math.abs(i-2)*16),y=by+Math.abs(i-2)*9,asa=Math.sin(t*10+i)>0?-3:2;g.strokeStyle='rgba(40,20,40,.75)';g.lineWidth=2;g.beginPath();g.moveTo(x-6,y+asa);g.lineTo(x,y);g.lineTo(x+6,y+asa);g.stroke()}}
+  // fumaça das chaminés da vila
+  for(const[x,y]of SPL.casas)for(let i=0;i<4;i++){const a=((t*.35+i/4)%1);g.fillStyle=`rgba(225,215,225,${(.42*(1-a)).toFixed(2)})`;g.beginPath();g.arc(x+a*14+Math.sin(t+i)*3,y-a*40,2+a*7,0,Math.PI*2);g.fill()}
+  // brilho correndo no rio
+  if(SPL.rio){const R=SPL.rio;for(let i=0;i<16;i++){const k=((t*.12+i/16)%1),y=R.y0+k*(R.y1-R.y0),x=R.x(y)+Math.sin(i*3.1)*R.w(y)*.5;g.fillStyle=`rgba(230,245,255,${(.55*Math.sin(k*Math.PI)).toFixed(2)})`;g.fillRect(x,y,sb*(3+i%3),sb)}}
+  // bichos pastando no cercado
+  if(SPL.cerca){const[x0,y0,cw,ch]=SPL.cerca,bichos=[['vaca',.2,.55,.09],['vaca',.62,.75,.07],['ovelha',.42,.35,.11],['galinha',.82,.4,.25],['galinha',.3,.85,.3],['porco',.72,.25,.1]];
+    for(const[sp,fx,fy,v]of bichos){const im=SPR[sp];if(!im)continue;const k=sb*.7,w=vw(im)*k,h=vh(im)*k,ph=t*v+fx*9,dx=Math.sin(ph)*cw*.12,x=x0+fx*cw+dx,y=y0+fy*ch,flip=Math.cos(ph)<0,anda=Math.abs(Math.cos(ph))>.3,pula=anda&&Math.floor(t*6)%2?k:0;
+      g.fillStyle='rgba(0,0,0,.18)';g.beginPath();g.ellipse(x,y,w*.38,w*.09,0,0,Math.PI*2);g.fill();
+      g.save();g.translate(Math.round(x-w/2+(flip?w:0)),Math.round(y-h-pula));if(flip)g.scale(-1,1);g.drawImage(im,0,0,w,h);g.restore()}}
+  // vaga-lumes no campo
+  for(let i=0;i<26;i++){const x=(i*233.7+Math.sin(t*.4+i)*30)%W,y=H*(.6+((i*37)%28)/100)+Math.cos(t*.5+i*1.7)*10,a=Math.max(0,Math.sin(t*1.8+i*2.3));if(a<.05)continue;
+    g.fillStyle=`rgba(255,240,140,${(a*.25).toFixed(2)})`;g.beginPath();g.arc(x,y,5,0,Math.PI*2);g.fill();g.fillStyle=`rgba(255,250,190,${a.toFixed(2)})`;g.fillRect(x-1,y-1,2,2)}
+  // o seu personagem parado no campo, respirando e olhando em volta
+  const pl=(typeof SOBREV!=='undefined'&&SOBREV.set)?SOBREV.set.down[0]:null;if(pl){const k=sb*.95,w=pl.width*pl.sc/S*k,h=pl.height*pl.sc/S*k,x=W*.25,y=H*.86,resp=Math.floor(t*1.6)%2,flip=Math.floor(t/4)%3===2;
+    g.fillStyle='rgba(0,0,0,.22)';g.beginPath();g.ellipse(x,y,w*.32,w*.08,0,0,Math.PI*2);g.fill();g.save();g.translate(Math.round(x-w/2+(flip?w:0)),Math.round(y-h-resp));if(flip)g.scale(-1,1);g.drawImage(pl,0,0,w,h);g.restore()}}
 addEventListener('resize',()=>{const sp=$('splash');if(sp&&!sp.classList.contains('hidden'))drawSplashBg()});
 /* ---------- Cenas animadas no fundo da tela de abertura ---------- */
 let spA=null;
@@ -5115,7 +5182,8 @@ function splashFrame(now){const sp=$('splash'),cv=$('spcv');if(!sp||!cv||!cv.get
   const W=cv.clientWidth|0,H=cv.clientHeight|0;if(!W||!H){requestAnimationFrame(splashFrame);return}
   if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H}
   const g=cv.getContext('2d');g.imageSmoothingEnabled=false;g.clearRect(0,0,W,H);
-  const t=(now-spA.t0)/1000,P=18,u=t%P,s=Math.max(2,Math.round(innerHeight/190)),sb=Math.max(2,s-1);
+  try{splashFx((now-spA.t0)/1000)}catch(e){}
+  const t=(now-spA.t0)/1000,P=18,u=t%P,s=Math.max(2,Math.round(Math.min(innerHeight,innerWidth*.6)/190)),sb=Math.max(2,s-1);
   const backY=H*.58,frontY=H*.96;
   const put=(img,x,y,k,flip)=>{const w=vw(img)*k,h=vh(img)*k;g.save();g.translate(Math.round(x),Math.round(y-h));if(flip){g.translate(w,0);g.scale(-1,1)}g.drawImage(img,0,0,w,h);g.restore()};
   const shadowAt=(x,y,w)=>{g.fillStyle='rgba(0,0,0,.18)';g.beginPath();g.ellipse(x,y,w,w*.22,0,0,Math.PI*2);g.fill()};
@@ -5318,6 +5386,7 @@ const ACT={
   rvestir(v){const[k,m]=v.split(':'),c=CLOTHES[k];if(!c||!state.roupas.owned[k])return;state.roupas.eq[c.tipo]=k;applyOutfit();save();openClothes.keep=1;openClothes(m)},
   rtirar(v){const[t,m]=v.split(':');state.roupas.eq[t]=null;applyOutfit();save();openClothes.keep=1;openClothes(m)},
   guarda(){openClothes('guarda')},
+  estilo(v){state.roupas.estilo=state.roupas.estilo==='classico'?'sobrev':'classico';applyOutfit();save();sfx.get();openClothes.keep=1;openClothes(v||clothMode)},
   skinlib(){if(skinUnlocked()||state.coins<SKIN_PRECO)return;state.coins-=SKIN_PRECO;state.roupas.skinLib=true;sfx.build();save();openClothes(clothMode,'skin','Desbloqueado! Agora é só escolher a imagem no seu PC.')},
   skinuse(v){if(!skinUnlocked())return;state.roupas.skin=v==='1';applyOutfit();save();openClothes.keep=1;openClothes(clothMode)},
   skinbig(v){if(!SKIN.cfg)return;SKIN.cfg.big=v==='1';saveSkin();buildSkin()},
@@ -6694,9 +6763,9 @@ function render(){
       ctx.fillStyle='#000';ctx.fillText('T.O.E.F.D GYM',sx+1,sy+1);ctx.fillStyle='#ffffff';ctx.fillText('T.O.E.F.D GYM',sx,sy)}
     else if(d.k===8){blit(SPR.moto[d.m],(d.x)*T-camx,(d.y)*T-camy,d.fl)}
     else if(d.k===9){const ag=greetOn('alison');drawPerson(ag?{side:[greetFr('alison')]}:SPR.seller,{x:SELLER_POS[0],y:SELLER_POS[1],dir:'left',walk:0},HEADS.seller.cv);if(ag)bubbles.push([greetSt.alison.text,SELLER_POS[0]*T-camx,(SELLER_POS[1]-1.85-(HEADS.seller.cv?HEADS.seller.cv.width/T-.3:0))*T-camy]);tag('Alison',SELLER_POS[0],SELLER_POS[1]-1.35-(HEADS.seller.cv?HEADS.seller.cv.width/T-.3:0),'#ffd23f')}
-    else{const hd=skinOn()?null:HEADS.player.cv;if(morte){const sx=Math.round(p.x*T-camx),sy=Math.round((p.y+.28)*T-camy),a=Math.min(1,morte.t/.7)*Math.PI/2*(p.face<0?-1:1);shadow(sx,sy-2,24,6);ctx.save();ctx.translate(sx,sy-4);ctx.rotate(a);ctx.translate(-sx,-(sy-4));drawPerson(SPR.player,Object.assign({},p,{walk:0,noShadow:1}),hd);ctx.restore()}else if(state.riding&&vehDef())drawRider(p,hd);else drawPerson(SPR.player,Object.assign({},p,{lift:acaoLift()}),hd);drawAcao(p);if(state.doze&&!morte&&!state.riding)drawDoze(p.x,p.y,p.dir,p.face)}
+    else{const hd=skinOn()||estiloSobrev()?null:HEADS.player.cv;if(morte){const sx=Math.round(p.x*T-camx),sy=Math.round((p.y+.28)*T-camy),a=Math.min(1,morte.t/.7)*Math.PI/2*(p.face<0?-1:1);shadow(sx,sy-2,24,6);ctx.save();ctx.translate(sx,sy-4);ctx.rotate(a);ctx.translate(-sx,-(sy-4));drawPerson(SPR.player,Object.assign({},p,{walk:0,noShadow:1}),hd);ctx.restore()}else if(state.riding&&vehDef())drawRider(p,hd);else drawPerson(SPR.player,Object.assign({},p,{lift:acaoLift()}),hd);drawAcao(p);if(state.doze&&!morte&&!state.riding)drawDoze(p.x,p.y,p.dir,p.face)}
   }
-  if(MP.role&&MP.nome)tag(MP.nome+(MP.role==='host'?' 👑':''),p.x,p.y-1.35,'#ffe066');if(playerSay)bubbles.push([playerSay.text,p.x*T-camx,(p.y-1.95)*T-camy-(skinOn()?Math.max(0,SPR.player.down[0].height*SPR.player.down[0].sc-66):HEADS.player.cv?HEADS.player.cv.width-18:0)-(state.riding?20:0)]);
+  if(MP.role&&MP.nome)tag(MP.nome+(MP.role==='host'?' 👑':''),p.x,p.y-1.35,'#ffe066');if(playerSay)bubbles.push([playerSay.text,p.x*T-camx,(p.y-1.95)*T-camy-(skinOn()||estiloSobrev()?Math.max(0,SPR.player.down[0].height*SPR.player.down[0].sc-66):HEADS.player.cv?HEADS.player.cv.width-18:0)-(state.riding?20:0)]);
   for(const id in BLD)if(state.b[id]>3){const[lx,ly,lw]=BLD[id].lot;tag(`${BLD[id].nome} · Nv ${state.b[id]}`,lx+lw/2,ly-LT*S/T-.1,'#ffe066')}
   const near=a=>Math.hypot(a.x-p.x,a.y-p.y)<4;      // o nome do animal só aparece quando você chega perto
   for(const a of wild)if(near(a)){const t=animTier(a);tag(animName(a)+(t?' · '+rarName(a):''),a.x,tagY(a),t?RAR[t].c:'#fff')}
@@ -6897,7 +6966,7 @@ try{cv.addEventListener('pointerdown',ev=>{if(ev.pointerType!=='mouse'||ev.butto
   addEventListener('pointerup',ev=>{if(ev.pointerType==='mouse'&&ev.button===0&&keys.e)keys.e=false});}catch(e){}
 try{cv.addEventListener('pointerdown',()=>{if(!fish)return;if(fish.st==='jogo'||fish.st==='carga')pescaHold=true});addEventListener('pointerup',()=>{pescaHold=false});addEventListener('pointercancel',()=>{pescaHold=false})}catch(e){}
 
-migrateOldSave();genMap();buildSprites();resize();loadHeads();loadSkin();loadSounds();
+migrateOldSave();genMap();buildSprites();resize();loadHeads();loadSkin();loadSobrev();loadSounds();
 state=newState();          // cenário de fundo na tela de mundos
 spawnWild();syncPens();syncNPCs();updateHUD();setupTouch();
 openSplash();
