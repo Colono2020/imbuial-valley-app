@@ -362,7 +362,15 @@
   #splash .spcv{position:absolute;left:0;bottom:0;width:100%;height:30vh;pointer-events:none;image-rendering:pixelated}
   #splash .spgear{position:absolute;right:12px;top:10px;width:42px;height:42px;padding:0;font-size:22px;border-radius:50%;background:rgba(0,0,0,.35);border:2px solid rgba(255,255,255,.55);box-shadow:none;z-index:3}
   #splash .spcfg{position:absolute;right:12px;top:58px;z-index:3;display:flex;flex-direction:column;gap:6px;background:rgba(30,18,10,.85);border:2px solid rgba(255,255,255,.35);border-radius:14px;padding:8px}#splash .spcfg.hidden{display:none}#splash .spcfg button{font-size:13px;padding:6px 12px;border-radius:10px;white-space:nowrap}
-  #splash .spquit{position:absolute;right:62px;top:12px;font-size:13px;padding:6px 14px;border-radius:20px;background:rgba(0,0,0,.35);border:2px solid rgba(255,255,255,.55);color:#fff;box-shadow:none}
+
+  /* botões de tábua de madeira (pixel) */
+  #splash .play,#splash .spquit{background:none;border:0;padding:0;box-shadow:none;border-radius:0;transition:transform .08s,filter .08s}
+  #splash .play img,#splash .spquit img,#splash .x{image-rendering:pixelated;display:block;filter:drop-shadow(0 4px 0 rgba(0,0,0,.3))}
+  #splash .play img{height:min(14vmin,88px)}#splash .spquit img{height:34px}
+  #splash .play:hover,#splash .spquit:hover{filter:brightness(1.12);transform:translateY(-2px)}#splash .spquit:active{transform:translateY(2px);filter:brightness(.95)}#splash .play:active{transform:translateY(5px);filter:brightness(.95)}
+  #splash .spgear{border-radius:6px;background:linear-gradient(#b06a35,#8a4f27);border:3px solid #3c1d0c;box-shadow:inset 0 2px 0 #e6a46a,0 3px 0 rgba(0,0,0,.35)}
+  #splash .hint{background:rgba(60,29,12,.75);border:2px solid #2e160a;border-radius:4px;color:#f6dfae}
+  #splash .spquit{position:absolute;right:62px;top:12px}
   #splash .ver{position:absolute;right:12px;bottom:8px;color:rgba(255,255,255,.75);font-size:11px}
 
   .titlecapa{display:flex;gap:12px;align-items:center}.titlecapa img{width:64px;height:64px;border-radius:12px;border:3px solid #3a2416;image-rendering:pixelated}.titlecapa h2{margin:0}
@@ -2173,7 +2181,7 @@ function buildSprites(){
   for(const k in ITEMS)if(ITEMS[k].qual){const b=I[ITEMS[k].base],q=QUALS.find(x=>x.ico===ITEMS[k].qual);I[k]=(r,e)=>{b(r,e);r(10,0,6,6,'#1c1c1c');r(11,1,4,4,q.c);if(q.ico==='★')r(12,1,2,2,'#fff8c0')}}
   for(const k in ITEMS)if(ITEMS[k].tier){const b=I[ITEMS[k].base],col=RAR[ITEMS[k].tier].c;I[k]=(r,e)=>{b(r,e);r(10,0,6,6,'#1c1c1c');r(11,1,4,4,col);r(12,1,1,1,'#ffffff')}}
   for(const k in I){const c=poliIcone(mk(16,16,I[k]));try{ICON[k]=c.toDataURL()}catch(e){ICON[k]=''}}
-  plantasIco()}
+  plantasIco();if(AXE_SPR.novo)ICON.machado=AXE_NOVO}
 const ic=id=>`<img class="ic" src="${ICON[id]}" alt="">`;
 
 /* ---------- Construções (sprites por nível) ---------- */
@@ -2477,6 +2485,8 @@ function gymSprite(){if(gymCv)return gymCv;const W=GYM_LOT[2]*16,H=GYM_LOT[3]*16
     base(r,0,W,H)})}
 const PICK_SPR=mk(14,16,r=>{r(6,3,2,13,'#8a5c38');r(7,3,1,13,'#a9744f');r(6,15,2,1,'#5a3a22');r(1,2,12,2,'#8d939c');r(1,2,12,1,'#d6dbe2');r(0,3,2,2,'#6c727b');r(12,3,2,2,'#6c727b');r(0,5,1,1,'#5a6069');r(13,5,1,1,'#5a6069');r(6,1,2,2,'#5a6069')});
 const AXE_SPR=mk(10,16,r=>{r(4,3,2,13,'#8a5c38');r(5,3,1,13,'#a9744f');r(0,1,6,5,'#9aa0a8');r(0,1,6,1,'#d6dbe2');r(0,5,2,1,'#6c727b')});
+const AXE_NOVO='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAAaCAYAAABRqrc5AAABQ0lEQVR4XmNkQAMqEiL/kYXuvHjDiK4GHcAVIGs+dfsJw7XrtxgS/Jxw6kc2HGwIzACY5mvXb8I1d5VnMoRllqMYtmp6J4ohLOgGnDx1BsP2o4cPwsXevH6JIc8EEoG5AJsBxAAWZEX37t0jRg92l6ADfn5+OIaBBfPn4LQAxSUw8PjxYwwNCYkpOA0BhwmlAMWQ58+egfHXL1/gmBjvEO0Sgt4xU5Vh0NJUYygqKiDoMxFRcQw1WFNsX98EuMJLBzZhNRgj2YMAobwzJcuK4dLlRwyzDj/ByJTwKIaZDDIM5D0YAImj52x0gJFO8GX9J6+/YPUa0bGDD5BkiIwoD2UuUTDSYfCL98JqCNa8gw0sWraFtAyIDcRF+YCFV+2bRTh2cAGau4RgdYCemkEAPS0RHcVmSnxgjA0QHTun7n3CGV4A6AqNy3k3bMIAAAAASUVORK5CYII=';      // machado novo: lâmina de aço com fio brilhante, olho com rebites e cabo de madeira com couro trançado (t/machado.png)
+{const im=new Image();im.onload=()=>{AXE_SPR.width=im.width;AXE_SPR.height=im.height;const g=AXE_SPR.getContext('2d');g.imageSmoothingEnabled=false;g.translate(im.width,0);g.scale(-1,1);g.drawImage(im,0,0);AXE_SPR.novo=1;if(typeof ICON!=='undefined')ICON.machado=AXE_NOVO};im.src=AXE_NOVO}
 /* ---------- Animações de trabalho: árvore (3 jeitos), pedra (3), frutas (2) e capim (2), com lasquinhas voando ---------- */
 let ambT=4;
 function ambTick(dt){if(muted||!state||MP.cap)return;ambT-=dt;if(ambT>0)return;ambT=3+Math.random()*6;const h=state.min/60,noite=h>=19||h<5.5,p=state.p;
@@ -2517,7 +2527,7 @@ function drawParts(){for(const q of parts){const k=1-q.t/q.life;ctx.globalAlpha=
 function acaoSom(k,v){if(k==='tree')sx('machado',v);else if(k==='rock')sx('picareta',v);else if(k==='fruit')sx('fruta',v);else if(k==='capim')sx('capim',v)}
 function acaoGuest(t){if(!t||t.k!=='obj'||state.depleted[t.i])return;const k={tree:'tree',rock:'rock',bush:'fruit',capim:'capim'}[t.o];if(k&&!(k==='rock'&&!state.flags.pick))startAcao(k,t.x,t.y,{ax:hasAxe(),i:t.i})}
 function drawSwing(p){if(swingT<=0)return;const sx=p.x*T-camx,sy=(p.y+.28)*T-camy,f=p.face||1,a=(1-swingT/.28)*2.2-1.2;
-  ctx.save();ctx.translate(sx+f*10,sy-34);ctx.scale(f,1);ctx.rotate(a);if(swingPick)ctx.drawImage(PICK_SPR,-14,-44,42,48);else ctx.drawImage(AXE_SPR,-6,-44,30,48);ctx.restore()}
+  ctx.save();ctx.translate(sx+f*10,sy-34);ctx.scale(f,1);ctx.rotate(a);if(swingPick)ctx.drawImage(PICK_SPR,-14,-44,42,48);else if(AXE_SPR.novo)ctx.drawImage(AXE_SPR,-9,-48,30,48);else ctx.drawImage(AXE_SPR,-6,-44,30,48);ctx.restore()}
 
 /* ---------- Arar terra: escolher as duas pontas ---------- */
 let plow=null,plowHover=null;      // plow={a:[x,y]|null,b:[x,y]|null}
@@ -3496,7 +3506,7 @@ function drawClimaWorld(W,H){const hr=state.min/60,c=state.clima;
 /* ================= MULTIPLAYER: cooperativo no mundo do dono, até 4 jogadores, pela internet com código de sala =================
    Ligação: WebRTC (canal de dados direto entre os aparelhos). Para os aparelhos se acharem usa o servidor público grátis do PeerJS
    só como "telefonista" (sinalização). Quem hospeda manda no mundo; os convidados mandam o que fazem e o dono aplica e espalha. */
-const JOGO_VERSAO='2026-11-23u';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
+const JOGO_VERSAO='2026-11-23y';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
 const MP_MAX=4,MP_PREFIX=SLOT_KEYS[0].replace(/_slot_1$/,'').replace(/_/g,''),MP_SERVER='wss://0.peerjs.com:443/peerjs?key=peerjs';
 const MP_ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']},{urls:'stun:global.stun.twilio.com:3478'}]};
 const MP_LEVE=['p','energy','hunger','vida','forca','sujeira','sel','testoUntil','fomeT','coins','xpUntil','monster','napHoje','doze'];      // muda toda hora: vai junto em cada batida
@@ -5179,8 +5189,8 @@ function openSplash(){const sp=$('splash');if(!sp||!sp.classList){openTitle();re
     <div class="logo"><b>Imbuial</b><b>Valley</b><small>Um vale tranquilo em Videira · SC</small></div>
     <div class="spgap"></div>
     <div class="spsexo" id="spsexo">${['h','m'].map(k=>`<button class="spsx${pSexo()===k?' on':''}" data-sx="${k}"><img src="${splashBoneco(k)}" alt=""><b>${k==='h'?'🎩 Cavalheiro':'👗 Dama'}</b></button>`).join('')}</div>
-    <button class="play" id="splashplay">▶ JOGAR</button>
-    <div class="hint">${isTouch?'toque em Jogar':'aperte Enter ou clique em Jogar'}</div><div class="ver">feito pelo Alison & Teus</div><button class="spquit" id="spquit">✖ Fechar jogo</button>
+    <button class="play" id="splashplay"><img src="${tabua('▶ JOGAR',{pad:11,t3d:1})}" alt="Jogar"></button>
+    <div class="hint">${isTouch?'toque em Jogar':'aperte Enter ou clique em Jogar'}</div><div class="ver">feito pelo Alison & Teus</div><button class="spquit" id="spquit" title="Fechar jogo"><img src="${tabua('✖ FECHAR')}" alt="Fechar jogo"></button>
     <button class="spgear" id="spgear" title="Configurações">⚙️</button><div class="spcfg hidden" id="spcfg"><button id="spmus">${musicaOff?'🔇 Música desligada':'🎵 Música ligada'}</button><button id="spsom">${muted?'🔇 Efeitos desligados':'🔊 Efeitos ligados'}</button></div>`;
   {const gb=$('spgear'),bx=$('spcfg'),mb=$('spmus'),sb=$('spsom');if(gb&&gb.addEventListener){const pare=ev=>{ev.stopPropagation()};
     gb.addEventListener('click',ev=>{pare(ev);getCtx();bx.classList.toggle('hidden')});bx.addEventListener('click',pare);
@@ -5191,6 +5201,22 @@ function openSplash(){const sp=$('splash');if(!sp||!sp.classList){openTitle();re
   sp.classList.remove('hidden','hide');drawSplashBg();
   const go=()=>{if(sp.classList.contains('hide'))return;getCtx&&getCtx();beep(523,.1,'square',.04);setTimeout(()=>beep(784,.16,'square',.04),110);sp.classList.add('hide');setTimeout(()=>{sp.classList.add('hidden');sp.classList.remove('hide')},600);openTitle()};
   sp.onclick=go;splashGo=go;{const q=$('spquit');if(q)q.onclick=ev=>{ev.stopPropagation();ACT.fecharjogo()}}startSplashAnim()}
+/* ---------- Botões de tábua (tela inicial) — letra pixel 5x7 desenhada aqui ---------- */
+const PXF={A:'01110100011000111111100011000110001',B:'11110100011000111110100011000111110',C:'01110100011000010000100001000101110',D:'11110100011000110001100011000111110',E:'11111100001000011110100001000011111',F:'11111100001000011110100001000010000',G:'01110100011000010111100011000101111',H:'10001100011000111111100011000110001',I:'01110001000010000100001000010001110',J:'00111000100001000010000101001001100',K:'10001100101010011000101001001010001',L:'10000100001000010000100001000011111',M:'10001110111010110101100011000110001',N:'10001110011010110011100011000110001',O:'01110100011000110001100011000101110',P:'11110100011000111110100001000010000',Q:'01110100011000110001101011001001101',R:'11110100011000111110101001001010001',S:'01111100001000001110000010000111110',T:'11111001000010000100001000010000100',U:'10001100011000110001100011000101110',V:'10001100011000110001100010101000100',W:'10001100011000110101101011101110001',X:'10001100010101000100010101000110001',Y:'10001100010101000100001000010000100',Z:'11111000010001000100010001000011111',' ':'00000000000000000000000000000000000','▶':'10000110001110011110111001100010000','✖':'00000100010101000100010101000100000','!':'00100001000010000100001000000000100'};
+function tabua(txt,o={}){const L=[...txt.toUpperCase()],K=o.t3d?2:1,tw=(L.length*6-1)*K,pad=o.pad||7,W=Math.max(o.w||0,tw+pad*2+2),H=o.t3d?26:15,c=document.createElement('canvas');c.width=W;c.height=H+1;const g=c.getContext('2d');
+  const r=(x,y,w,h,col)=>{g.fillStyle=col;g.fillRect(x,y,w,h)};let sd=txt.length*7+W;const rnd=()=>{sd=(sd*9301+49297)%233280;return sd/233280};
+  const D=o.d||0;if(D){c.height=H+D+1}const esc=o.cor||['#3c1d0c','#c98049','#b06a35','#9a5a2c','#7d4320','#e6a46a'];   // contorno, claro, corpo, veio, base, brilho
+  if(D){r(1,2,W-2,H+D-2,esc[0]);r(0,3,W,H+D-4,esc[0]);r(1,H+D-1,W-2,2,'rgba(0,0,0,.3)');r(1,H-2,W-2,D,'#6a3416');r(1,H-2,W-2,1,'#4f260f');r(1,H+D-3,W-2,1,'#4f260f');for(let x=6;x<W-4;x+=9)r(x,H-1,1,D-2,'#58290f');r(1,H-1,1,D-2,'#8a4a22');r(W-2,H-1,1,D-2,'#4a230d')}
+  r(1,0,W-2,H,esc[0]);r(0,1,W,H-2,esc[0]);if(!D)r(1,H,W-2,1,'rgba(0,0,0,.35)');               // contorno com cantos cortados + sombra
+  r(1,1,W-2,H-2,esc[2]);r(2,1,W-4,1,esc[5]);r(1,2,1,H-5,esc[1]);r(1,H-4,W-2,3,esc[4]);r(2,H-4,W-4,1,esc[3]);   // corpo, brilho, base grossa
+  for(let i=0;i<W/5;i++){const y=3+Math.floor(rnd()*(H-8)),x=2+Math.floor(rnd()*(W-10)),w=2+Math.floor(rnd()*5);r(x,y,w,1,esc[3])}   // veios da madeira
+  r(3,H-6,1,1,esc[0]);r(W-4,H-6,1,1,esc[0]);r(3,3,1,1,esc[0]);r(W-4,3,1,1,esc[0]);           // pregos
+  const x0=Math.round((W-tw)/2),y0=o.t3d?3:3,fill=o.letra||'#f6dfae',lin=o.contorno||'#4a2410';
+  const px=(f)=>L.forEach((ch,i)=>{const gl=PXF[ch]||PXF[' '];for(let k=0;k<35;k++)if(gl[k]==='1')f(x0+i*6+k%5,y0+(k/5|0))});
+  if(o.t3d){const E=3,M=new Map(),put=(x,y,v)=>{const q=x+','+y;if(!M.has(q)||v<M.get(q))M.set(q,v)};L.forEach((ch,i)=>{const gl=PXF[ch]||PXF[' '];for(let k=0;k<35;k++)if(gl[k]==='1')for(let a=0;a<K;a++)for(let b=0;b<K;b++){const x=x0+i*6*K+(k%5)*K+a,y=y0+(k/5|0)*K+b;put(x,y,0);for(let e=1;e<=E;e++)put(x,y+e,e)}});for(const q of M.keys()){const[x,y]=q.split(',').map(Number);for(const[dx,dy]of[[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,1],[1,-1],[-1,-1]])if(!M.has((x+dx)+','+(y+dy)))r(x+dx,y+dy,1,1,lin)}for(const[q,v]of M){const[x,y]=q.split(',').map(Number);r(x,y,1,1,v===0?(y-y0<4?'#fff6dc':y-y0<9?'#f6dfae':'#e6bd7c'):v===E?'#6e3a18':'#a3602c')}}
+  else{px((x,y)=>r(x-1,y,3,2,lin));px((x,y)=>r(x,y-1,1,3,lin));px((x,y)=>r(x,y,1,1,fill))}
+  return c.toDataURL()}
+function tabuaBtn(el,txt,o){if(!el)return;el.classList.add('tabua');el.innerHTML=`<img src="${tabua(txt,o)}" alt="${txt}">`}
 let splashGo=null;
 /* ---------- Fundo da tela de abertura desenhado com os gráficos do próprio jogo ---------- */
 function splashBoneco(k){const eq=k==='h'?{hat:'palha',shirt:'xadrez',pants:'jeans',shoes:'botina'}:{shirt:'cam_rosa',pants:'jeans',shoes:'tenis_branco'};
