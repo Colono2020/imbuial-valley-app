@@ -343,7 +343,7 @@
   @keyframes spSun{to{transform:translateY(-1.5vmin) scale(1.03)}}
   #splash .spbg,#splash .spfx{position:absolute;left:0;top:0;width:100%;height:100%;image-rendering:pixelated;pointer-events:none}#splash .spgap{flex:1;min-height:2vh}
   #splash .spsexo{position:relative;display:flex;gap:2vmin;z-index:2}#splash .spsx{display:flex;flex-direction:column;align-items:center;gap:.3vh;padding:.6vh 2vmin .8vh;border-radius:16px;background:rgba(30,16,40,.62);backdrop-filter:blur(2px);border:3px solid rgba(255,255,255,.35);box-shadow:none;color:#fff;font-size:min(2.6vmin,15px)}
-  #splash .spsx img{height:min(9vh,80px);image-rendering:pixelated;filter:drop-shadow(0 3px 0 rgba(0,0,0,.35))}#splash .spsx.on{background:rgba(255,224,102,.28);border-color:#ffe066;transform:translateY(-.4vh)}#splash .spsx:hover{border-color:#fff}
+  #splash .spsx img{height:min(9vh,80px);image-rendering:pixelated;filter:drop-shadow(0 3px 0 rgba(0,0,0,.35))}#splash .spsx.on{background:rgba(255,224,102,.28);border-color:#ffe066;transform:translateY(-.4vh)}#splash .spsx:hover{border-color:#fff}#splash .spsx{width:min(30vmin,170px);box-sizing:border-box;justify-content:flex-end}#splash .spsx b{white-space:nowrap}
   #splash .cloud{position:absolute;height:3vmin;border-radius:3vmin;background:rgba(255,226,214,.55);animation:spCloud linear infinite}
   @keyframes spCloud{from{transform:translateX(-30vw)}to{transform:translateX(130vw)}}
   #splash .logo{position:relative;text-align:center;line-height:.9;margin-top:0;animation:spLogo 3s ease-in-out infinite alternate}
@@ -375,7 +375,24 @@
 
   .titlecapa{display:flex;gap:12px;align-items:center}.titlecapa img{width:64px;height:64px;border-radius:12px;border:3px solid #3a2416;image-rendering:pixelated}.titlecapa h2{margin:0}
   .l-head{background:linear-gradient(#3d8fb8,#245f80);border-bottom-color:#183f56}.l-head img{border-color:#e9d8a6}
-  .lsaldo{flex:none;background:rgba(0,0,0,.22);border-radius:12px;padding:8px 12px;text-align:center;margin-right:96px}.lsaldo small{display:block;font-size:11px;opacity:.85}.lsaldo b{font-size:18px}.lsaldo img{width:18px!important;height:18px!important;border:0!important;vertical-align:-3px}
+  .mtabs{margin:0 0 8px}.eqh{margin:10px 0 6px;font-size:15px}.eqh small{font-weight:400;opacity:.75}.mcard.eqc .eqi{width:64px;height:auto;image-rendering:pixelated}
+  .altlock{background:rgba(0,0,0,.06);border:2px dashed #b0a07a;border-radius:12px;padding:18px;text-align:center;line-height:1.5}
+  .altc{display:flex;gap:12px;align-items:center;background:#fffdf5;border:2px solid #e2d6b4;border-radius:12px;padding:8px 10px;margin-bottom:8px;color:#2b2f35}.altc .mi{width:96px;image-rendering:pixelated}.altc .g{flex:1}
+  .sw{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0}.swc{width:24px;height:24px;min-width:0;padding:0;border-radius:6px;border:2px solid #3a2416;box-shadow:none}.swc.on{outline:3px solid #ffd23f;outline-offset:1px}
+  .altn input{width:60px;font-size:15px;padding:3px 6px;text-align:center;border-radius:6px;border:2px solid #b0a07a}
+  .lsaldo{flex:none;background:rgba(0,0,0,.22);border-radius:12px;padding:8px 12px;text-align:center;margin-right:96px}
+  .l-head .lsaldo{margin-right:0}
+  .lcart{flex:none;align-self:flex-start;margin-top:34px;width:222px;box-sizing:border-box;background:#fffdf5;color:#2b2f35;border:3px solid #183f56;border-radius:12px;padding:8px 10px;box-shadow:0 6px 16px rgba(0,0,0,.3);font-size:12.5px;text-align:left}
+  .lcart>b{display:block;font-size:14px;margin-bottom:4px}.lcart.vazio small{opacity:.75;line-height:1.3;display:block}
+  .lclist{max-height:150px;overflow:auto;margin:0 -4px;padding:0 4px}.lcl{display:flex;align-items:center;gap:5px;padding:3px 0;border-bottom:1px dashed #d8d2bd}
+  .lcl img{width:22px!important;height:22px!important;border:0!important;border-radius:0!important;image-rendering:pixelated;flex:none}.lcl .n{flex:1;line-height:1.15}.lcl .n i{color:#245f80;font-style:normal;font-weight:700}.lcl .p{font-weight:700;white-space:nowrap}
+  .lcl .lx{padding:0 7px;min-width:0;font-size:14px;line-height:20px;border-radius:6px;background:#e9e2cc;color:#7a2a1a;border:1px solid #c9bf9f;box-shadow:none}
+  .lctot{display:flex;justify-content:space-between;align-items:baseline;margin-top:6px;font-size:14px}.lctot b{font-size:18px;color:#1f6b2f}
+  .lcfalta{color:#c4302b;font-weight:700;display:block}.lcdep{opacity:.7;display:block}
+  .lcfim{width:100%;margin-top:6px;background:linear-gradient(#8fd45a,#4f9a2f);border-color:#2f5a1c;color:#fff;font-weight:700}.lcfim:disabled{filter:grayscale(1);opacity:.6}
+  .lclimpa{width:100%;margin-top:4px;padding:3px;font-size:11.5px;background:none;border:0;box-shadow:none;color:#7a2a1a;text-decoration:underline}
+  .lincart{display:block;color:#245f80;font-weight:700}
+  @media (max-width:760px){.l-head{flex-wrap:wrap}.l-head .lsaldo{margin-right:0}.lcart{position:static;width:100%;order:9;margin-top:6px}.lclist{max-height:84px}.lcart.vazio{padding:6px 10px}.lcart.vazio small br{display:none}}.lsaldo small{display:block;font-size:11px;opacity:.85}.lsaldo b{font-size:18px}.lsaldo img{width:18px!important;height:18px!important;border:0!important;vertical-align:-3px}
   .lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
   .lcard{position:relative;background:linear-gradient(#fffaf0,#f7e8c6);border:2px solid #c9a26b;border-radius:12px;padding:10px 8px 8px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:3px;box-shadow:0 3px 0 #c9a26b}
   .lcard>img{width:52px;height:52px;image-rendering:pixelated;background:#fff;border-radius:10px;border:2px solid #e3cfa0;padding:4px}
@@ -1323,7 +1340,7 @@ function load(n){if(n==null)n=curSlot==null?0:curSlot;try{const s=readSlot(n);if
   if(!s.nivel)s.nivel={lvl:Math.max(1,s.forca&&s.forca.lvl||1),xp:0};      // saves antigos: começa no nível da força, para não perder os pontos de estudo já usados
   for(const k in d.inv)if(s.inv[k]==null)s.inv[k]=0;for(const k in d.b)if(s.b[k]==null)s.b[k]=d.b[k];s.crops=s.crops||{};s.seeds=s.seeds||{};s.found=s.found||{};s.motos=s.motos||{};s.tratores=s.tratores||{};s.fuel=s.fuel||{};s.rideKind=s.rideKind||'moto';if(s.trator&&!TRATORES[s.trator])s.trator=null;s.forca=s.forca||{lvl:1,xp:0,hoje:0};s.estudos=Object.assign({floresta:0,geo:0,zoo:0,pesca:0},s.estudos||{});for(const k in s.estudos)s.estudos[k]=Math.min(s.estudos[k],STUDY_MAX);s.napHoje=s.napHoje||0;if(s.moto&&!MOTOS[s.moto])s.moto=null;s.riding=!!(s.riding&&s.moto);s.p.face=s.p.face||1;s.rain=!!s.rain;if(!s.roupas)s.roupas={owned:{palha:1,cam_vermelha:1,jeans:1,botina:1},eq:{hat:'palha',shirt:'cam_vermelha',pants:'jeans',shoes:'botina'}};      // saves antigos: fica com a roupa de antes
   s.roupas.owned=s.roupas.owned||{};if(!s.roupas.v){const ow=Object.keys(s.roupas.owned).sort().join();if(ow==='botina,cam_vermelha,jeans,palha'||!ow){s.roupas.owned={};s.roupas.eq={}}s.roupas.v=2}      // fica de cueca até comprar a primeira peça
-  for(const a of s.animals||[]){if(a.cor==null)a.cor=pickCor(a.sp);if(ANIM_VARS[a.sp]&&!ANIM_VARS[a.sp][a.cor])a.cor=0}s.func=s.func||{trat:[],lav:0};s.extras=s.extras||[];s.sujeira=s.sujeira||0;s.vsuj=s.vsuj||{};s.visual=s.visual||{};s.roupas.eq=Object.assign({hat:null,shirt:null,pants:null,shoes:null,oculos:null},s.roupas.eq||{});for(const k in s.roupas.eq){const c=s.roupas.eq[k];if(c&&!(CLOTHES[c]&&CLOTHES[c].tipo===k))s.roupas.eq[k]=null}
+  for(const a of s.animals||[]){if(a.cor==null)a.cor=pickCor(a.sp);if(ANIM_VARS[a.sp]&&!ANIM_VARS[a.sp][a.cor])a.cor=0}s.func=s.func||{trat:[],lav:0};s.extras=s.extras||[];s.sujeira=s.sujeira||0;s.vsuj=s.vsuj||{};s.mequip=s.mequip||{own:{esc_padrao:1},cap:null,capCor:'#d42a2a',camisa:false,calca:false};s.motoCustom=s.motoCustom||{};s.visual=s.visual||{};s.roupas.eq=Object.assign({hat:null,shirt:null,pants:null,shoes:null,oculos:null},s.roupas.eq||{});for(const k in s.roupas.eq){const c=s.roupas.eq[k];if(c&&!(CLOTHES[c]&&CLOTHES[c].tipo===k))s.roupas.eq[k]=null}
   migrateMap(s);return s}}catch(e){}return null}
 const maxEnergy=()=>{const l=state.b.casa;return l<=3?[0,100,130,160][l]:160+25*(l-3)};
 const vilaLevel=()=>Object.values(state.b).reduce((a,b)=>a+b,0);
@@ -1405,6 +1422,28 @@ function outline(c){     // contorno escuro de 1 px em volta do desenho (estilo 
     g.fillStyle='rgba(70,44,28,.9)';for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(d[(y*w+x)*4+3]>40){g.fillRect(x,y+1,3,1);g.fillRect(x+1,y,1,3)}
     g.drawImage(c,1,1);o.pad=1;return o}catch(err){return c}}
 // ---- motos e tratores HD (o dobro de detalhe, mesmo tamanho na tela) ----
+// ---- moto vista de frente (descendo) e de trás (subindo) ----
+function motoVistaHD(m,tras){const c=document.createElement('canvas');c.width=26;c.height=32;const g=c.getContext('2d');
+  const r=(x,y,w,h,col)=>{g.fillStyle=col;g.fillRect(x,y,w,h)};
+  const C=m.cor,C2=m.cor2,CL=shd(C,.25),CD=shd(C,-.3),MET='#c9ced6',MD='#7a8088',PR='#1c1c1c';
+  if(!tras){
+    r(4,10,5,8,C);r(4,10,5,1,CL);r(17,10,5,8,C);r(17,10,5,1,CL);r(5,12,3,5,CD);r(18,12,3,5,CD);      // carenagens do radiador
+    r(1,21,4,2,MD);r(21,21,4,2,MD);      // pedaleiras
+    r(10,17,6,15,PR);r(9,19,8,11,PR);r(10,31,6,1,'#111');      // pneu da frente
+    r(8,7,2,18,MET);r(16,7,2,18,MET);r(9,7,1,18,MD);r(17,7,1,18,MD);      // garfo
+    r(8,14,10,3,C);r(8,14,10,1,CL);r(9,17,8,1,CD);      // paralama
+    if(m.num){r(6,4,14,9,C2);r(7,5,12,7,'#f4f4f4');digitos(r,m.num,13,6,m.numCor||PR)}else{r(7,4,12,9,C2);r(8,5,10,7,'#f4f4f4');r(12,6,2,5,PR);r(11,7,1,1,PR)}      // placa da frente com número
+    r(0,3,26,2,PR);r(0,2,3,3,'#555');r(23,2,3,3,'#555');r(3,1,2,2,'#2b2b2b');r(21,1,2,2,'#2b2b2b')}      // guidão, manoplas e manetes
+  else{
+    {const st=m.esc;if(st==='esc_duplo'){r(19,7,4,4,'#8d939c');r(19,12,4,4,'#8d939c');r(20,9,2,1,'#2a2a2a');r(20,14,2,1,'#2a2a2a')}else if(st==='esc_curto'){r(19,10,3,4,'#8d939c');r(19,10,3,1,'#d6dbe2');r(20,13,1,1,'#2a2a2a')}else if(st==='esc_alto'){r(19,3,4,6,'#8d939c');r(19,3,4,1,'#d6dbe2');r(20,8,2,1,'#2a2a2a')}else if(st==='esc_oval'||st==='esc_esportivo'){r(18,7,6,7,'#8d939c');r(18,7,6,1,'#d6dbe2');r(19,12,4,2,'#2a2a2a')}else{r(19,8,4,6,'#8d939c');r(19,8,4,1,'#d6dbe2');r(20,13,2,2,'#2a2a2a')}}      // escapamento do lado direito
+    r(1,21,4,2,MD);r(21,21,4,2,MD);      // pedaleiras
+    r(6,7,4,9,C2);r(16,7,4,9,C2);r(7,9,2,5,'#f4f4f4');r(17,9,2,5,'#f4f4f4');      // plaquetas laterais
+    r(7,18,2,7,'#4a4f57');r(17,18,2,7,'#4a4f57');      // balança
+    r(9,17,8,15,PR);r(8,19,10,11,PR);r(9,31,8,1,'#111');      // pneu traseiro (mais largo)
+    r(11,13,4,5,'#c99a1a');r(11,14,4,1,'#f2c23a');r(11,16,4,1,'#f2c23a');      // amortecedor
+    r(9,2,8,9,PR);r(10,2,6,1,'#3a3a3a');      // banco
+    r(8,10,10,4,C);r(8,10,10,1,CL);r(9,14,8,1,CD);r(11,11,4,2,'#e33b3b');r(12,11,2,1,'#ff8a8a')}      // paralama de trás com lanterna
+  const o=outline(c);o.sc=S/2;o.pad=.5;return o}
 function motoSpriteHD(m){const c=document.createElement('canvas');c.width=52;c.height=32;const g=c.getContext('2d');
   const r=(x,y,w,h,col)=>{g.fillStyle=col;g.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h))};
   const e=(cx,cy,rx,ry,col)=>{g.fillStyle=col;for(let y=Math.ceil(cy-ry);y<=cy+ry;y++){const k=1-((y-cy)/ry)**2;if(k<0)continue;const dx=rx*Math.sqrt(k),x0=Math.round(cx-dx);g.fillRect(x0,y,Math.max(1,Math.round(cx+dx)-x0),1)}};
@@ -1416,13 +1455,13 @@ function motoSpriteHD(m){const c=document.createElement('canvas');c.width=52;c.h
   for(let i=0;i<6;i++)r(21+i*.6,9+i*1.5,3,1,i%2?'#f2c23a':'#c99a1a');      // amortecedor traseiro (mola)
   r(22,13,11,9,'#3a3f47');r(22,13,11,2,'#5a5f66');for(let y=15;y<22;y+=2)r(23,y,9,1,'#2a2e33');e(26,19,2.5,2.5,MD);e(26,19,1.2,1.2,MET);      // motor com aletas
   ln(40,4,33,21,2,'#2b2b2b');ln(30,6,8,6,1.6,'#2b2b2b');ln(24,13,12,7,1.4,'#2b2b2b');      // quadro e subquadro
-  ln(31,14,28,9,1.4,'#9aa0a8');ln(28,9,14,8,1.4,'#9aa0a8');r(3,7,11,3,'#8d939c');r(3,7,11,1,'#d6dbe2');r(2,8,1,1,'#2a2a2a');      // escapamento subindo por baixo do banco
+  escHD(r,ln,m.esc);      // escapamento subindo por baixo do banco
   ln(40,3,45,24,2.4,'#3a3a3a');ln(41,3,45.6,22,1,MET);r(39,2,3,3,'#2b2b2b');      // garfo
   r(38,1,7,1,PR);r(36,0,3,2,'#555');r(44,0,2,2,'#555');      // guidão e manoplas
   r(40,13,10,2,C);r(40,13,10,1,CL);r(48,12,3,2,C);      // paralama dianteiro (alto, de trilha)
   r(43,4,6,8,C2);r(44,5,4,6,'#f4f4f4');r(45,6,2,4,PR);      // placa da frente com número
   r(25,5,14,7,C);r(25,5,14,2,CL);r(36,6,3,5,CD);r(27,8,8,1,C2);      // tanque com faixa
-  r(17,4,10,8,'#f4f4f4');r(18,5,8,6,C2);r(20,6,3,4,'#f4f4f4');      // plaqueta lateral de número
+  if(m.num){r(15,4,13,8,C2);r(16,5,11,6,'#f4f4f4');digitos(r,m.num,21.5,5.5|0,m.numCor||'#1c1c1c')}else{r(17,4,10,8,'#f4f4f4');r(18,5,8,6,C2);r(20,6,3,4,'#f4f4f4')}      // plaqueta lateral de número
   r(6,2,24,3,PR);r(7,2,20,1,'#3a3a3a');      // banco comprido
   r(1,4,15,2,C);r(0,3,6,2,C);r(0,3,6,1,CL);r(1,6,2,1,'#e33b3b');      // paralama de trás e lanterna
   r(30,21,4,1,'#5a5f66');      // pedaleira
@@ -1621,7 +1660,7 @@ function bonecoHD(dir,f,L){return hdCanvas((r,px,e,seg)=>{
       const[b1,b2]=braco(cx+8,ySh+1,-.35,-Math.PI*.84-(af?.12:0),true);r(b1-.7,b2-3.4,1.6,2.8,sk);px(b1-.7,b2-3.4,skL)}
     else if(pose==='flex'){const t=af?.1:0;braco(cx-8,ySh+1,-Math.PI*.5,-Math.PI*(.94+t),true);braco(cx+8,ySh+1,Math.PI*.5,Math.PI*(.94+t),true)}      // Gabriel mostrando o muque
     else if(pose==='camisa'){braco(cx-8,ySh+1,.1,1.15,true);braco(cx+8,ySh+1,-.1,-1.15,true);const c=af?'#2f6fd1':'#3fb53a',cD=shd(c,-.25),y0=ySh+3;      // Luan mostrando a camisa da coleção nova
-      r(cx-6,y0,12,12,c);r(cx-9,y0,3,5,c);r(cx+6,y0,3,5,c);r(cx-6,y0+11,12,1,cD);r(cx-2,y0,4,1.6,'#ffffff');r(cx-4,y0+2,1,8,shd(c,.2));px(cx,y0-1.6,'#8a8f98');px(cx,y0-2.6,'#8a8f98');e(cx-6.5,y0+1,1.6,1.5,sk);e(cx+6.5,y0+1,1.6,1.5,sk)}
+      const Y=ySh-1,H=yHip+2-Y;r(cx-9,Y,18,H,c);r(cx-13,Y,4,7,c);r(cx+9,Y,4,7,c);r(cx-13,Y+6,4,1,cD);r(cx+9,Y+6,4,1,cD);r(cx-9,Y+H-1,18,1,cD);r(cx-9,Y,1,H,cD);r(cx+8,Y,1,H,cD);r(cx-3,Y,6,2,'#ffffff');r(cx-2,Y+2,4,1,shd(c,-.15));r(cx-6,Y+3,1,H-5,shd(c,.2));r(cx+3,Y+5,3,3,shd(c,.25));px(cx,Y-1,'#8a8f98');px(cx,Y-2,'#8a8f98');px(cx-1,Y-2.5,'#8a8f98');e(cx-9,Y+1,2,1.7,sk);e(cx+9,Y+1,2,1.7,sk)}
     else if(pose==='moeda'){braco(cx-8,ySh+1,.2,.08,true);const[b1,b2]=braco(cx+8,ySh+1,.15,-Math.PI*.9,true);const cy=b2-(af?7:3),cx2=b1+1.2;e(cx2,cy,1.7,af?.7:1.7,'#f5c542');px(cx2-.6,cy-.6,'#fff3b0');px(cx2+.8,cy+.6,'#c99a1a')}      // Junior jogando a moedinha
     else{const[a1,a2]=braco(cx-8,ySh+1,.2+sw*.06,.08+sw*.1,true);const[b1,b2]=braco(cx+8,ySh+1,-.2-sw*.06,-.08-sw*.1,true);
       if(L.book&&!up){r(b1-1,b2-4,4,5,'#6e3a1e');r(b1,b2-3,2,3,'#f2ead8')}}
@@ -1946,11 +1985,11 @@ const ANIM_VARS={      // r: raridade (0 comum … 4 lendário) · w: peso no so
     {n:'pescoço pelado',r:2,w:8,m:{'#e6e6e6':'#f0e2d0'},neck:'#e88a7a'},
     {n:'T.O.E.F.D',r:5,w:0,m:{'#ffffff':'#1f8a3a','#e6e6e6':'#c4302b'},shades:1}],
   ovelha:[{n:'branca',r:0,w:35,m:{}},
-    {n:'preta',r:2,w:8,m:{'#f5f5f0':'#3c3c42','#ffffff':'#4c4c54','#dcdcd4':'#2c2c32','#3b3b3b':'#1a1a1a'}},
-    {n:'marrom',r:1,w:14,m:{'#f5f5f0':'#8a6a4a','#ffffff':'#9c7a58','#dcdcd4':'#735637'}},
-    {n:'cinza',r:1,w:15,m:{'#f5f5f0':'#a8a8a8','#ffffff':'#bcbcbc','#dcdcd4':'#8f8f8f'}},
-    {n:'creme',r:0,w:22,m:{'#f5f5f0':'#e8d6b0','#ffffff':'#f2e3c4','#dcdcd4':'#cdbb94'}},
-    {n:'rosa',r:4,w:1.5,m:{'#f5f5f0':'#f4b6c8','#ffffff':'#f9cad8','#dcdcd4':'#e09ab0'}},
+    {n:'preta',r:2,w:8,m:{'#f5f5f0':'#3c3c42','#ffffff':'#4c4c54','#dcdcd4':'#2c2c32','#3b3b3b':'#1a1a1a','#c4c4ba':'#222228','#55524e':'#2e2e34'}},
+    {n:'marrom',r:1,w:14,m:{'#f5f5f0':'#8a6a4a','#ffffff':'#9c7a58','#dcdcd4':'#735637','#c4c4ba':'#5f4630'}},
+    {n:'cinza',r:1,w:15,m:{'#f5f5f0':'#a8a8a8','#ffffff':'#bcbcbc','#dcdcd4':'#8f8f8f','#c4c4ba':'#7a7a7a'}},
+    {n:'creme',r:0,w:22,m:{'#f5f5f0':'#e8d6b0','#ffffff':'#f2e3c4','#dcdcd4':'#cdbb94','#c4c4ba':'#b8a780'}},
+    {n:'rosa',r:4,w:1.5,m:{'#f5f5f0':'#f4b6c8','#ffffff':'#f9cad8','#dcdcd4':'#e09ab0','#c4c4ba':'#cf8aa0'}},
     {n:'malhada',r:3,w:4,m:{'#f5f5f0':'#f5f5f0'},bl:'#2c2c32'}],
   porco:[{n:'rosa',r:0,w:45,m:{}},
     {n:'piau',r:1,w:25,m:{'#f2a7b5':'#f2b8a0'},bl:'#2a2a2e'},
@@ -1972,17 +2011,17 @@ const ANIM_VARS={      // r: raridade (0 comum … 4 lendário) · w: peso no so
 const animTier=a=>{const v=ANIM_VARS[a.sp];return v&&v[a.cor|0]?v[a.cor|0].r:0};
 const prodOf=a=>{const t=animTier(a),k=SPECIES[a.sp].prod;return t?k+'_'+t:k};
 function pickCor(sp){const v=ANIM_VARS[sp];if(!v)return 0;let t=0;for(const x of v)t+=x.w;let r=Math.random()*t;for(let i=0;i<v.length;i++){r-=v[i].w;if(r<=0)return i}return 0}
-function recolor(img,vr){const w=img.width,h=img.height,c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.drawImage(img,0,0);
+function recolor(img,vr){const w=img.width,h=img.height,c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.drawImage(img,0,0);const bs=img.sc&&img.sc<S?2:1;
   try{const id=g.getImageData(0,0,w,h),d=id.data,hex=i=>'#'+[d[i],d[i+1],d[i+2]].map(v=>v.toString(16).padStart(2,'0')).join(''),M={};
     for(const k in vr.m)M[k]=[parseInt(vr.m[k].slice(1,3),16),parseInt(vr.m[k].slice(3,5),16),parseInt(vr.m[k].slice(5,7),16)];
     const body=Object.keys(vr.m)[0];
     for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;if(d[i+3]<250)continue;const k=hex(i);
-      if(vr.bl&&k===body&&hash2(x>>1,y>>1,11)<.32){const v=vr.bl;d[i]=parseInt(v.slice(1,3),16);d[i+1]=parseInt(v.slice(3,5),16);d[i+2]=parseInt(v.slice(5,7),16);continue}
+      if(vr.bl&&k===body&&hash2(x>>bs,y>>bs,11)<.32){const v=vr.bl;d[i]=parseInt(v.slice(1,3),16);d[i+1]=parseInt(v.slice(3,5),16);d[i+2]=parseInt(v.slice(5,7),16);continue}
       if(vr.sp&&k===body&&((x*7+y*13)%5===0)){const v=vr.sp;d[i]=parseInt(v.slice(1,3),16);d[i+1]=parseInt(v.slice(3,5),16);d[i+2]=parseInt(v.slice(5,7),16);continue}
       if(vr.shades&&y===3&&x>=7&&x<=10&&d[i+3]>200&&k!=='#e33b3b'&&k!=='#f5a623'){d[i]=17;d[i+1]=17;d[i+2]=17;continue}      // óculos escuros de academia
       if(vr.neck&&k==='#ffffff'&&x>=6&&y>=3&&y<=4){d[i]=0xe8;d[i+1]=0x8a;d[i+2]=0x7a;continue}
       if(M[k]){d[i]=M[k][0];d[i+1]=M[k][1];d[i+2]=M[k][2]}}
-    g.putImageData(id,0,0)}catch(e){}c.pad=img.pad;return c}
+    g.putImageData(id,0,0)}catch(e){}c.pad=img.pad;if(img.sc)c.sc=img.sc;return c}
 const animImg=a=>(SPR.var&&SPR.var[a.sp]&&SPR.var[a.sp][a.cor|0])||SPR[a.sp];
 const animName=a=>{const v=ANIM_VARS[a.sp],vv=v&&v[a.cor|0];return SPECIES[a.sp].nome+(vv&&vv.n!=='comum'&&(a.cor|0)?' '+vv.n:'')};
 const animFem=sp=>sp==='galinha'||sp==='ovelha'||sp==='vaca';
@@ -2109,8 +2148,8 @@ function buildSprites(){
   SPR.capim=mk(16,16,r=>{for(const[x,y,h]of[[2,6,9],[4,4,11],[6,7,8],[8,3,12],[10,6,9],[12,5,10],[13,8,7]]){r(x,y,1,h,'#c9d65a');r(x+1,y+2,1,h-2,'#a9bf3f')}});
   SPR.galinha=outline(mk(10,9,(r,e)=>{e(4,5,3,2,'#ffffff');r(0,3,2,3,'#e6e6e6');r(1,2,1,1,'#e6e6e6');r(6,1,3,4,'#ffffff');r(7,0,2,1,'#e33b3b');r(9,2,1,1,'#f5a623');r(7,2,1,1,'#222');r(8,4,1,1,'#e33b3b');r(3,5,3,1,'#e6e6e6');r(3,8,1,1,'#f5a623');r(5,8,1,1,'#f5a623')}));
   SPR.pato=outline(mk(11,9,(r,e)=>{e(4,5,4,2,'#f3efe0');r(0,4,2,2,'#f3efe0');r(7,2,2,4,'#2e7d4f');r(7,1,3,2,'#2e7d4f');r(10,2,1,1,'#f5a623');r(8,1,1,1,'#fff');r(7,4,2,1,'#fff');r(3,5,3,1,'#cfc7a8');r(3,8,1,1,'#f5a623');r(5,8,1,1,'#f5a623')}));
-  SPR.ovelha=outline(mk(16,12,(r,e)=>{e(7,5,6,4,'#f5f5f0');e(4,4,3,2,'#ffffff');e(9,3,3,2,'#ffffff');e(6,7,3,1,'#dcdcd4');e(10,6,2,1,'#dcdcd4');r(12,3,3,4,'#3b3b3b');r(11,3,1,2,'#3b3b3b');r(13,4,1,1,'#fff');r(12,2,3,1,'#f5f5f0');
-    r(3,9,1,3,'#3b3b3b');r(5,9,1,3,'#3b3b3b');r(9,9,1,3,'#3b3b3b');r(11,9,1,3,'#3b3b3b');r(0,4,1,2,'#f5f5f0')}));
+  SPR.ovelha=(()=>{const M='............................................HHHH......................HHHHHHHHHHHHHHHH...............HHHHHHHHHHHHHHHHHH............HHHHHHHHHHWWHHHHHWWW...........HHHHHWWHHWWHHHHWWWHHHH.........HHHHWHHHHHHHHHHHHHHHHHHW........HWWWHHHHHHHHHHHHHHHHHHWWW.......WHHHHHHHWHHHHWWHHHHHWWWHHW......HHHHHWWWWHWWWWHHHWWWWWWHHHKK...HHWWWWWWWWWWWWWWWWWWWWWKKKKKKK..WWWWWHHHHDWHHWDWHHWHHHFFKKKENK..WWWDHHHWWHHHHWHHHHHHWFFKKKKKKK..DSDHWWWWHHWWWHHWWWWWWWWKKKKKKKK..SSWWWWWWWWWWWWWWWWWDDDDKKKKKFF...SWWDDDWWWDDWWWDDDDDDSS...KKFFN...DSDSSDDDDDDDDDDSSSSSS....KKK.....SSSSSSSSSSSSSSSSSSS..............SSSSSSSSSSSSSSS.KK................KK..SS...SSK..KK................NN..KK....KK..NN....................NN....NN.............................................................................',P={H:'#ffffff',W:'#f5f5f0',D:'#dcdcd4',S:'#c4c4ba',K:'#3b3b3b',F:'#55524e',E:'#f4f4f4',N:'#2a2a2a'},c=document.createElement('canvas');c.width=32;c.height=24;const g=c.getContext('2d');      // ovelha HD: lã fofa em caroços, luz de cima, cabeça baixa pastando
+    for(let i=0;i<M.length;i++){const k=M[i];if(k==='.')continue;g.fillStyle=P[k];g.fillRect(i%32,i/32|0,1,1)}const o=outline(c);o.sc=S/2;o.pad=.5;return o})();
   SPR.porco=outline(mk(16,10,(r,e)=>{e(7,4,6,3,'#f2a7b5');e(6,3,4,1,'#f7c0cb');r(11,2,4,5,'#f2a7b5');r(15,4,1,2,'#d9788c');r(11,1,2,1,'#d9788c');r(13,3,1,1,'#222');r(0,3,1,1,'#d9788c');r(0,2,1,1,'#d9788c');
     r(2,7,2,3,'#e895a6');r(5,7,2,3,'#d9788c');r(9,7,2,3,'#e895a6');r(11,7,2,3,'#d9788c');r(2,9,2,1,'#8a5a63');r(5,9,2,1,'#8a5a63');r(9,9,2,1,'#8a5a63');r(11,9,2,1,'#8a5a63')}));
   SPR.vaca=outline(mk(27,19,(r,e)=>{e(11,8,9,5,'#fafafa');r(3,4,16,8,'#fafafa');e(8,7,3,2,'#262626');e(15,10,2,2,'#262626');r(3,4,3,3,'#262626');e(13,5,2,1,'#262626');
@@ -2120,7 +2159,7 @@ function buildSprites(){
   SPR.player=personSet({hat:'#e8c860',shirt:'#e5533d',pants:'#3d6fb5',skin:'#f2c79c'});      // trocado pela roupa do save em applyOutfit()
   SPR.var={};for(const sp in ANIM_VARS)SPR.var[sp]=ANIM_VARS[sp].map(v=>recolor(SPR[sp],v));
   SPR.seller=npcSet(NPC_LOOKS.alison);SPR.mateus=mateusSet();SPR.mateusGreet=hdFrames(lookNpc(NPC_LOOKS.mateus,'mateus'),'down',['acena0','acena1']);SPR.greet={};for(const k in GREET_DRAW)SPR.greet[k]=npcGreet(NPC_LOOKS[k],k==='alison'?'side':'down',k);SPR.giliard=npcSet(NPC_LOOKS.giliard);SPR.maikelen=npcSet(NPC_LOOKS.maikelen);SPR.xande=npcSet(NPC_LOOKS.xande);SPR.xandeFr=xandeFrames();SPR.gabriel=npcSet(NPC_LOOKS.gabriel);SPR.gabrielBarb=hdSet(Object.assign(lookNpc(NPC_LOOKS.gabriel,'gabriel'),{top:'#f4f4f4',sleeve:'longa',glasses:null,avental:'#2a1c14',gravata:'#8a1a24',pants:'#2a2a30',shoes:{col:'#1c1c1c',style:'tenis'}}));SPR.thiago=npcSet(NPC_LOOKS.thiago);SPR.everton=altoSet(hdSet(Object.assign(lookNpc(NPC_LOOKS.everton,'everton'),{gravata:'#c9a227',sleeve:'longa'})),1.14);SPR.luan=npcSet(NPC_LOOKS.luan);SPR.junior=npcSet(NPC_LOOKS.junior);
-  SPR.moto={};for(const k in MOTOS)SPR.moto[k]=motoSpriteHD(MOTOS[k]);
+  SPR.moto={};SPR.motoF={};SPR.motoT={};for(const k in MOTOS){SPR.moto[k]=motoSpriteHD(MOTOS[k]);SPR.motoF[k]=motoVistaHD(MOTOS[k],0);SPR.motoT[k]=motoVistaHD(MOTOS[k],1)}
   SPR.trator={};for(const k in TRATORES)SPR.trator[k]=tratorSpriteHD(TRATORES[k]);
   SPR.thief=personSet({hat:'#26262e',shirt:'#3a3a46',pants:'#1f1f27',skin:'#d9b08c'});
   SPR.npc=[{hat:'#8fb5e8',shirt:'#f5d76e',pants:'#6b4a33',skin:'#e8b88a'},{hat:'#c98a3d',shirt:'#7fb04f',pants:'#444a5a',skin:'#c99570'},
@@ -2250,6 +2289,45 @@ function motoShopSprite(){if(motoShopCv)return motoShopCv;const W=MOTO_LOT[2]*16
     for(const[x,y]of[[3,H-10],[3,H-16],[9,H-10]]){e(x+3,y+3,3,3,'#1c1c1c');e(x+3,y+3,1.4,1.4,'#555')}     // pilha de pneus
     r(66,H-12,5,9,'#c94f3d');r(66,H-12,5,1,'#e8735f');r(72,H-11,5,8,'#3d7ea6');r(72,H-11,5,1,'#5fa0c8');     // tambores de óleo
     base(r,0,W,H)})}
+// ---- casa principal: ala da esquerda sobre base de pedra + corpo com térreo de pedra, enxaimel em cima e telhado grande com águas-furtadas ----
+function pedras(r,x,y,w,h){r(x,y,w,h,'#6f757e');for(let yy=y,row=0;yy<y+h;yy+=4,row++){const hh=Math.min(4,y+h-yy);for(let xx=x-(row%2?3:0);xx<x+w;xx+=6){const a=Math.max(x,xx),b=Math.min(x+w,xx+6);if(b-a<2)continue;
+    r(a,yy,b-a-1,hh-1,((xx*7+yy*3)%3)?'#858b94':'#7a8089');r(a,yy,b-a-1,1,'#9aa0a8')}r(x,yy+hh-1,w,1,'#4e535a')}r(x-1,y,1,h,OUTL);r(x+w,y,1,h,OUTL)}
+function casaNova(r,e,W,H,lvl){const rf=lvl===3?'#6a4a3a':'#7f8f45',tel=mixc(rf,'#b04a2e',.62),wall='#c9a27a',G=H-3;
+  // --- corpo principal (direita) ---
+  const mx=28,mw=W-mx,mcx=mx+mw/2;
+  if(lvl>=2){r(34,0,9,20,OUTL);pedras(r,35,1,7,19);r(34,0,9,2,'#4e535a')}      // chaminé de pedra
+  roofTelha(r,mcx,8,37,mw/2-9,mw/2+2,tel);                                      // telhado grande
+  for(const dx of[mcx-11,mcx+12]){      // águas-furtadas (janelinhas no telhado)
+    r(dx-6,22,12,12,OUTL);r(dx-5,23,10,11,'#5e3b22');r(dx-3,25,6,7,OUTL);r(dx-2,26,4,5,'#bfe6ff');r(dx-2,26,1,2,'#fff');r(dx,26,1,5,'#5e3b22');
+    roofTelha(r,dx,17,25,1,7,shd(tel,-.08))}
+  enxaimel(r,mx+1,mw-2,36,54,wall);r(mx+1,37,mw-2,2,'rgba(0,0,0,.3)');      // andar de cima em enxaimel
+  win(r,mx+12,40);win(r,W-20,40);
+  beam(r,mx,54,mw,'#5e3b22');                                                   // viga entre os andares
+  pedras(r,mx+1,58,mw-2,G-58);                                                  // térreo de pedra
+  // porta em arco com moldura de pedra
+  const dx0=mx+15,dw=12,dt=G-19;e(dx0+dw/2,dt+2,dw/2+3,6,'#9aa0a8');e(dx0+dw/2,dt+2,dw/2+2,5,'#858b94');for(let i=-2;i<=2;i++)r(dx0+dw/2+i*3,dt-3+Math.abs(i),1,3,'#4e535a');
+  e(dx0+dw/2,dt+3,dw/2+.5,4.5,OUTL);door(r,dx0,H,dw,17);e(dx0+dw/2,dt+3,dw/2-.5,3.5,'#8a5c38');for(let i=dx0+2;i<dx0+dw;i+=2)r(i,dt,1,4,'#6e4527');
+  r(dx0+1,dt+8,dw-2,1,'#3a3f47');r(dx0+1,dt+13,dw-2,1,'#3a3f47');      // dobradiças de ferro
+  r(W-22,62,9,7,OUTL);r(W-21,63,7,5,'#2b2f35');r(W-21,63,7,1,'#4a4e56');r(W-18,63,1,5,'#5e3b22');      // janelinha do porão
+  // lenha empilhada encostada na parede
+  for(let row=0;row<3;row++)for(let i=0;i<3-(row>1?1:0);i++){const x=W-10+i*3+(row%2),y=G-3-row*3;e(x,y,1.6,1.6,'#6e4527');e(x,y,.8,.8,'#c9a26b')}
+  // --- ala da esquerda (sobre base de pedra, com escada) ---
+  const lx=0,lw=31,lcx=lx+lw/2;
+  pedras(r,lx+3,52,lw-6,G-52);r(lx+3,52,lw-6,2,'rgba(0,0,0,.35)');      // base de pedra
+  for(const px of[lx+1,lx+lw-3]){r(px-1,40,4,G-40,OUTL);r(px,40,2,G-40,'#5e3b22');r(px,40,1,G-40,'#7a4e2e')}      // esteios de madeira
+  enxaimel(r,lx+1,lw-2,30,51,wall);beam(r,lx,51,lw,'#5e3b22');
+  win(r,lx+11,35);
+  roofTelha(r,lcx,4,31,2,lw/2+3,tel);                                           // telhado da ala, de frente
+  r(lcx-1,14,3,3,OUTL);r(lcx,15,1,1,'#f5d76e');                                 // respiro em losango
+  // escada encostada
+  for(const x of[lx+7,lx+12]){r(x,46,1,G-46,'#8a5c38');r(x,46,1,1,OUTL)}for(let y=48;y<G;y+=4)r(lx+7,y,6,1,'#a9744f');
+  base(r,0,W,H);
+  // toras empilhadas na frente
+  for(const[x,y]of[[22,G-2],[26,G-2],[24,G-5]]){e(x,y,2,2,'#6e4527');e(x,y,1,1,'#c9a26b')}
+  if(lvl>=3){const cx=dx0+dw/2;for(const x of[cx-12,cx+11]){r(x,G-15,2,12,'#3a3f47');r(x-1,G-18,4,4,'#ffe9a0');r(x-1,G-19,4,1,OUTL)}      // lampiões
+    r(mcx+16,0,2,7,'#c9962a');r(mcx+13,1,8,1,'#c9962a');r(mcx+14,3,6,2,'#c9962a');      // cata-vento
+    e(W-3,G-1,4,3,'#3c8f45');e(3,G-1,4,3,'#3c8f45');r(1,G-4,2,2,'#e85d75');r(W-4,G-4,2,2,'#f5d76e');
+    for(let i=0;i<6;i++){r(mx+3+i*2,G-4,2,2,i%2?'#e0392b':'#f06a8a')}r(mx+2,G-2,13,1,'#3c8f45')}}
 function lotSprite(id,lvl){
   const key=id+lvl;if(lotCache[key])return lotCache[key];
   const[,,w,h]=BLD[id].lot,W=w*16,top=LT,H=h*16+top,wins=[];curWins=wins;
@@ -2259,15 +2337,7 @@ function lotSprite(id,lvl){
     if(id==='ponte'){if(lvl===0)sign(r,8,H);else{r(7,H-22,2,21,'#444');r(5,H-27,6,6,'#f5d76e');r(4,H-28,8,1,'#444');r(6,H-26,2,2,'#fff7c0')}return}
     if(lvl===0){r(1,top+1,W-2,H-top-2,'#b98f5a');for(let y=top+4;y<H-2;y+=5)r(2,y,W-4,1,'#a67c48');
       for(const[x,y]of[[0,top-3],[W-2,top-3],[0,H-8],[W-2,H-8]])r(x,y,2,8,'#6e4527');r(1,top,W-2,1,'#e5c592');r(1,H-5,W-2,1,'#e5c592');sign(r,W/2,H-4);return}
-    if(id==='casa'){const rf=lvl===3?'#4f8a6a':'#7f8f45',rh=house(r,0,W,H,'#9c4a32','#6e3020',rf,'',lvl===3?'#c9962a':'#5f7a3a'),cx=W/2;
-      win(r,12,rh+7);win(r,W-21,rh+7);
-      if(lvl>=2){win(r,24,rh+7);win(r,W-33,rh+7);r(W-22,2,10,20,OUTL);r(W-21,3,8,18,'#8d939c');r(W-21,3,8,2,'#6c727b');for(let y=7;y<20;y+=4)r(W-20+(y%8?0:3),y,3,1,'#6c727b');   // chaminé de pedra
-        roofA(r,cx,rh+12,rh+19,5,10,rf,4)}                                                                      // alpendre sobre a porta
-      door(r,cx-5,H,10,21);
-      if(lvl>=3){for(const x0 of[10,22,W-35,W-23]){r(x0,rh+18,13,3,'#8a5c38');r(x0,rh+20,13,1,OUTL);for(let i=0;i<5;i++)r(x0+1+i*2.5,rh+16,2,2,i%2?'#e85d75':'#f5d76e')}   // floreiras
-        r(cx-6,12,12,12,OUTL);r(cx-5,13,10,10,'#5a3a1e');r(cx-4,14,8,8,'#bfe6ff');r(cx,14,1,8,'#5a3a1e');r(cx-4,18,8,1,'#5a3a1e');      // janela do sótão
-        r(cx-1,0,2,5,'#c9962a');r(cx-4,0,8,1,'#c9962a');for(const x of[cx-10,cx+8]){r(x,H-16,2,12,'#3a3f47');r(x-1,H-19,4,4,'#ffe9a0');r(x-1,H-20,4,1,OUTL)}   // cata-vento e lampiões
-        e(4,H-4,4,3,'#3c8f45');e(W-5,H-4,4,3,'#3c8f45');r(3,H-7,2,2,'#e85d75');r(W-6,H-7,2,2,'#f5d76e')}}
+    if(id==='casa'){casaNova(r,e,W,H,lvl);}
     else if(id==='mercado'){const rh=house(r,0,W,H,'#c98e52','#9a6534','#3d6fa6','','#2d5f80');
       for(let x=0;x<W;x+=4){r(x,rh+1,4,6,(x/4)%2?'#ffffff':'#d9534f');r(x,rh+7,4,1,(x/4)%2?'#d0d0d0':'#a83f3b')}
       door(r,28,H);win(r,6,rh+14);win(r,49,rh+14);
@@ -2599,7 +2669,7 @@ function doPlow(){if(plow.mode==='tirar'){const[x0,y0,x1,y1]=plowRect(plow.a,plo
     sfx.build();toast(`${n} canteiro${n===1?'':'s'} de lavoura tirado${n===1?'':'s'}. Virou grama de novo.`);endPlow();panelKind=null;closePanel();save();return}
   const c=plowCount(plow.a,plow.b),cost=c.n*PLOW_PRICE;if(!c.n||state.coins<cost)return;
   const[x0,y0,x1,y1]=plowRect(plow.a,plow.b);for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)if(plowValid(x,y))state.soil[y*AW-XMIN+x]=1;sx('arar');setTimeout(()=>sx('arar'),180);
-  state.coins-=cost;sfx.build();addDirt(Math.min(25,4+c.n*.4));
+  state.coins-=cost;sfx.build();addDirt(Math.min(8,1+c.n*.1));
   if(!state.flags.seedGift){state.flags.seedGift=1;const k=Object.keys(CROPS).filter(c=>true).sort((a,b)=>CROPS[a].sem-CROPS[b].sem)[0];
     state.seeds[k]=(state.seeds[k]||0)+5;state.sel=k;setTimeout(()=>toast(`Ganhou 5 sementes de ${CROPS[k].nome.toLowerCase()} para começar!`),2600)}
   toast(`${c.n} canteiros arados! Fique em cima da terra e aperte E para plantar.`);endPlow();panelKind=null;closePanel();save()}
@@ -3127,14 +3197,110 @@ function drawMap(cvm){if(!cvm||!cvm.getContext)return;const g=cvm.getContext('2d
 let sellerLine=0,sellerSay='';
 function motoIcon(k){const s=SPR.moto[k],c=document.createElement('canvas');c.width=vw(s)*4;c.height=vh(s)*4;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.drawImage(s,0,0,c.width,c.height);try{return c.toDataURL()}catch(e){return''}}
 function sellerPortrait(){const H=HEADS.seller;return H.cfg&&H.cfg.src?H.cfg.src:PORTRAIT.seller}
+/* ---------- Loja de motos: equipamentos (capacetes, roupa de trilha, escapamentos) e personalização (cor e número da moto, cor do capacete) ---------- */
+const ALT_PRECO=100,ALT_NIVEL=20;
+const MOTO_CV={crf50:3,crf230:19,kx250:40,yz250:41,rmz250:42,crf450:55,ktm450:57,fc450:58};      // potência original de cada moto
+const escTier=id=>Math.max(0,ESCAPES.findIndex(q=>q[0]===id));      // 0 = original, 1..5 = cada vez mais forte
+const escDe=k=>(state&&state.motoCustom&&state.motoCustom[k]&&state.motoCustom[k].esc)||'esc_padrao';
+const motoCv=k=>(MOTO_CV[k]||10)+2*escTier(escDe(k));      // cada nível de escape: +2 cv
+const escVel=k=>1+.05*escTier(escDe(k));      // cada nível de escape: +5% de velocidade
+function escPreco(k,id){const i=Object.keys(MOTOS).indexOf(k),t=escTier(id);return Math.round((300+100*(t-1))*(1+Math.max(0,i)*.2)/10)*10}      // escape é de cada moto: mais cara a moto, mais caro o escape
+const escOwn=(k,id)=>id==='esc_padrao'||!!mEq().own[k+':'+id];
+function eqPreco(id){for(const L of[CAPACETES,ROUPA_TRILHA,ESCAPES.slice(1)]){const i=L.findIndex(q=>q[0]===id);if(i>=0)return 300+i*100}return 300}      // começa em 300 e sobe de 100 em 100
+const CAPACETES=[['cap_cross','Capacete motocross','Bico comprido, queixeira e óculos de trilha.'],['cap_pro','Capacete cross pro','O de competição: com faixas e óculos espelhados.'],
+  ['cap_fechado','Capacete fechado','Viseira fumê, fechado de ponta a ponta.'],['cap_aberto','Capacete aberto','Deixa o rosto de fora, com pala curtinha.'],['cap_coquinho','Capacete coquinho','O clássico meio-casco do vovô.']];
+const ESCAPES=[['esc_padrao','Escape original','O que vem de fábrica.'],['esc_esportivo','Escape esportivo','Ponteira cônica mais comprida, ronco grosso.'],['esc_duplo','Ponteira dupla','Duas saídas, uma em cima da outra.'],
+  ['esc_curto','Escape curto FMX','Curtinho, estilo das motos de manobra.'],['esc_alto','Escape alto de enduro','Sai lá em cima, pra atravessar rio.'],['esc_oval','Escape oval de competição','Silenciador gordo e oval.']];
+const ROUPA_TRILHA=[['camisa_trilha','Camisa de trilha','Manga longa, combina com a cor da moto.'],['calca_trilha','Calça de trilha','Reforçada no joelho, com botas de cano alto.']];
+const TXT_CORES=['#f4f4f4','#1c1c1c','#f2c218','#d42a2a','#f27a1a','#3fb53a','#1f5fd1','#3ab0e0','#e0509a','#6a3ab0'];
+const MOTO_CORES=['#d42a2a','#f27a1a','#f2c218','#3fb53a','#1f8a5a','#1f5fd1','#3ab0e0','#6a3ab0','#e0509a','#f4f4f4','#8a8f98','#1c1c1c'];
+const DIG3=['111101101101111','010110010010111','111001111100111','111001111001111','101101111001001','111100111001111','111100111101111','111001001001001','111101111101111','111101111001111'];
+const LET3={A:'010101111101101',B:'110101110101110',C:'011100100100011',D:'110101101101110',E:'111100110100111',F:'111100110100100',G:'011100101101011',H:'101101111101101',I:'111010010010111',J:'001001001101010',K:'101101110101101',L:'100100100100111',M:'101111111101101',N:'110101101101101',O:'010101101101010',P:'110101110100100',Q:'010101101110011',R:'110101110101101',S:'011100010001110',T:'111010010010010',U:'101101101101111',V:'101101101101010',W:'101101111111101',X:'101101010101101',Y:'101101010010010',Z:'111001010100111'};
+function letras(r,str,cx,y,col){str=String(str||'').toUpperCase().replace(/[^A-Z]/g,'').slice(0,2);const w=str.length*4-1,x0=Math.round(cx-w/2);[...str].forEach((ch,i)=>{const g=LET3[ch];for(let k=0;k<15;k++)if(g[k]==='1')r(x0+i*4+k%3,y+(k/3|0),1,1,col)})}
+function digitos(r,str,cx,y,col){str=String(str||'').slice(0,3);const w=str.length*4-1,x0=Math.round(cx-w/2);[...str].forEach((d,i)=>{const g=DIG3[+d];if(!g)return;for(let k=0;k<15;k++)if(g[k]==='1')r(x0+i*4+k%3,y+(k/3|0),1,1,col)})}
+function mEq(){if(!state.mequip)state.mequip={own:{esc_padrao:1},cap:null,capCor:'#d42a2a',camisa:false,calca:false};if(!state.motoCustom)state.motoCustom={};const q=state.mequip;
+  for(const id in q.own)if(id.startsWith('esc_')&&id!=='esc_padrao'){const k=state.moto||Object.keys(MOTOS).find(m=>state.motos[m]);if(k)q.own[k+':'+id]=1;delete q.own[id]}return q}
+const motoDef=k=>Object.assign({},MOTOS[k],(state&&state.motoCustom&&state.motoCustom[k])||{});
+let motoPCache={};
+function motoPlayer(k){const d=motoDef(k),key=k+'|'+d.cor+'|'+(d.num||'')+'|'+(d.esc||'')+'|'+(d.numCor||'');if(motoPCache[key])return motoPCache[key];
+  return motoPCache[key]={S:motoSpriteHD(d),F:motoVistaHD(d,0),T:motoVistaHD(d,1)}}
+// escapamento desenhado na moto de lado (todos na cor original, só muda o formato)
+function escHD(r,ln,st){const M='#8d939c',L='#d6dbe2',P='#9aa0a8',X='#2a2a2a';
+  if(st==='esc_esportivo'){ln(31,14,28,9,1.4,P);ln(28,9,16,8,1.4,P);r(2,6,15,4,M);r(2,6,15,1,L);r(1,7,1,2,X);r(0,7,1,2,M);r(14,6,1,4,L)}
+  else if(st==='esc_duplo'){ln(31,14,28,9,1.4,P);ln(28,9,14,8,1.4,P);r(3,6,11,2,M);r(3,6,11,1,L);r(3,9,11,2,M);r(3,9,11,1,L);r(2,6,1,2,X);r(2,9,1,2,X)}
+  else if(st==='esc_curto'){ln(31,14,28,10,1.4,P);ln(28,10,19,9,1.4,P);r(12,8,8,3,M);r(12,8,8,1,L);r(11,9,1,1,X)}
+  else if(st==='esc_alto'){ln(31,14,27,6,1.4,P);ln(27,6,15,4,1.4,P);r(4,2,12,3,M);r(4,2,12,1,L);r(3,3,1,1,X)}
+  else if(st==='esc_oval'){ln(31,14,28,9,1.4,P);ln(28,9,15,8,1.4,P);r(3,5,12,6,M);r(3,5,12,1,L);r(3,10,12,1,'#6c727b');r(2,6,1,4,X);r(14,5,1,6,L)}
+  else{ln(31,14,28,9,1.4,P);ln(28,9,14,8,1.4,P);r(3,7,11,3,M);r(3,7,11,1,L);r(2,8,1,1,X)}}
+// roupa de trilha: o boneco do jogador com camisa manga longa da cor da moto e calça reforçada
+let riderCache={};
+function riderSet(){const q=mEq();if(!q.camisa&&!q.calca)return SPR.player;const d=motoDef(state.moto),eq=state.roupas.eq||{},key=JSON.stringify([eq,pVis(),q.camisa,q.calca,d.cor,d.cor2,q.camCor]);if(riderCache[key])return riderCache[key];
+  const L=lookPlayer(eq);if(q.camisa)Object.assign(L,{top:q.camCor||d.cor,top2:d.cor2,topStyle:'liso',sleeve:'longa',rock:null});if(q.calca)Object.assign(L,{pants:shd(d.cor,-.55),shorts:null,cueca:false,shoes:{col:'#f4f4f4',style:'botina'}});
+  riderCache={};return riderCache[key]=hdSet(L)}
+// capacete por cima da cabeça do piloto (u = tamanho do pixel na tela)
+function drawCamisaNum(cx,cy,dir){const q=mEq();if(!q.camisa||dir==='left'||dir==='right')return;const d=motoDef(state.moto),u=1.5,lumF=c=>{const n=parseInt(c.slice(1),16);return((n>>16&255)*.3+(n>>8&255)*.59+(n&255)*.11)/255},lum=lumF(q.camCor||d.cor),col=q.camTxtCor||(lum>.62?'#1c1c1c':'#f4f4f4'),O=lumF(col)>.5?'#1c1c1c':'#f4f4f4';
+  const R=(x,y,w,h,c)=>{ctx.fillStyle=c;ctx.fillRect(Math.round(cx+x*u),Math.round(cy+y*u),Math.ceil(w*u),Math.ceil(h*u))};
+  const pinta=(fn,str,y)=>{const pts=[];fn((x,yy)=>pts.push([x,yy]),str,0,y,0);for(const[x,yy]of pts)R(x-1,yy-1,3,3,O);for(const[x,yy]of pts)R(x,yy,1,1,col)};
+  const fnD=(put,str,cx0,y)=>digitos((x,yy)=>put(x,yy),str,cx0,y,0),fnL=(put,str,cx0,y)=>letras((x,yy)=>put(x,yy),str,cx0,y,0);
+  const let_=q.camModo==='let'&&q.camLet,num=!let_&&q.camNum;
+  if(dir==='up'){if(let_)pinta(fnL,q.camLet,-1);else if(num)pinta(fnD,q.camNum,-1)}
+  else if(let_)pinta(fnL,q.camLet,-4);else if(num)pinta(fnD,q.camNum,-4)}
+function drawCapacete(id,cor,cx,cy,dir,G){G=G||ctx;const u=G===ctx?1.75:1.5,f=dir==='left'?-1:1,side=dir==='left'||dir==='right',CL=shd(cor,.3),CD=shd(cor,-.35),O='#1c1c1c';
+  const R=(x,y,w,h,c)=>{G.fillStyle=c;G.fillRect(Math.round(cx+(f<0?-(x+w):x)*u),Math.round(cy+y*u),Math.ceil(w*u),Math.ceil(h*u))};
+  const casco=(top,bot,hw)=>{for(let y=top;y<=bot;y++){const k=(y-(top+bot)/2)/((bot-top)/2+.5),w=Math.round(Math.sqrt(Math.max(0,1-k*k))*hw);R(-w-1,y,w*2+2,1,O)}
+    for(let y=top+1;y<bot;y++){const k=(y-(top+bot)/2)/((bot-top)/2+.5),w=Math.round(Math.sqrt(Math.max(0,1-k*k))*hw)-1;if(w>0)R(-w-1,y,w*2+2,1,y<top+3?CL:y>bot-3?CD:cor)}};
+  if(id==='cap_coquinho'){casco(-8,-1,7);R(-7,-1,14,1,O);if(side)R(-2,0,1,4,'#3a2416');return}
+  if(id==='cap_aberto'){casco(-8,2,7);if(side){R(1,-2,7,7,'#e8b88a');R(3,-1,1,1,'#222');R(2,-3,7,1,O)}else if(dir==='down'){R(-5,-2,10,7,'#e8b88a');R(-3,0,1,1,'#222');R(2,0,1,1,'#222');R(-6,-3,12,1,O);R(-5,-4,10,1,CD)}return}
+  casco(-8,6,7);
+  if(dir==='up'){if(id==='cap_pro'){R(-1,-7,2,12,'#f4f4f4')}else R(-6,-1,12,1,CD);return}
+  if(id==='cap_fechado'){if(side){R(2,-3,6,5,O);R(3,-2,5,3,'#1c2a3a');R(4,-2,2,1,'#6a8aa8')}else{R(-6,-3,12,5,O);R(-5,-2,10,3,'#1c2a3a');R(-4,-2,3,1,'#6a8aa8')}return}
+  // motocross: bico, óculos e queixeira
+  const lente=id==='cap_pro'?'#d8b04a':'#2a3a4a';if(id==='cap_pro'){R(-1,-8,2,13,'#f4f4f4');if(side)R(-6,-1,12,1,'#f4f4f4')}
+  if(side){R(1,-9,11,3,O);R(2,-8,10,1,CD);R(3,-7,8,1,cor);R(-7,-3,14,2,O);R(2,-3,6,3,O);R(3,-2,4,1,lente);R(4,-2,1,1,'#fff');R(5,2,5,4,O);R(6,2,3,3,cor);R(7,3,1,1,'#8a8f98')}
+  else{R(-8,-10,16,3,O);R(-7,-9,14,1,CD);R(-7,-3,14,4,O);R(-5,-2,4,2,lente);R(1,-2,4,2,lente);R(-4,-2,1,1,'#fff');R(-3,2,6,5,O);R(-2,2,4,4,cor);R(-1,4,2,1,'#8a8f98')}}
+function roupaIcon(id){const d=motoDef(state.moto&&state.motos[state.moto]?state.moto:'crf230'),c=document.createElement('canvas');c.width=40;c.height=40;const g=c.getContext('2d'),R=(x,y,w,h,col)=>{g.fillStyle=col;g.fillRect(x,y,w,h)},O='#1c1c1c';
+  if(id==='camisa_trilha'){const q=mEq(),cc=q.camCor||d.cor,tc=q.camTxtCor||O;R(9,7,22,26,O);R(3,9,8,18,O);R(29,9,8,18,O);R(10,8,20,24,cc);R(4,10,6,16,cc);R(30,10,6,16,cc);R(16,8,8,3,O);R(4,22,6,4,d.cor2);R(30,22,6,4,d.cor2);R(10,20,20,3,d.cor2);
+    const G2=(x,y,w,h,c)=>R(x*2-20,y*2-10,w*2,h*2,c);if(q.camModo==='let'&&q.camLet)letras(G2,q.camLet,20,11,tc);else digitos(G2,(q.camNum||'1'),20,11,tc)}
+  else{const pc=shd(d.cor,-.55);R(10,5,20,30,O);R(11,6,18,28,pc);R(19,14,2,20,O);R(11,6,18,3,d.cor);R(12,18,6,5,'#8a8f98');R(22,18,6,5,'#8a8f98');R(10,32,9,4,'#f4f4f4');R(21,32,9,4,'#f4f4f4')}
+  try{return c.toDataURL()}catch(e){return''}}
+function capIcon(id,cor,dir){const c=document.createElement('canvas');c.width=40;c.height=40;try{drawCapacete(id,cor,20,22,dir||'right',c.getContext('2d'))}catch(e){}try{return c.toDataURL()}catch(e){return''}}
+function escIcon(st){const d=Object.assign({},MOTOS[state.moto&&state.motos[state.moto]?state.moto:'crf230'],(state.moto&&state.motoCustom[state.moto])||{},{esc:st}),im=motoSpriteHD(d),c=document.createElement('canvas');c.width=34*3;c.height=22*3;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.drawImage(im,0,0,34,22,0,0,c.width,c.height);      // zoom na traseira, onde fica o escape
+try{return c.toDataURL()}catch(e){return''}}
+function motoIconP(k){const im=motoPlayer(k).S,c=document.createElement('canvas');c.width=vw(im)*4;c.height=vh(im)*4;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.drawImage(im,0,0,c.width,c.height);try{return c.toDataURL()}catch(e){return''}}
+let motoTab='motos';
+function motoEquipHtml(){const q=mEq(),own=q.own,card=(img,nome,desc,acts,tag)=>`<div class="mcard eqc"><img class="mi eqi" src="${img}" alt=""><div class="g"><b>${nome}</b>${tag?` <span class="cc">${tag}</span>`:''}<br><small>${desc}</small></div><div class="act">${acts}</div></div>`;
+  const buy=(id)=>`<span class="price">${brl(eqPreco(id))}</span><button data-a="eqbuy" data-v="${id}" ${state.coins>=eqPreco(id)?'':'disabled'}>Comprar</button>`;
+  let h='<h3 class="eqh">🪖 Capacetes</h3>';
+  for(const[id,nome,desc]of CAPACETES)h+=card(capIcon(id,q.capCor),nome,desc,own[id]?(q.cap===id?'<button class="alt" data-a="eqtira" data-v="cap">Tirar</button><small class="ok">usando</small>':`<button data-a="equsa" data-v="${id}">Usar</button>`):buy(id));
+  h+='<h3 class="eqh">👕 Roupa de trilha</h3>';
+  for(const[id,nome,desc]of ROUPA_TRILHA){const slot=id==='camisa_trilha'?'camisa':'calca';h+=card(roupaIcon(id),nome,desc,own[id]?(q[slot]?`<button class="alt" data-a="eqtira" data-v="${slot}">Tirar</button><small class="ok">usando</small>`:`<button data-a="equsa" data-v="${id}">Usar</button>`):buy(id),'')}
+  const mk=state.moto;h+=`<h3 class="eqh">💨 Escapamentos <small>${mk?`da ${MOTOS[mk].nome} · ${motoCv(mk)} cv agora (original ${MOTO_CV[mk]} cv)`:'(compre uma moto primeiro)'}</small></h3>`;
+  if(mk){const cur=escDe(mk);for(const[id,nome,desc]of ESCAPES){const t=escTier(id),tag=t?`+${2*t} cv · +${5*t}% vel.`:'de fábrica',pr=escPreco(mk,id);
+    h+=card(escIcon(id),nome,desc,escOwn(mk,id)?(cur===id?'<small class="ok">instalado</small>':`<button data-a="escpoe" data-v="${id}">Instalar</button>`):`<span class="price">${brl(pr)}</span><button data-a="escbuy" data-v="${id}" ${state.coins>=pr?'':'disabled'}>Comprar</button>`,tag)}}
+  return h}
+function motoAltHtml(){const q=mEq();if(state.nivel.lvl<ALT_NIVEL)return`<div class="altlock">🔒 <b>Oficina de personalização</b><br>Libera no <b>nível ${ALT_NIVEL}</b> do personagem (você está no nível ${state.nivel.lvl}).<br><small>Aqui dá para trocar a cor e o número da moto e a cor do capacete.</small></div>`;
+  const ks=Object.keys(MOTOS).filter(k=>state.motos[k]);let h=`<p class="lnote" style="color:#ffd23f">Cada alteração custa <b>${brl(ALT_PRECO)}</b>.</p>`;
+  if(!ks.length)h+='<p>Você ainda não tem moto.</p>';
+  for(const k of ks){const d=motoDef(k);h+=`<div class="altc"><img class="mi" src="${motoIconP(k)}" alt=""><div class="g"><b>${MOTOS[k].nome}</b><div class="sw">${MOTO_CORES.map(c=>`<button class="swc${d.cor===c?' on':''}" style="background:${c}" data-a="altcor" data-v="${k}|${c}" title="Trocar a cor"></button>`).join('')}</div>
+      <div class="altn">Número: <input id="num_${k}" maxlength="3" inputmode="numeric" value="${d.num||''}" placeholder="000"><button class="alt" data-a="altnum" data-v="${k}">Trocar número</button></div>
+      <small>Cor do número:</small><div class="sw">${TXT_CORES.map(c=>`<button class="swc${(d.numCor||'#1c1c1c')===c?' on':''}" style="background:${c}" data-a="altnumcor" data-v="${k}|${c}"></button>`).join('')}</div></div></div>`}
+  if(q.own.camisa_trilha){const md=q.camModo==='let'?'let':'num',cc=q.camCor||motoDef(state.moto||'crf230').cor;h+=`<div class="altc"><img class="mi" src="${roupaIcon('camisa_trilha')}" alt="" style="width:72px"><div class="g"><b>Camisa de trilha</b>
+      <div class="altn">Mostrar na camisa: <button class="${md==='num'?'':'alt'}" data-a="camodo" data-v="num">🔢 Número</button> <button class="${md==='let'?'':'alt'}" data-a="camodo" data-v="let">🔤 Letras</button></div>
+      <small>Cor da camisa:</small><div class="sw">${MOTO_CORES.map(c=>`<button class="swc${cc===c?' on':''}" style="background:${c}" data-a="altcamcor" data-v="${c}"></button>`).join('')}</div>
+      <small>Cor do número/letras:</small><div class="sw">${TXT_CORES.map(c=>`<button class="swc${(q.camTxtCor||'')===c?' on':''}" style="background:${c}" data-a="altcamtxt" data-v="${c}"></button>`).join('')}</div>
+      <div class="altn">Número (até 3): <input id="camnum" maxlength="3" inputmode="numeric" value="${q.camNum||''}" placeholder="00"><button class="alt" data-a="altcamnum">Trocar número</button></div>
+      <div class="altn">Letras (2): <input id="camlet" maxlength="2" value="${q.camLet||''}" placeholder="AB" style="text-transform:uppercase"><button class="alt" data-a="altcamlet">Trocar letras</button></div></div></div>`}
+  if(CAPACETES.some(([id])=>q.own[id])){const id=q.cap||CAPACETES.find(([i])=>q.own[i])[0];h+=`<div class="altc"><img class="mi" src="${capIcon(id,q.capCor)}" alt="" style="width:72px"><div class="g"><b>Cor do capacete</b><div class="sw">${MOTO_CORES.map(c=>`<button class="swc${q.capCor===c?' on':''}" style="background:${c}" data-a="altcap" data-v="${c}"></button>`).join('')}</div></div></div>`}
+  return h}
+function altPaga(){if(state.coins<ALT_PRECO){toast('Cada alteração custa '+brl(ALT_PRECO)+'.');return false}state.coins-=ALT_PRECO;sfx.coin();return true}
 function openMotoShop(refresh,say){
   if(!refresh){sellerSay='Camadona, me fui';playSound('vendedor',1,true)}
   if(say)sellerSay=say;
   const fast=Math.max(...Object.values(MOTOS).map(m=>m.vel));
-  let cards='';
+  let cards='';mEq();
   for(const k in MOTOS){const m=MOTOS[k],own=state.motos[k],sel=state.moto===k,ok=state.coins>=m.preco;
-    cards+=`<div class="mcard${sel?' sel':''}"><img class="mi" src="${motoIcon(k)}" alt=""><div class="g"><b>${m.nome}</b> <span class="cc">${m.cc} cc</span><br><small>${m.desc}</small>
-      <div class="vel"><i style="width:${(m.vel-1)/(fast-1)*100}%"></i></div><small>Velocidade ×${m.vel.toFixed(2).replace('.',',')}</small></div>
+    cards+=`<div class="mcard${sel?' sel':''}"><img class="mi" src="${own?motoIconP(k):motoIcon(k)}" alt=""><div class="g"><b>${m.nome}</b> <span class="cc">${m.cc} cc</span><br><small>${m.desc}</small>
+      <div class="vel"><i style="width:${(m.vel-1)/(fast-1)*100}%"></i></div><small>Velocidade ×${(m.vel*(own?escVel(k):1)).toFixed(2).replace('.',',')} · ${own?motoCv(k):MOTO_CV[k]} cv${own&&escTier(escDe(k))?` <b class="ok">(escape +${2*escTier(escDe(k))} cv)</b>`:''}</small></div>
       <div class="act">${own?(sel?(state.riding&&state.rideKind==='moto'?'<button class="alt" data-a="motoride">Descer</button>':'<button data-a="motoride">Montar</button>')+'<small class="ok">em uso</small>':`<button class="alt" data-a="motouse" data-v="${k}">Usar esta</button>`)
         :`<span class="price">${brl(m.preco)}</span><button data-a="motobuy" data-v="${k}" ${ok?'':'disabled'}>Comprar</button>`}</div></div>`}
   showPanel('motoloja',`<div class="s-head"><button class="close" data-a="close">Fechar ✕</button><h1>🏁 Trilha Motos Imbuial</h1><div class="sub">Motos de trilha novas e seminovas · seu saldo: <b>${brl(state.coins)}</b></div></div>
@@ -3143,11 +3309,11 @@ function openMotoShop(refresh,say){
       <label class="btn">🔊 Trocar voz<input type="file" accept="audio/*" data-snd="vendedor" hidden></label>
       ${sndHas.vendedor?'<button class="alt mini" data-a="sndplay" data-v="vendedor">▶ Ouvir voz</button>':''}
       <small>Tecla <kbd>R</kbd> monta e desce da moto.</small></div>
-    <div class="s-list">${cards}</div></div>`)}
+    <div class="s-list"><div class="itabs mtabs">${[['motos','🏍️ Motos'],['equip','🪖 Equipamentos'],['alterar',state.nivel.lvl>=ALT_NIVEL?'🎨 Alterar':'🔒 Alterar (nível '+ALT_NIVEL+')']].map(([id,nm])=>`<button class="itab${motoTab===id?' on':''}" data-a="mototab" data-v="${id}">${nm}</button>`).join('')}</div>${motoTab==='equip'?motoEquipHtml():motoTab==='alterar'?motoAltHtml():cards}</div></div>`)}
 function vehKey(){return!state.riding?null:state.rideKind==='trator'?state.trator:state.moto}
 function vehDef(){const k=vehKey();return!k?null:state.rideKind==='trator'?TRATORES[k]:MOTOS[k]}
 function fuelOf(kind,k){const id=(kind==='trator'?'t:':'m:')+k;if(!state.fuel[id])state.fuel[id]={l:tankOf(kind,k),ad:0};return state.fuel[id]}
-const rideSpeed=()=>{const v=vehDef();return v?v.vel*(fuelOf(state.rideKind,vehKey()).ad?AD_BOOST:1):1};
+const rideSpeed=()=>{const v=vehDef();return v?v.vel*(state.rideKind==='moto'?escVel(vehKey()):1)*(fuelOf(state.rideKind,vehKey()).ad?AD_BOOST:1):1};
 function burnFuel(d){const v=vehDef();if(!v||!d)return;const kind=state.rideKind,f=fuelOf(kind,vehKey());f.l=Math.max(0,f.l-d*FUEL_USE[kind]);
   if(f.l<=0){f.ad=0;state.riding=false;toast(`Acabou a gasolina da ${v.nome}! Leve até o posto (do outro lado da ponte, perto dos tratores).`);sfx.no()}
   else if(f.l<tankOf(kind,vehKey())*.15&&!f.warn){f.warn=1;toast(`⛽ Tanque quase vazio na ${v.nome}. Passe no posto!`)}}
@@ -3433,7 +3599,7 @@ function spawnWild(){
 }
 const inVila=(x,y,m)=>{m=m||0;return x>=CITY_ZONE[0]-m&&x<=CITY_ZONE[2]+1+m&&y>=CITY_ZONE[1]-m&&y<=CITY_ZONE[3]+1+m};      // Videira: bicho solto não entra
 const inFarm=(x,y,m)=>{m=m||0;return x>=FARM[0]-m&&x<=FARM[2]+1+m&&y>=FARM[1]-m&&y<=FARM[3]+1+m};
-function penBox(pen,sp){const hw=SPR[sp]?SPR[sp].width*S/T/2:.5;      // [xmin,xmax,ymin,ymax] para o animal caber inteiro dentro da cerca
+function penBox(pen,sp){const hw=SPR[sp]?vw(SPR[sp])*S/T/2:.5;      // [xmin,xmax,ymin,ymax] para o animal caber inteiro dentro da cerca
   return[pen[0]+.15+hw,pen[0]+pen[2]-.15-hw,pen[1]+.95,pen[1]+pen[3]-.75]}
 function syncPens(){const ins={},used={};for(const t of['galinheiro','curral']){ins[t]=penInsts(t);used[t]=ins[t].map(()=>0)}
   const velhos=penAnim.slice(),pego=new Set();      // no multiplayer a lista de bichos chega nova toda hora: reaproveita o mesmo bicho (sem teletransportar)
@@ -3506,7 +3672,7 @@ function drawClimaWorld(W,H){const hr=state.min/60,c=state.clima;
 /* ================= MULTIPLAYER: cooperativo no mundo do dono, até 4 jogadores, pela internet com código de sala =================
    Ligação: WebRTC (canal de dados direto entre os aparelhos). Para os aparelhos se acharem usa o servidor público grátis do PeerJS
    só como "telefonista" (sinalização). Quem hospeda manda no mundo; os convidados mandam o que fazem e o dono aplica e espalha. */
-const JOGO_VERSAO='2026-11-23y';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
+const JOGO_VERSAO='2026-11-23zo';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
 const MP_MAX=4,MP_PREFIX=SLOT_KEYS[0].replace(/_slot_1$/,'').replace(/_/g,''),MP_SERVER='wss://0.peerjs.com:443/peerjs?key=peerjs';
 const MP_ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']},{urls:'stun:global.stun.twilio.com:3478'}]};
 const MP_LEVE=['p','energy','hunger','vida','forca','sujeira','sel','testoUntil','fomeT','coins','xpUntil','monster','napHoje','doze'];      // muda toda hora: vai junto em cada batida
@@ -3844,7 +4010,7 @@ function drawMpPlayer(r){const e={x:r.p.x,y:r.p.y,dir:r.p.dir||'down',walk:r.p.w
     for(const d of r.busPo||[]){const a=1-d.t/1.2;ctx.fillStyle=state.rain?`rgba(110,80,50,${.45*a})`:`rgba(190,160,120,${.4*a})`;ctx.beginPath();ctx.arc(d.x*T-camx,(d.y+.3)*T-camy-d.t*14,6+d.t*16,0,7);ctx.fill()}
     if(r.busFum)drawFumaca(r.busFum);drawBusAt(r.p.x,r.p.y+.45,fl,vel>.3?Math.round(Math.sin(clock*18)*1.5):0,clock*(4+10*Math.min(1,vel/4)));
     tag('🚌 '+r.nome+(r.id==='h'?' 👑':''),r.p.x,r.p.y-1.9,'#bfe6ff');if(r.say)bubbles.push([r.say.text,r.p.x*T-camx,(r.p.y-2.5)*T-camy]);return}
-  if(r.rd){const[k,v]=r.rd.split(':'),vs=k==='t'?SPR.trator&&SPR.trator[v]:SPR.moto&&SPR.moto[v];if(vs){const sx=Math.round(r.p.x*T-camx),gy=Math.round((r.p.y+.28)*T-camy),bump=r.mov&&Math.floor(clock*18)%2?1:0;shadow(sx,gy-2,k==='t'?44:36,k==='t'?8:6);blit(vs,sx,gy-bump,r.p.dir==='left');
+  if(r.rd){const[k,v]=r.rd.split(':'),vs=k==='t'?SPR.trator&&SPR.trator[v]:SPR.moto&&SPR.moto[v];if(vs&&k!=='t'&&(r.p.dir==='up'||r.p.dir==='down')&&SPR.motoF&&SPR.motoF[v]){const st=r.img?SPR.player:SPR.npc[(r.id.charCodeAt(1)||0)%4];motoVertical(SPR.moto,v,Math.round(r.p.x*T-camx),Math.round((r.p.y+.28)*T-camy),r.p.dir,r.mov,r.img||undefined,st,st.hd?14:18);tag(r.nome+(r.id==='h'?' 👑':''),r.p.x,r.p.y-1.7,'#bfe6ff');if(r.say)bubbles.push([r.say.text,r.p.x*T-camx,(r.p.y-2.2)*T-camy]);return}if(vs){const sx=Math.round(r.p.x*T-camx),gy=Math.round((r.p.y+.28)*T-camy),bump=r.mov&&Math.floor(clock*18)%2?1:0;shadow(sx,gy-2,k==='t'?44:36,k==='t'?8:6);blit(vs,sx,gy-bump,r.p.dir==='left');
     drawPerson(r.img?SPR.player:SPR.npc[(r.id.charCodeAt(1)||0)%4],{x:r.p.x,y:r.p.y-(k==='t'?.55:.35),dir:'side',walk:0},r.img||undefined);tag(r.nome+(r.id==='h'?' 👑':''),r.p.x,r.p.y-1.7,'#bfe6ff');if(r.say)bubbles.push([r.say.text,r.p.x*T-camx,(r.p.y-2.2)*T-camy]);return}}
   drawPerson(r.img?SPR.player:SPR.npc[(r.id.charCodeAt(1)||0)%4],e,r.img||undefined);if(r.dz||r.doze)drawDoze(r.p.x,r.p.y,r.p.dir,r.p.dir==='left'?-1:1);
   tag(r.nome+(r.id==='h'?' 👑':''),r.p.x,r.p.y-1.35,'#bfe6ff');if(r.say)bubbles.push([r.say.text,r.p.x*T-camx,(r.p.y-1.9)*T-camy])}
@@ -4100,6 +4266,16 @@ function busPath(id){const pts=[];      // do ponto de saída até o outro ponto
   for(let x=Math.round(BUS[0].x);x<=9;x++)pts.push([x,DIRT_Y(x)+1]);for(let x=10;x<=Math.round(BUS[1].x);x++)pts.push([x,25]);
   return id==='fazenda'?pts:pts.reverse()}
 let busRide=null;
+// enquanto viaja de ônibus o cenário continua vivo (horizonte, bichos, povo da cidade)
+function cenarioTick(dt){const p=state.p;
+  updateWolf(dt);updateDonkey(dt);updateGrau(dt);updateHzn(dt);updateTracks(dt);updateBuildFx(dt);updatePinhoes(dt);updateUniWins(dt,p);
+  if(MP.role!=='guest')for(const a of wild){if(a.led||a.lassoBy)continue;const sp=SPECIES[a.sp],ox=a.x,oy=a.y;if(a.flee>0)a.flee=0;wander(a,dt,.8,sp.zone);
+    if((inFarm(a.x,a.y)&&!inFarm(ox,oy))||(inVila(a.x,a.y)&&!inVila(ox,oy))){a.x=ox;a.y=oy;a.timer=0;a.vx=-a.vx;a.vy=-a.vy}}
+  for(const a of penAnim){const pen=a.pen||BLD[SPECIES[a.sp].pen].pen;a.timer-=dt;
+    if(a.timer<=0){a.timer=1+Math.random()*3;if(Math.random()<.5)a.vx=a.vy=0;else{const g=Math.random()*6.28;a.vx=Math.cos(g)*.5;a.vy=Math.sin(g)*.5}}
+    const bx=penBox(pen,a.sp);a.x=clamp(a.x+a.vx*dt,bx[0],bx[1]);a.y=clamp(a.y+a.vy*dt,bx[2],bx[3]);if(a.vx)a.face=a.vx>0?1:-1}
+  for(const n of npcs)updateNPC(n,dt,p);updateTreeFalls(dt);
+  for(const f of floats)f.t+=dt;floats=floats.filter(f=>f.t<1.4)}
 function busTick(dt){const r=busRide;if(!r)return;r.t+=dt;const f=Math.min(1,r.t/r.dur),s=(.5-.5*Math.cos(Math.PI*f))*r.L;      // sai devagar e chega devagar
   let i=1;while(i<r.cum.length-1&&r.cum[i]<s)i++;const a=r.pts[i-1],b=r.pts[i],seg=(r.cum[i]-r.cum[i-1])||1,u=Math.max(0,Math.min(1,(s-r.cum[i-1])/seg));
   r.x=a[0]+(b[0]-a[0])*u;r.y=a[1]+(b[1]-a[1])*u;state.p.x=r.x;state.p.y=r.y;      // a câmera segue o ônibus
@@ -4672,7 +4848,7 @@ function dirtOver(img,stage){if(!stage||!img)return null;if(!img._dirt)img._dirt
       if(hh<th){g.fillStyle=cols[(hh*997|0)%4];g.fillRect(x,y,bs,bs)}}
     c.sc=img.sc;c.pad=img.pad;img._dirt[stage]=c}catch(e){}return img._dirt[stage]}
 function updateDirt(dt,dist){const p=state.p,i=Math.floor(p.y)*AW-XMIN+Math.floor(p.x);
-  if(dist>0&&soilOn(i)){if(state.riding&&vehDef())addVehDirt(dist*(state.rideKind==='trator'?2.2:3.5));else addDirt(dist*.7)}
+  if(dist>0&&soilOn(i)){if(state.riding&&vehDef())addVehDirt(dist*(state.rideKind==='trator'?.5:.8));else addDirt(dist*.18)}      // sujeira bem mais lenta
   if(state.rain){const c=dt*MIN_PER_SEC*.03;state.sujeira=Math.max(0,state.sujeira-c);for(const k in state.vsuj)state.vsuj[k]=Math.max(0,state.vsuj[k]-c)}}      // a chuva lava um pouquinho
 /* ---------- Vento, árvores balançando e folhas caindo ---------- */
 let windLines=[],leaves=[],visTrees=[],gust=null,gustT=12,breezeT=2;
@@ -4895,7 +5071,7 @@ function interact(){idleT=0;
     if(state.energy<4){useEnergy(4);return}
     lasso={a:t.a,t:0};return}
   if(t.k==='soil'){const c=state.crops[t.i];
-    addDirt(t.act==='plant'?2.5:t.act==='water'?1.2:2);
+    addDirt(t.act==='plant'?.6:t.act==='water'?.3:.5);
     if(t.act==='plant'){if(seedOk(state.sel))plantAt(t.i,state.sel);else openSeeds(t.i)}
     else if(t.act==='water'){if(!useEnergy(.5))return;c.w=true;sx('regar');addNivelXp(XP_REGA,t.x+.5,t.y-.1)}
     else{const k=c.c;if(TRATOR_SO.has(k)){if(clock-tratorAvisoT>4){tratorAvisoT=clock;toast(`🚜 ${CROPS[k].nome} só pode ser colhido com trator. Passe por cima com o trator.`)}sfx.no();return}
@@ -5059,29 +5235,43 @@ function trigWatch(){if(!trigSpin)return;const wh=$('twheel');      // acompanha
         if(ce){ce.className='tcenter '+(trigVerde(s)?'g':'r');ce.innerHTML=`<b>${s+1}</b><small>${trigVerde(s)?'VERDE':'VERMELHO'}</small>`}}}}
   requestAnimationFrame(trigWatch)}
 let lojaTab='sementes',lojaSay='';
+
+/* ---------- Carrinho da Loja do Giliard: escolhe os produtos e paga tudo de uma vez ---------- */
+let lojaCart={};      // chave -> quantidade · 'sem:milho', 'racao', 'pao', 'axe', 'pick'
+function cartInfo(k){const l=state.b.mercado;
+  if(k.startsWith('sem:')){const c=CROPS[k.slice(4)];return c&&{nome:'Semente de '+c.nome.toLowerCase(),icon:'sem_'+k.slice(4),pr:c.sem,uni:0}}
+  if(k==='racao')return{nome:'Ração',icon:'racao',pr:racaoPrice(l)};if(k==='pao')return{nome:'Pão',icon:'pao',pr:PAO_PRICE};
+  if(k==='axe')return{nome:'Machado',icon:'machado',pr:AXE_PRICE,uni:1};if(k==='pick')return{nome:'Picareta',icon:'picareta',pr:PICK_PRICE,uni:1};return null}
+function cartTotal(){let t=0;for(const k in lojaCart){const i=cartInfo(k);if(i)t+=i.pr*lojaCart[k]}return t}
+function cartHtml(){const ks=Object.keys(lojaCart).filter(k=>lojaCart[k]>0&&cartInfo(k));
+  if(!ks.length)return`<div class="lcart vazio"><b>🛒 Carrinho</b><small>Toque nos produtos para<br>colocar no carrinho.</small></div>`;
+  const tot=cartTotal(),falta=tot-state.coins;
+  return`<div class="lcart"><b>🛒 Carrinho</b><div class="lclist">${ks.map(k=>{const i=cartInfo(k),q=lojaCart[k];return`<div class="lcl"><img src="${ICON[i.icon]||''}" alt=""><span class="n">${i.nome}${i.uni?'':` <i>×${q}</i>`}</span><span class="p">${brl(i.pr*q)}</span><button class="lx" data-a="lojarem" data-v="${k}" title="tirar um">−</button></div>`}).join('')}</div>
+    <div class="lctot"><span>Total</span><b>${brl(tot)}</b></div>${falta>0?`<small class="lcfalta">Faltam ${brl(falta)}</small>`:`<small class="lcdep">sobra ${brl(state.coins-tot)}</small>`}
+    <button class="lcfim" data-a="lojafim" ${falta>0?'disabled':''}>✔ Finalizar compra</button><button class="lclimpa" data-a="lojalimpa">Esvaziar</button></div>`}
 function openLoja(tab){if(tab){lojaTab=tab;lojaSay=''}const l=state.b.mercado,d=BLD.mercado,bonus=marketBonus(l),t=lojaTab;
   if(!lojaSay)lojaSay=GILIARD_LINES[giliardLine++%GILIARD_LINES.length];
-  const card=(icon,nome,info,preco,have,btns,tag)=>`<div class="lcard">${tag?`<span class="ltag">${tag}</span>`:''}<img src="${ICON[icon]||''}" alt=""><b>${nome}</b><small>${info}</small>
-      <div class="lprice">${brl(preco)}</div>${have!=null?`<small class="lhave">na mochila: <b>${have}</b></small>`:''}<div class="lbtns">${btns}</div></div>`;
-  const qb=(a,v,q,pr)=>`<button class="mini" data-a="${a}" data-v="${v}:${q}" ${state.coins>=pr*q?'':'disabled'}>+${q}</button>`;
+  const card=(icon,nome,info,preco,have,btns,tag,tag2)=>`<div class="lcard">${tag?`<span class="ltag">${tag}</span>`:''}<img src="${ICON[icon]||''}" alt=""><b>${nome}</b><small>${info}</small>
+      <div class="lprice">${brl(preco)}</div>${have!=null?`<small class="lhave">na mochila: <b>${have}</b></small>`:''}${tag2||''}<div class="lbtns">${btns}</div></div>`;
+  const qb=(a,v,q,pr)=>`<button class="mini" data-a="lojaadd" data-v="${a==='buyseed'?'sem:'+v:v}|${q}">+${q}</button>`,noCart=k=>lojaCart[k]?`<small class="lincart">🛒 ${lojaCart[k]} no carrinho</small>`:'';
   let body='';
   if(t==='sementes'){const sea=season();body=`<p class="lnote">🌱 Todas as sementes, o ano todo · plante na terra arada (tecla <kbd>L</kbd> para arar)</p><div class="lgrid">`;
     for(const k in CROPS){const c=CROPS[k];const venda=Math.round(c.preco*bonus);
-      const ok=seedNivelOk(k);body+=card('sem_'+k,c.nome,`${c.dias} dia${c.dias>1?'s':''} para colher${c.rebrota?` · rebrota a cada ${c.rebrota}`:''}<br>vende por <b>${venda}</b> com o Mateus${TRATOR_SO.has(k)?'<br>🚜 <b>só colhe com trator</b>':''}`,c.sem,state.seeds[k]||0,ok?qb('buyseed',k,1,c.sem)+qb('buyseed',k,5,c.sem)+qb('buyseed',k,10,c.sem):`<button class="mini" disabled>🔒 Nível ${CROP_NIVEL[k]}</button>`,!ok?`⭐ nível ${CROP_NIVEL[k]}`:TRATOR_SO.has(k)?'🚜 trator':venda>=c.sem*3?'💰 lucro bom':'')}
+      const ok=seedNivelOk(k);body+=card('sem_'+k,c.nome,`${c.dias} dia${c.dias>1?'s':''} para colher${c.rebrota?` · rebrota a cada ${c.rebrota}`:''}<br>vende por <b>${venda}</b> com o Mateus${TRATOR_SO.has(k)?'<br>🚜 <b>só colhe com trator</b>':''}`,c.sem,state.seeds[k]||0,ok?qb('buyseed',k,1,c.sem)+qb('buyseed',k,5,c.sem)+qb('buyseed',k,10,c.sem):`<button class="mini" disabled>🔒 Nível ${CROP_NIVEL[k]}</button>`,!ok?`⭐ nível ${CROP_NIVEL[k]}`:TRATOR_SO.has(k)?'🚜 trator':venda>=c.sem*3?'💰 lucro bom':'',noCart('sem:'+k))}
     body+='</div>'}
   else if(t==='comida'){const rp=racaoPrice(l);body=`<div class="lgrid">`+
-      card('racao','Ração','alimenta 1 animal por 12 h<br>(ou faça com 2 capins na mochila)',rp,state.inv.racao,qb('buy','racao',1,rp)+qb('buy','racao',5,rp)+qb('buy','racao',10,rp),'🐔 animais')+
-      card('pao','Pão','mata a fome: <b>+45</b>',PAO_PRICE,state.inv.pao,qb('buy','pao',1,PAO_PRICE)+qb('buy','pao',3,PAO_PRICE),'🍞 quentinho')+'</div>'}
+      card('racao','Ração','alimenta 1 animal por 12 h<br>(ou faça com 2 capins na mochila)',rp,state.inv.racao,qb('buy','racao',1,rp)+qb('buy','racao',5,rp)+qb('buy','racao',10,rp),'🐔 animais',noCart('racao'))+
+      card('pao','Pão','mata a fome: <b>+45</b>',PAO_PRICE,state.inv.pao,qb('buy','pao',1,PAO_PRICE)+qb('buy','pao',3,PAO_PRICE),'🍞 quentinho',noCart('pao'))+'</div>'}
   else if(t==='ferramentas'){body=`<div class="lgrid">`+card('machado','Machado',`corta árvores mais rápido conforme a força<br>precisa de <b>Força ${AXE_MIN}</b> (você: ${state.forca.lvl})`,AXE_PRICE,null,
-      state.flags.axe?'<span class="ok">✔ comprado</span>':`<button class="mini" data-a="buyaxe" ${state.coins>=AXE_PRICE?'':'disabled'}>Comprar</button>`,'🪓')+
-      card('picareta','Picareta','quebra pedras (o machado não quebra)<br>mais força = menos golpes',PICK_PRICE,null,state.flags.pick?'<span class="ok">✔ comprada</span>':`<button class="mini" data-a="buypick" ${state.coins>=PICK_PRICE?'':'disabled'}>Comprar</button>`,'⛏️')+'</div>'}
+      state.flags.axe?'<span class="ok">✔ comprado</span>':lojaCart.axe?'<span class="ok">🛒 no carrinho</span>':`<button class="mini" data-a="lojaadd" data-v="axe|1">🛒 Pôr no carrinho</button>`,'🪓')+
+      card('picareta','Picareta','quebra pedras (o machado não quebra)<br>mais força = menos golpes',PICK_PRICE,null,state.flags.pick?'<span class="ok">✔ comprada</span>':lojaCart.pick?'<span class="ok">🛒 no carrinho</span>':`<button class="mini" data-a="lojaadd" data-v="pick|1">🛒 Pôr no carrinho</button>`,'⛏️')+'</div>'}
   else body=upgradeHtml('mercado')+`<p class="lnote">Cada nível da Loja aumenta o preço que o Mateus paga nos seus produtos${bonus>1?` (hoje: <b class="ok">+${Math.round((bonus-1)*100)}%</b>)`:''}.</p>`;
   const tabs=[['sementes','🌱 Sementes'],['comida','🍞 Comida e ração'],['ferramentas','🛠️ Ferramentas'],['melhorias','⬆️ Melhorar a Loja']].map(([id,nm])=>`<button class="itab${t===id?' on':''}" data-a="lojatab" data-v="${id}">${nm}</button>`).join('');
   showPanel('bld:mercado',`<div class="v-head l-head"><button class="close" data-a="close">Fechar ✕</button><img src="${PORTRAIT.giliard}" alt="">
       <div style="flex:1"><h1>🏪 Loja do Giliard</h1><div class="sub">sementes, ração, pão e ferramentas · nível ${l}${bonus>1?` · o Mateus paga +${Math.round((bonus-1)*100)}%`:''}</div>
       <div class="bubble dark">${lojaSay}</div></div>
-      <div class="lsaldo"><small>seu saldo</small><b>${brl(state.coins)}</b></div></div>
-    <div class="itabs">${tabs}</div><div class="v-body">${body}<p class="lnote">Para <b>vender</b>, procure o <b>Mateus</b> ao lado da sua casa.</p></div>`)}
+      <div class="lsaldo"><small>seu saldo</small><b>${brl(state.coins)}</b></div>${cartHtml()}</div>
+    <div class="itabs">${tabs}</div><div class="v-body lojab">${body}<p class="lnote">Para <b>vender</b>, procure o <b>Mateus</b> ao lado da sua casa.</p></div>`)}
 const INV_CATS=[['tudo','Tudo','🎒'],['comida','Comida','🍞'],['recursos','Recursos','🪵'],['animais','Dos animais','🥚'],['lavoura','Colheitas','🌽'],['pesca','Pesca','🐟'],['tesouros','Tesouros','💎'],['sementes','Sementes','🌱'],['equip','Equipamentos','🧰']];
 let invTab='tudo';
 function invCat(k){if(CROPS[k]||ITEMS[k]&&ITEMS[k].qual)return'lavoura';if(FISH[k]||k==='bota')return'pesca';if(TREASURE[k])return'tesouros';
@@ -5445,6 +5635,19 @@ const ACT={
   sellall(k){const pr=Math.round(ITEMS[k].preco*marketBonus(state.b.mercado));if(state.inv[k]>0){state.coins+=pr*state.inv[k];state.inv[k]=0;state.flags.sold=1;sfx.coin()}openBld('mercado')},
   buy(v){const[k,n]=String(v).split(':'),q=+n||1,pr=(k==='racao'?racaoPrice(state.b.mercado):PAO_PRICE)*q;if(state.coins>=pr){state.coins-=pr;state.inv[k]+=q;sfx.get();lojaSay=['Valeu! Volta sempre.','Boa compra!','Tá na mão!','Precisando, é só chamar.'][Math.random()*4|0]}openBld('mercado')},
   lojatab(v){openLoja(v)},
+  lojaadd(v){const[k,n]=String(v).split('|'),q=+n||1,i=cartInfo(k);if(!i)return;if(k.startsWith('sem:')&&!seedNivelOk(k.slice(4)))return;
+    if(i.uni){if((k==='axe'&&state.flags.axe)||(k==='pick'&&state.flags.pick))return;lojaCart[k]=1}else lojaCart[k]=(lojaCart[k]||0)+q;
+    beep(880,.05,'square',.03);lojaSay=['Boa escolha!','Separei aqui pra ti.','Mais alguma coisa?','Tá no carrinho!'][Math.random()*4|0];openLoja()},
+  lojarem(k){if(!lojaCart[k])return;const i=cartInfo(k);if(i&&i.uni||lojaCart[k]<=1)delete lojaCart[k];else lojaCart[k]--;openLoja()},
+  lojalimpa(){lojaCart={};openLoja()},
+  lojafim(){const tot=cartTotal();if(!tot)return;if(state.coins<tot){toast('Dinheiro não dá para tudo isso.');return}
+    let n=0;for(const k in lojaCart){const q=lojaCart[k];if(!q)continue;n+=q;
+      if(k.startsWith('sem:')){const c=k.slice(4);state.seeds[c]=(state.seeds[c]||0)+q;if(!seedOk(state.sel))state.sel=c}
+      else if(k==='racao'||k==='pao')state.inv[k]=(state.inv[k]||0)+q;
+      else if(k==='axe')state.flags.axe=1;else if(k==='pick')state.flags.pick=1}
+    state.coins-=tot;const tinhaAxe=lojaCart.axe;lojaCart={};sfx.coin();sfx.get();
+    lojaSay=['Valeu! Volta sempre.','Negócio fechado!','Tá na mão! Bom plantio.','Precisando, é só chamar.'][Math.random()*4|0];
+    toast(`🛒 Compra finalizada: ${n} ite${n>1?'ns':'m'} por ${brl(tot)}`+(tinhaAxe&&state.forca.lvl<AXE_MIN?` · treine até Força ${AXE_MIN} para usar o machado`:''));save();openLoja()},
   mute(){muted=!muted;toast(muted?'Som desligado':'Som ligado');musicaAplica();openMenu()},
   mutecfg(){muted=!muted;musicaAplica();openConfig()},
   musica(){musicaToggle();toast(musicaOff?'🔇 Música desligada':'🎵 Música ligada');if(panelKind==='config')openConfig();else if(panelKind==='menu')openMenu()},
@@ -5561,6 +5764,24 @@ const ACT={
     toast(state.forca.lvl>=AXE_MIN?'Machado comprado! As árvores agora caem mais rápido.':`Machado comprado! Treine na academia até Força ${AXE_MIN} para usá-lo.`);openBld('mercado')},
   motobuy(k){const m=MOTOS[k];if(state.motos[k]||state.coins<m.preco)return;state.coins-=m.preco;state.motos[k]=1;state.moto=k;revSound();save();
     openMotoShop(true,`Negócio fechado! A ${m.nome} é sua. Aperta R pra montar e acelera com cuidado!`)},
+  mototab(v){motoTab=v;openMotoShop(true)},
+  eqbuy(id){const q=mEq(),pr=eqPreco(id);if(q.own[id]||state.coins<pr)return;state.coins-=pr;q.own[id]=1;revSound();
+    if(id.startsWith('cap_'))q.cap=id;else if(id==='camisa_trilha')q.camisa=true;else if(id==='calca_trilha')q.calca=true;else if(id.startsWith('esc_')&&state.moto){(state.motoCustom[state.moto]=state.motoCustom[state.moto]||{}).esc=id}
+    save();openMotoShop(true,['Equipamento top! Agora tu tá no estilo.','Isso aí, segurança em primeiro lugar!','Esse escape vai roncar bonito!'][id.startsWith('esc_')?2:id.startsWith('cap_')?1:0])},
+  equsa(id){const q=mEq();if(!q.own[id])return;if(id.startsWith('cap_'))q.cap=id;else if(id==='camisa_trilha')q.camisa=true;else if(id==='calca_trilha')q.calca=true;save();openMotoShop(true)},
+  eqtira(v){const q=mEq();q[v]=v==='cap'?null:false;save();openMotoShop(true)},
+  escbuy(id){const k=state.moto,q=mEq();if(!k||escOwn(k,id))return;const pr=escPreco(k,id);if(state.coins<pr)return;state.coins-=pr;q.own[k+':'+id]=1;(state.motoCustom[k]=state.motoCustom[k]||{}).esc=id;revSound();save();
+    openMotoShop(true,`Escape na ${MOTOS[k].nome}! Agora ela tem ${motoCv(k)} cv. Sente o ronco!`)},
+  escpoe(id){const q=mEq();if(!state.moto||!escOwn(state.moto,id))return;(state.motoCustom[state.moto]=state.motoCustom[state.moto]||{}).esc=id==='esc_padrao'?null:id;sfx.build();save();openMotoShop(true,`Escape instalado! A ${MOTOS[state.moto].nome} está com ${motoCv(state.moto)} cv.`)},
+  altcor(v){if(state.nivel.lvl<ALT_NIVEL)return;const[k,c]=v.split('|');if(!state.motos[k]||motoDef(k).cor===c)return;if(!altPaga())return;(state.motoCustom[k]=state.motoCustom[k]||{}).cor=c;save();openMotoShop(true,'Pintura nova! Ficou outra moto.')},
+  altnum(k){if(state.nivel.lvl<ALT_NIVEL||!state.motos[k])return;const el=$('num_'+k),n=((el&&el.value)||'').replace(/\D/g,'').slice(0,3);if(!n){toast('Digite um número de 1 a 3 dígitos.');return}if(n===(motoDef(k).num||''))return;if(!altPaga())return;(state.motoCustom[k]=state.motoCustom[k]||{}).num=n;save();openMotoShop(true,`Número ${n} adesivado na placa!`)},
+  altcamnum(){if(state.nivel.lvl<ALT_NIVEL)return;const q=mEq();if(!q.own.camisa_trilha)return;const el=$('camnum'),n=((el&&el.value)||'').replace(/\D/g,'').slice(0,3);if(!n){toast('Digite um número de 1 a 3 dígitos.');return}if(n===q.camNum)return;if(!altPaga())return;q.camNum=n;q.camModo='num';save();openMotoShop(true,`Número ${n} estampado na camisa!`)},
+  altcamlet(){if(state.nivel.lvl<ALT_NIVEL)return;const q=mEq();if(!q.own.camisa_trilha)return;const el=$('camlet'),t=((el&&el.value)||'').toUpperCase().replace(/[^A-Z]/g,'').slice(0,2);if(!t){toast('Digite até 2 letras.');return}if(t===q.camLet)return;if(!altPaga())return;q.camLet=t;q.camModo='let';save();openMotoShop(true,`Letras ${t} na camisa. Ficou de piloto profissional!`)},
+  camodo(v){const q=mEq();if(state.nivel.lvl<ALT_NIVEL||!q.own.camisa_trilha)return;q.camModo=v;save();openMotoShop(true,v==='let'?'Agora a camisa mostra as letras.':'Agora a camisa mostra o número.')},
+  altcamcor(c){if(state.nivel.lvl<ALT_NIVEL)return;const q=mEq();if(!q.own.camisa_trilha||(q.camCor||'')===c)return;if(!altPaga())return;q.camCor=c;save();openMotoShop(true,'Camisa tingida!')},
+  altcamtxt(c){if(state.nivel.lvl<ALT_NIVEL)return;const q=mEq();if(!q.own.camisa_trilha||q.camTxtCor===c)return;if(!altPaga())return;q.camTxtCor=c;save();openMotoShop(true,'Estampa com cor nova!')},
+  altnumcor(v){if(state.nivel.lvl<ALT_NIVEL)return;const[k,c]=v.split('|');if(!state.motos[k]||(motoDef(k).numCor||'#1c1c1c')===c)return;if(!altPaga())return;(state.motoCustom[k]=state.motoCustom[k]||{}).numCor=c;save();openMotoShop(true,'Número da placa repintado!')},
+  altcap(c){if(state.nivel.lvl<ALT_NIVEL)return;const q=mEq();if(q.capCor===c)return;if(!altPaga())return;q.capCor=c;save();openMotoShop(true,'Capacete repintado!')},
   motouse(k){if(!state.motos[k])return;state.moto=k;openMotoShop(true,`Boa escolha! A ${MOTOS[k].nome} tá pronta.`)},
   motoride(){toggleRide('moto');openMotoShop(true)},
   inv(){openInv()},
@@ -5784,24 +6005,42 @@ function blit(img,cx,footY,flip,alpha){const sc=img.sc||S,w=img.width*sc,h=img.h
 function wheelSpin(cx,cy,a,sc){sc=sc||S;const px=(x,y,c)=>{ctx.fillStyle=c;ctx.fillRect(Math.round(cx+x*sc-sc/2),Math.round(cy+y*sc-sc/2),sc,sc)};      // pneu girando: cravos e raios
   for(let i=0;i<6;i++){const b=a+i*Math.PI/3;px(Math.cos(b)*3.1,Math.sin(b)*3.1,'#5a5f66')}
   for(let i=0;i<3;i++){const b=-a*.9+i*Math.PI*2/3;px(Math.cos(b)*1.1,Math.sin(b)*1.1,'#3a3f47')}px(0,0,'#d6dbe2')}
+function motoVertical(m,k,sx,gy,dir,mov,head,set,lift){      // moto de frente (descendo) ou de costas (subindo)
+  const tras=dir==='up',img=typeof k==='object'?k[tras?'T':'F']:(tras?SPR.motoT:SPR.motoF)[k],bump=mov&&Math.floor(clock*18)%2?1:0,u=img.sc||S/2;
+  shadow(sx,gy-2,15,6);
+  if(mov&&Math.floor(clock*10)%3===0){ctx.fillStyle='rgba(185,160,120,.55)';ctx.beginPath();ctx.arc(sx+(Math.random()-.5)*14,tras?gy+4:gy-34,5+Math.random()*4,0,7);ctx.fill()}   // poeira
+  if(set)drawPerson(set,{x:(sx+camx)/T,y:(gy+camy)/T-.28,dir,walk:0,lift:lift+(tras?6:0)+bump,noShadow:1},head);
+  blit(img,sx,gy-bump);
+  {const o=dirtOver(img,dirtStage(vehDirt()));if(o)blit(o,sx,gy-bump)}
+  const L=Math.round(sx-img.width*u/2),Tp=gy-bump-img.height*u+(img.pad||0)*S,x0=L+(tras?10:11)*u,ww=(tras?6:4)*u,ph=((spinA||0)*2)%3;      // cravos do pneu correndo
+  ctx.fillStyle='#454545';for(let y=19+ph;y<31;y+=3)ctx.fillRect(Math.round(x0),Math.round(Tp+(y+1)*u),Math.round(ww),Math.round(u))}
 function drawRider(p,head){
-  const tr=state.rideKind==='trator',m=tr?SPR.trator[state.trator]:SPR.moto[state.moto],sx=Math.round(p.x*T-camx),gy=Math.round((p.y+.28)*T-camy),bump=p.walk&&Math.floor(clock*18)%2?1:0,fl=p.face<0;
+  if(state.rideKind!=='trator'&&(p.dir==='up'||p.dir==='down')&&SPR.motoF&&SPR.motoF[state.moto]){if(p.walk)spinA=clock*(p.vel||14);
+    const sx=Math.round(p.x*T-camx),gy=Math.round((p.y+.28)*T-camy);
+    const mp=motoPlayer(state.moto),q=mEq();if(SPR.player&&SPR.player.sit){motoVertical(SPR.moto,mp,sx,gy,p.dir,p.walk,null,null,0);return}
+    const rs=riderSet(),cap=q.cap&&!skinOn()&&!estiloSobrev();motoVertical(SPR.moto,mp,sx,gy,p.dir,p.walk,cap?null:head,rs,rs.hd?14:18);
+    {const bump=p.walk&&Math.floor(clock*18)%2?1:0;drawCamisaNum(sx,gy-(rs.hd?14:18)-(p.dir==='up'?6:0)-bump-CAMISA_DY,p.dir)}
+    if(cap){const bump=p.walk&&Math.floor(clock*18)%2?1:0;drawCapacete(q.cap,q.capCor,sx,gy-(rs.hd?14:18)-(p.dir==='up'?6:0)-bump-CAP_DY,p.dir)}return}
+  const tr=state.rideKind==='trator',m=tr?SPR.trator[state.trator]:motoPlayer(state.moto).S,sx=Math.round(p.x*T-camx),gy=Math.round((p.y+.28)*T-camy),bump=p.walk&&Math.floor(clock*18)%2?1:0,fl=p.face<0;
   shadow(sx,gy-2,tr?44:36,tr?8:6);blit(m,sx,gy-bump,fl);{const o=dirtOver(m,dirtStage(vehDirt()));if(o)blit(o,sx,gy-bump,fl)}
   if(!tr){if(p.walk)spinA=clock*(p.vel||14);const w=vw(m)*S,top=gy-bump-vh(m)*S+(m.pad||0)*S;for(const wx of[6.5,22.5])wheelSpin(fl?sx+w/2-wx*S:sx-w/2+wx*S,top+13.5*S,fl?-spinA:spinA)}
   if(p.walk&&Math.floor(clock*10)%3===0){ctx.fillStyle='rgba(185,160,120,.55)';const bx=sx+(fl?1:-1)*40;ctx.beginPath();ctx.arc(bx,gy-6,6+Math.random()*4,0,7);ctx.fill()}   // poeira
   const rx=p.x+(tr?(fl?.25:-.25):(fl?.06:-.06));
   if(SPR.player&&SPR.player.sit){blit(SPR.player.sit[0],Math.round(rx*T-camx),Math.round((p.y+.28)*T-camy)-(tr?20:9)-bump,fl);return}      // skin do Minecraft: pose sentada
-  drawPerson(SPR.player,{x:rx,y:p.y,dir:fl?'left':'right',walk:0,sit:1,lift:(SPR.player.hd?(tr?27:16):(tr?30:20))+bump,noShadow:1},head)}
+  const q=mEq(),cap=!tr&&q.cap&&!skinOn()&&!estiloSobrev(),rs=tr?SPR.player:riderSet(),lf=(rs.hd?(tr?27:16):(tr?30:20))+bump;
+  drawPerson(rs,{x:rx,y:p.y,dir:fl?'left':'right',walk:0,sit:1,lift:lf,noShadow:1},cap?null:head);
+  if(cap)drawCapacete(q.cap,q.capCor,Math.round(rx*T-camx)+(fl?-CAP_DX:CAP_DX),Math.round((p.y+.28)*T-camy)-lf-CAP_DYS,fl?'left':'right')}
+const CAP_DY=53,CAP_DYS=51,CAP_DX=1,CAMISA_DY=32;
 function drawPerson(set,e,head){const side=e.dir==='left'||e.dir==='right',fr=e.sit&&set.hd&&side?5:e.walk?1+(Math.floor(e.walk)%(set.hd?4:2)):0,img=set[side?'side':e.dir][fr];
   const sx=Math.round(e.x*T-camx),sy=Math.round((e.y+.28)*T-camy)-(e.lift||0);
   if(!e.noShadow)shadow(sx,sy-2,15,5);blit(img,sx,sy,e.dir==='left');
   if(set===SPR.player&&state&&state.sujeira>=1){const o=dirtOver(img,dirtStage(state.sujeira));if(o)blit(o,sx,sy,e.dir==='left')}
   if(head){const D=head.width,hy=sy-(set.hd?40:30)-D;if(e.dir==='left'){ctx.save();ctx.translate(sx,0);ctx.scale(-1,1);ctx.drawImage(head,-D/2,hy);ctx.restore()}else ctx.drawImage(head,Math.round(sx-D/2),hy)}}
 function drawAnimal(a,moving){const tr=animTier(a);if(tr>=3){const sx0=Math.round(a.x*T-camx),sy0=Math.round((a.y+.3)*T-camy),im0=animImg(a);ctx.fillStyle=RAR[tr].c;
-    for(let i=0;i<3;i++){const ph=(clock*.8+i*.37+a.x)%1,ang=i*2.1+clock*.5,rx=Math.cos(ang)*im0.width*S*.45,ry=-im0.height*S*(.3+ph*.6);ctx.globalAlpha=Math.sin(ph*Math.PI);ctx.fillRect(sx0+rx-1,sy0+ry-3,3,7);ctx.fillRect(sx0+rx-3,sy0+ry-1,7,3)}ctx.globalAlpha=1}
+    for(let i=0;i<3;i++){const ph=(clock*.8+i*.37+a.x)%1,ang=i*2.1+clock*.5,rx=Math.cos(ang)*vw(im0)*S*.45,ry=-vh(im0)*S*(.3+ph*.6);ctx.globalAlpha=Math.sin(ph*Math.PI);ctx.fillRect(sx0+rx-1,sy0+ry-3,3,7);ctx.fillRect(sx0+rx-3,sy0+ry-1,7,3)}ctx.globalAlpha=1}
   const img=animImg(a),sx=Math.round(a.x*T-camx),sy=Math.round((a.y+.3)*T-camy);
   shadow(sx,sy-2,vw(img)*S*.38,4);blit(img,sx,sy-(moving&&Math.floor(clock*6)%2?2:0),a.face<0)}
-const tagY=a=>a.y+.3-(SPR[a.sp].height*S+8)/T;
+const tagY=a=>a.y+.3-(vh(SPR[a.sp])*S+8)/T;
 const isWaterAt=(x,y)=>{if(x<XMIN||y<0||x>=MW||y>=MH)return true;const g=ground[y*AW-XMIN+x];return g===2||(g===3&&!state.b.ponte)};
 function tag(text,wx,wy,col){tags.push([text,wx*T-camx,wy*T-camy,col||'#fff'])}
 function drawThief(t){const hd=HEADS.thief.cv;const sx=Math.round(t.x*T-camx),sy=Math.round((t.y+.28)*T-camy);
@@ -5950,6 +6189,9 @@ function drawTreeFall(f){const img=f.img,sc=img.sc||S,w=img.width*sc,h=img.heigh
   if(f.t>.7&&f.t<1.6){const q=(f.t-.7)/.9;for(let i=0;i<9;i++){const a=i/9*Math.PI,r=10+q*40;ctx.fillStyle=`rgba(200,180,140,${.55*(1-q)})`;ctx.beginPath();ctx.arc(bx+f.dir*h*.55+Math.cos(a)*r*(i%2?1:-1),by-4-Math.sin(a)*r*.35,7+q*10,0,7);ctx.fill()}
     for(let i=0;i<7;i++){const a=(i*1.7)%6.28;ctx.fillStyle=`rgba(79,174,90,${1-q})`;ctx.fillRect(bx+f.dir*h*.6+Math.cos(a)*q*50,by-10-Math.sin(a)*q*30+q*q*30,4,3)}}}
 // ---- moradores com vida: passeiam, vão pescar no rio, param para conversar e cumprimentam você ----
+const BAR_PORTA=[38.35,23.35],BAR_BEB=['raiska','vinho_pet','cerveja','cerveja'];
+const NPC_BAR_SAI=['Saúde! 🍻','Uma gelada pra alegrar!','O Xande caprichou!','Essa é por minha conta!','Hoje tem!'];
+const NPC_BAR_BEBE=['Ahh, que delícia!','Essa tá gelada!','Mais uma e vou pra casa...','Saúde, vizinho!','Hic!','Bah, que trago bom!'];
 const NPC_PAPO=['E aí, tudo bem?','Viu o preço do milho?','Choveu bem ontem!','Bah, que calor!','Vai na missa domingo?','O Gabriel tá forte, hein!','Minha galinha botou dois ovos!','Dizem que tem lobisomem...','Vamo num churrasco?','A uva tá doce esse ano!','Viu o disco voador?!','O Mateus achou caro de novo.'];
 const NPC_OI=['Opa! 👋','Bom dia, vizinho!','E aí! 👋','Bah, tchê!','Salve! 👋','Tudo certo?'];
 const NPC_PESCA=['Peguei um lambari! 🐟','Olha o tamanho desse! 🐟','Hoje tá dando peixe!','Escapou... 😩'];
@@ -5966,16 +6208,33 @@ function updateNPC(n,dt,p){if(n.sayT>0){n.sayT-=dt;if(n.sayT<=0)n.say=null}if(n.
   if(free){n.next=(n.next==null?6+Math.random()*10:n.next)-dt;
     if(n.next<=0){n.next=14+Math.random()*20;const r=Math.random(),sp=fishSpots();
       if(r<.3&&sp.length&&npcs.filter(m=>m.act==='pesca').length<2){const f=sp[Math.random()*sp.length|0];n.act='pesca';n.ph='vai';n.tx=f[0];n.ty=f[1];n.wx=f[2];n.wy=f[3];n.stuck=0}
+      else if(r>=.75&&r<.93&&state.min>=600&&npcs.filter(m=>m.act==='bar').length<2){n.act='bar';n.ph='vai';n.tx=BAR_PORTA[0]+(Math.random()-.5)*.3;n.ty=BAR_PORTA[1];n.stuck=0}      // vai no Bar do Xande buscar uma bebida
       else if(r<.75){const o=npcs.find(m=>m!==n&&(!m.act||m.act==='anda')&&Math.hypot(m.x-n.x,m.y-n.y)<8);if(o){const mx=(n.x+o.x)/2,my=(n.y+o.y)/2;for(const[a,b]of[[n,-.55],[o,.55]]){a.act='papo';a.ph='vai';a.tx=mx+b;a.ty=my;a.par=a===n?o:n;a.stuck=0;a.actT=10}n.fala=1}}}}
   if(n.act==='pesca'){if(n.ph==='vai'){if(npcWalkTo(n,n.tx,n.ty,dt,1.2)){n.ph='pesca';n.actT=14+Math.random()*12;n.vx=n.vy=0;n.dir=n.wx?(n.wx<0?'left':'right'):(n.wy<0?'up':'down');n.bite=3+Math.random()*4}else if(n.stuck>1.5)n.act='anda'}
     else{n.actT-=dt;n.bite-=dt;if(n.bite<=0){n.bite=4+Math.random()*5;n.say=NPC_PESCA[Math.random()*NPC_PESCA.length|0];n.sayT=2.4;n.splash=.5}if(n.splash>0)n.splash-=dt;if(n.actT<=0)n.act='anda'}
     if(n.ph==='vai')npcDir(n);else n.walk=0;return}
+  if(n.act==='bar'){
+    if(n.ph==='vai'){if(npcWalkTo(n,n.tx,n.ty,dt,1.2)){n.ph='dentro';n.hid=1;n.vx=n.vy=0;n.walk=0;n.actT=5+Math.random()*6;n.say=null}else if(n.stuck>2){n.act='anda';return}npcDir(n);return}
+    if(n.ph==='dentro'){n.actT-=dt;if(n.actT<=0){n.hid=0;n.ph='sai';n.beb=BAR_BEB[Math.random()*BAR_BEB.length|0];n.say=NPC_BAR_SAI[Math.random()*NPC_BAR_SAI.length|0];n.sayT=2.4;
+      n.tx=BAR_PORTA[0]+(Math.random()-.5)*4;n.ty=BAR_PORTA[1]+1.4+Math.random()*1.6;n.stuck=0;n.dir='down'}return}
+    if(n.ph==='sai'){if(npcWalkTo(n,n.tx,n.ty,dt,1)||n.stuck>1.5){n.ph='bebe';n.actT=22+Math.random()*16;n.gole=2+Math.random()*2}npcDir(n);return}
+    n.actT-=dt;n.gole-=dt;if(n.gole<=0){n.gole=4+Math.random()*3;n.sip=1.1;if(Math.random()<.45){n.say=NPC_BAR_BEBE[Math.random()*NPC_BAR_BEBE.length|0];n.sayT=2.2}}
+    if(n.sip>0){n.sip-=dt;n.vx=n.vy=0;n.walk=0}else{wander(n,dt,.7,[30,20,44,29]);if(n.vx||n.vy){n.walk+=dt*5;n.dir=Math.abs(n.vx)>Math.abs(n.vy)?(n.vx<0?'left':'right'):(n.vy<0?'up':'down')}else n.walk=0}
+    if(n.actT<=0){n.act='anda';n.beb=null;n.sip=0}return}
   if(n.act==='papo'){const o=n.par;if(!o||o.act!=='papo'){n.act='anda';return}
     if(n.ph==='vai'){if(npcWalkTo(n,n.tx,n.ty,dt,1.1)||n.stuck>1.5){n.ph='fala';n.vx=n.vy=0}npcDir(n)}
     else{n.walk=0;n.dir=o.x<n.x?'left':'right';n.actT-=dt;if(o.ph==='fala'&&n.fala){n.ft=(n.ft||0)-dt;if(n.ft<=0){n.ft=2.2;const who=(n.turn=(n.turn||0)+1)%2?n:o;who.say=NPC_PAPO[Math.random()*NPC_PAPO.length|0];who.sayT=2}}
       if(n.actT<=0){n.act='anda';n.fala=0;o.act='anda';o.fala=0}}
     return}
   n.act='anda';wander(n,dt,1.1,[15,17,35,29]);if(n.vx||n.vy){n.walk+=dt*6;n.dir=Math.abs(n.vx)>Math.abs(n.vy)?(n.vx<0?'left':'right'):(n.vy<0?'up':'down')}else n.walk=0}
+function drawNPCBebida(n){const sx=Math.round(n.x*T-camx),sy=Math.round((n.y+.28)*T-camy),d=n.dir,sip=n.sip>0?Math.sin(Math.min(1,(1.1-n.sip)/.3)*Math.PI/2)*(n.sip<.3?n.sip/.3:1):0;
+  const hx=sx+(d==='left'?-13:d==='right'?13:d==='up'?-12:12),hy=sy-24-sip*20,R=(x,y,w,h,c)=>{ctx.fillStyle=c;ctx.fillRect(Math.round(hx+x),Math.round(hy+y),w,h)};
+  ctx.save();if(sip>.5){ctx.translate(hx,hy);ctx.rotate((d==='left'?1:-1)*.6);ctx.translate(-hx,-hy)}
+  if(n.beb==='cerveja'){R(-4,-10,9,12,'#3a2416');R(-3,-9,7,10,'#e0a020');R(-3,-9,7,3,'#fff6e0');R(-2,-6,1,6,'#ffd76a');R(5,-7,3,1,'#3a2416');R(7,-7,1,6,'#3a2416');R(5,-2,3,1,'#3a2416')}      // caneco de chope
+  else if(n.beb==='vinho_pet'){R(-3,-16,7,18,'#1c3a1c');R(-2,-15,5,16,'#3a8a3a');R(-1,-18,3,3,'#1c3a1c');R(-1,-19,3,1,'#e8e8e8');R(-2,-9,5,4,'#f0e2b6');R(-1,-14,1,8,'#7acc7a')}      // vinho na garrafa pet
+  else{R(-3,-14,7,16,'#2a3a4a');R(-2,-13,5,14,'#dfeef6');R(-1,-17,3,4,'#2a3a4a');R(-1,-17,3,1,'#c9a227');R(-2,-8,5,4,'#2f6fd1');R(-1,-12,1,6,'#ffffff')}      // garrafinha de raiska
+  ctx.fillStyle=n.dir==='up'?'#000':'#e8b88a';ctx.restore();
+  ctx.fillStyle='#e8b88a';ctx.fillRect(Math.round(hx-3),Math.round(hy-2),6,4)}      // mão segurando
 function drawNPCExtras(n){const sx=Math.round(n.x*T-camx),sy=Math.round((n.y+.28)*T-camy);
   if(n.act==='pesca'&&n.ph==='pesca'){const wx=n.wx||0,wy=n.wy||0,tipx=sx+wx*30+(wx?0:10),tipy=sy-44+(wy>0?20:0),bx=sx+wx*62+(wx?0:10),byy=sy+wy*46-6+Math.sin(clock*3)*1.5+(n.splash>0?3:0);
     ctx.strokeStyle='#6e4527';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(sx+wx*6,sy-20);ctx.lineTo(tipx,tipy);ctx.stroke();
@@ -6308,10 +6567,51 @@ function expDraw(e){const s=EXP_ST[e.id],set=e.id==='gabriel'&&s.tag==='barb'?SP
 // ---- casinhas dos funcionários ----
 const CASAS_COR=[['#efe3c8','#b04a2e'],['#f2d7d0','#7a3a2a'],['#e3ecd8','#3f6b3a'],['#f1e6c0','#8a5a2a'],['#dfe6f0','#3a4f7a'],['#f0e0d0','#a0402a'],['#e8e0d0','#5a4a3a']];
 const casaVCache=[];
+// casinha do funcionário no mesmo formato da casa principal (ala sobre pedra + corpo com térreo de pedra e telhado com água-furtada), cada uma com o tema do serviço
+function casaVNova(r,e,W,H,i){const[wall,roof]=CASAS_COR[i],tel=mixc(roof,'#b04a2e',.35),G=H-3,mx=12,mw=W-mx,mcx=mx+mw/2;
+  r(39,1,6,14,OUTL);pedras(r,40,2,4,13);      // chaminé
+  roofTelha(r,mcx,6,30,mw/2-8,mw/2+2,tel);
+  {const dx=mcx+3;r(dx-5,16,10,10,OUTL);r(dx-4,17,8,9,'#5e3b22');r(dx-2,19,4,5,'#bfe6ff');r(dx-2,19,1,2,'#fff');roofTelha(r,dx,12,18,1,6,shd(tel,-.08))}      // água-furtada
+  enxaimel(r,mx+1,mw-2,29,42,wall);r(mx+1,30,mw-2,2,'rgba(0,0,0,.3)');
+  for(const x of[mx+12,W-9]){r(x-4,32,9,8,OUTL);r(x-3,33,7,6,'#bfe6ff');r(x,33,1,6,'#f4ecda');r(x-3,35,7,1,'#f4ecda');r(x-3,33,1,2,'#fff');if(curWins)curWins.push([x-2,34])}
+  beam(r,mx,42,mw,'#5e3b22');pedras(r,mx+1,45,mw-2,G-45);
+  const dc=24,dw=9,dt=G-14;e(dc,dt+2,dw/2+2.5,5,'#9aa0a8');e(dc,dt+2,dw/2+1.5,4,'#858b94');e(dc,dt+3,dw/2+.5,3.5,OUTL);door(r,dc-dw/2,H,dw,13);e(dc,dt+3,dw/2-.5,2.6,'#8a5c38');r(dc-dw/2+1,dt+6,dw-2,1,'#3a3f47');
+  r(W-13,48,7,5,OUTL);r(W-12,49,5,3,'#2b2f35');      // janelinha do porão
+  // ala da esquerda
+  pedras(r,2,40,10,G-40);for(const px of[0,11]){r(px,30,2,G-30,OUTL);r(px,30,1,G-30,'#7a4e2e')}
+  enxaimel(r,1,11,25,39,wall);beam(r,0,39,13,'#5e3b22');r(4,29,5,5,OUTL);r(5,30,3,3,'#bfe6ff');
+  roofTelha(r,6,11,26,2,7,tel);r(5,17,2,2,OUTL);
+  base(r,0,W,H);
+  // ---- tema de cada um ----
+  if(i===0){      // Luan (Pitol Calçados): varal com roupas e um par de tênis na porta
+    r(2,G-17,1,15,'#8a5c38');r(15,G-17,1,15,'#8a5c38');r(2,G-17,14,1,'#e8e8e8');
+    for(const[x,c]of[[3,'#e5533d'],[7,'#2f6fd1'],[11,'#f2c218']]){r(x,G-16,4,5,c);r(x-1,G-16,1,2,c);r(x+4,G-16,1,2,c)}
+    r(dc+6,G-2,3,2,'#f2f2f2');r(dc+9,G-2,3,2,'#f2f2f2');r(dc+6,G-1,6,1,'#d42a2a')}
+  else if(i===1){      // Maikelen (A.C.C.P.U.V, cooperativa da uva): parreira sobre a porta e pipa de vinho
+    r(dc-9,dt-6,18,2,'#6e4527');for(const x of[dc-9,dc+8])r(x,dt-6,1,16,'#6e4527');
+    for(let k=0;k<7;k++){e(dc-8+k*2.7,dt-6,2,1.6,k%2?'#3f8a3a':'#5fa04a')}for(const x of[dc-6,dc+1,dc+6]){e(x,dt-2,1.4,2,'#6a2a6a');r(x-1,dt-3,1,1,'#9a4a9a')}
+    e(W-5,G-4,4,4.5,'#7a4a2a');r(W-9,G-6,8,1,'#3a3f47');r(W-9,G-2,8,1,'#3a3f47');r(W-6,G-5,2,1,'#c9a26b')}
+  else if(i===2){      // Gabriel (academia e barbearia): poste listrado e halter na porta
+    r(dc-10,G-15,3,13,OUTL);for(let y=G-14;y<G-3;y++)r(dc-9,y,1,1,(y%4<2)?'#d42a2a':'#f4f4f4');r(dc-10,G-16,3,2,'#c9962a');
+    r(dc+7,G-3,8,1,'#3a3f47');r(dc+6,G-5,2,4,'#1c1c1c');r(dc+14,G-5,2,4,'#1c1c1c')}
+  else if(i===3){      // Junior (Triguinho): roleta no frontão, dado e moedas
+    e(6,20,3,3,OUTL);e(6,20,2.3,2.3,'#2f8a3a');r(6,18,1,4,'#f5c542');r(4,20,4,1,'#f5c542');e(6,20,.8,.8,'#d42a2a');
+    r(dc+7,G-5,4,4,'#f4f4f4');r(dc+7,G-5,4,1,'#d8d8d8');r(dc+8,G-4,1,1,'#1c1c1c');r(dc+9,G-2,1,1,'#1c1c1c');
+    for(const x of[dc-12,dc-9,dc+13]){e(x,G-1,1.6,1,'#f5c542');r(x-1,G-2,1,1,'#fff3b0')}}
+  else if(i===4){      // Xande (bar): barril de chope, caixa de cerveja e placa com caneco
+    e(W-5,G-4,4,4.5,'#8a5a2a');r(W-9,G-6,8,1,'#3a3f47');r(W-9,G-2,8,1,'#3a3f47');r(W-6,G-5,2,1,'#c9a26b');
+    r(dc-13,G-5,7,5,'#c4302b');r(dc-13,G-5,7,1,'#e85d4f');for(const x of[dc-12,dc-10,dc-8])r(x,G-6,1,2,'#3f8a3a');
+    r(dc+6,dt-3,1,4,'#3a3f47');r(dc+5,dt+1,7,6,OUTL);r(dc+6,dt+2,5,4,'#f5c542');r(dc+6,dt+2,5,1,'#fff6e0');r(dc+11,dt+3,1,2,'#f5c542')}
+  else if(i===5){      // Alison (loja de motos): moto de trilha estacionada e pneus
+    const bx=W-14,by=G-1;e(bx,by-2,2.5,2.5,'#1c1c1c');e(bx+9,by-2,2.5,2.5,'#1c1c1c');e(bx,by-2,1,1,'#9aa0a8');e(bx+9,by-2,1,1,'#9aa0a8');
+    r(bx+1,by-7,7,2,'#3fb53a');r(bx+2,by-8,4,1,'#1c1c1c');r(bx+7,by-9,1,6,'#9aa0a8');r(bx+6,by-10,3,1,'#1c1c1c');r(bx+3,by-5,3,2,'#4a4f57');
+    for(const y of[G-1,G-4]){e(dc-11,y,2.6,1.6,'#1c1c1c');e(dc-11,y,1,.6,'#555')}}
+  else if(i===6){      // Thiago (posto): galão vermelho, tambor de óleo e bomba de ar
+    r(dc-13,G-7,5,7,'#d42a2a');r(dc-13,G-7,5,1,'#f0625a');r(dc-12,G-9,2,2,'#1c1c1c');
+    r(W-8,G-9,6,9,'#2f6fd1');r(W-8,G-9,6,1,'#5f9ae8');r(W-8,G-5,6,1,'#1f4fa1');
+    r(dc+7,G-10,4,10,'#e8e8e8');r(dc+7,G-10,4,1,'#ffffff');r(dc+8,G-8,2,2,'#d42a2a');r(dc+11,G-7,1,5,'#1c1c1c')}}
 function casaVSprite(i){if(casaVCache[i])return casaVCache[i];const W=3*16,H=2*16+LT,[wall,roof]=CASAS_COR[i];
-  return casaVCache[i]=mk(W,H,(r,e)=>{const rh=house(r,0,W,H,wall,shd(wall,-.2),roof,shd(roof,-.3));door(r,W/2-4,H,8,17);
-    for(const x of[5,W-13]){r(x-1,rh+6,10,10,OUTL);r(x,rh+7,8,8,'#bfe6ff');r(x+3.5,rh+7,1,8,'#f4ecda');r(x,rh+10.5,8,1,'#f4ecda');if(curWins)curWins.push([x+1,rh+8])}
-    r(W-9,4,4,8,'#8a5a3a');r(W-10,3,6,2,'#5a3a22')})}      // chaminé
+  return casaVCache[i]=mk(W,H,(r,e)=>casaVNova(r,e,W,H,i))}
 // ---- Barbearia do Gabriel: tema antigo (tijolinho, madeira escura, vitrine com letreiro dourado e o poste listrado) ----
 let barbCv=null;
 /* ---------- Banco Imbuial: guarda o dinheiro e rende todo dia; gerente Everton ---------- */
@@ -6524,7 +6824,58 @@ function ufoSound(){if(muted)return;try{const c=getCtx(),t=c.currentTime,o=c.cre
   l.connect(lg);lg.connect(o.frequency);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.025,t+.4);g.gain.setValueAtTime(.025,t+3.4);g.gain.exponentialRampToValueAtTime(.0001,t+4);o.connect(g);g.connect(c.destination);o.start(t);l.start(t);o.stop(t+4.1);l.stop(t+4.1)}catch(e){}}
 function shotSound(){if(muted)return;try{const c=getCtx(),t=c.currentTime,n=c.sampleRate*.25,b=c.createBuffer(1,n,c.sampleRate),d=b.getChannelData(0);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/n,3);
   const s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();s.buffer=b;f.type='lowpass';f.frequency.value=1400;g.gain.value=.09;s.connect(f);f.connect(g);g.connect(c.destination);s.start(t)}catch(e){}}
+/* ---------- Motocross no horizonte: rampa, salto e manobra sorteada no ar ---------- */
+const MX_MANOBRAS=[['superman','SUPERMAN!'],['nacnac','NAC-NAC!'],['whip','WHIP!'],['cliffhanger','CLIFFHANGER!'],['backflip','BACKFLIP!'],['heelclicker','HEEL CLICKER!'],['canCan','CAN-CAN!']];
+function initMx(h){const W=cv.width,dir=h.dir,gap=Math.min(260,Math.max(170,W*.26)),Lx=dir>0?W*(.22+Math.random()*.18):W*(.78-Math.random()*.18);
+  const mk2=Object.keys(MOTOS),mb=MX_MANOBRAS[Math.random()*MX_MANOBRAS.length|0];
+  h.peak=0;Object.assign(h,{ph:'vem',x:dir>0?-180:W+180,y:0,v:(W+400)/6.5,Lx,Ax:Lx+dir*gap,RL:46,RH:14,man:mb[0],nome:mb[1],moto:mk2[Math.random()*mk2.length|0],look:Math.random()*SPR.npc.length|0,
+    tAr:mb[0]==='backflip'?2.1:1.75,peak:0,ta:0,pit:0,poeira:[],alpha:0});h.RH=14;h.peak=Math.max(18,Math.min(36,skyNear(Lx)+6-h.RH-50));grauSound()}
+function mxChao(x){return skyNear(x)+6}
+function mxAltura(h,x){const d=h.dir,t0=(x-(h.Lx-d*h.RL))*d/h.RL;if(t0>=0&&t0<=1)return h.RH*Math.pow(t0,1.25);      // rampa de subida
+  const t1=(x-h.Ax)*d/(h.RL*1.4);if(t1>=0&&t1<=1)return h.RH*(1-t1);return 0}      // rampa de descida
+function updateMx(h,dt){h.t+=dt;h.alpha=Math.min(1,h.alpha+dt*1.5);
+  for(const q of h.poeira){q.t+=dt;q.x+=q.vx*dt;q.y-=12*dt}h.poeira=h.poeira.filter(q=>q.t<.9);
+  if(h.ph==='vem'||h.ph==='sai'){const x0=h.x;h.x+=h.dir*h.v*dt;const y0=mxChao(x0)-mxAltura(h,x0);h.y=mxChao(h.x)-mxAltura(h,h.x);h.pit=Math.atan2(y0-h.y,Math.abs(h.x-x0)||1);
+    if(Math.random()<dt*10)h.poeira.push({x:h.x-h.dir*14,y:h.y-3,vx:-h.dir*20,t:0});
+    if(h.ph==='vem'&&(h.x-h.Lx)*h.dir>=0){h.ph='ar';h.ta=0;h.x=h.Lx;h.y0=mxChao(h.Lx)-h.RH;h.y1=mxChao(h.Ax)-h.RH;grauSound()}
+    if(h.ph==='sai'&&(h.x<-260||h.x>cv.width+260)){h.alpha-=dt*3;if(h.alpha<=0)hzn=null}return}
+  h.ta+=dt;const p=Math.min(1,h.ta/h.tAr);h.x=h.Lx+(h.Ax-h.Lx)*p;h.y=h.y0+(h.y1-h.y0)*p-h.peak*4*p*(1-p);
+  h.pit=Math.atan2(h.peak*4*(1-2*p)-(h.y1-h.y0),Math.abs(h.Ax-h.Lx))*.55;      // nariz pra cima na subida, pra baixo na descida
+  if(p>=1){h.ph='sai';h.x=h.Ax;mudSound();for(let i=0;i<10;i++)h.poeira.push({x:h.x+(Math.random()-.5)*30,y:h.y-2,vx:(Math.random()-.5)*60,t:Math.random()*.2})}}
+function drawMx(h,u0,say){const u=1.4;const m=SPR.moto[h.moto],rd=SPR.npc[h.look].side[1],d=h.dir,mw=vw(m)*u,mh=vh(m)*u,rw=vw(rd)*u,rh=vh(rd)*u;
+  ctx.save();ctx.globalAlpha=Math.max(0,Math.min(1,h.alpha));
+  // pista: rampas de terra com bandeirinhas
+  const rampa=(xa,xb,ha,hb)=>{const n=12;ctx.fillStyle='#8a5a32';ctx.beginPath();ctx.moveTo(xa,mxChao(xa)+2);for(let i=0;i<=n;i++){const x=xa+(xb-xa)*i/n;ctx.lineTo(x,mxChao(x)-(ha+(hb-ha)*(i/n)))}ctx.lineTo(xb,mxChao(xb)+2);ctx.closePath();ctx.fill();
+    ctx.strokeStyle='#b07a44';ctx.lineWidth=3;ctx.beginPath();for(let i=0;i<=n;i++){const x=xa+(xb-xa)*i/n,y=mxChao(x)-(ha+(hb-ha)*(i/n))+1;i?ctx.lineTo(x,y):ctx.moveTo(x,y)}ctx.stroke();
+    ctx.fillStyle='#6e4526';for(let i=1;i<n;i+=3){const x=xa+(xb-xa)*i/n;ctx.fillRect(x,mxChao(x)-(ha+(hb-ha)*(i/n))*.5,3,2)}};
+  const xs=h.Lx-d*h.RL;rampa(Math.min(xs,h.Lx),Math.max(xs,h.Lx),d>0?0:h.RH,d>0?h.RH:0);
+  const xe=h.Ax+d*h.RL*1.4;rampa(Math.min(h.Ax,xe),Math.max(h.Ax,xe),d>0?h.RH:0,d>0?0:h.RH);
+  ctx.fillStyle='#c94a3a';ctx.fillRect(h.Lx-d*4-1,mxChao(h.Lx)-h.RH-20,2,18);ctx.fillRect(h.Ax+d*4-1,mxChao(h.Ax)-h.RH-20,2,18);      // postes
+  for(const[px,c]of[[h.Lx-d*4,'#ffe066'],[h.Ax+d*4,'#ffe066']]){const fy=mxChao(px)-h.RH-20,w=Math.sin(h.t*8)*2;ctx.fillStyle=c;ctx.beginPath();ctx.moveTo(px,fy);ctx.lineTo(px-d*12,fy+4+w);ctx.lineTo(px,fy+8);ctx.fill()}
+  for(const q of h.poeira){ctx.fillStyle=`rgba(170,130,90,${.5*(1-q.t/.9)})`;ctx.beginPath();ctx.arc(q.x,q.y,3+q.t*8,0,7);ctx.fill()}
+  // manobra: k sobe e desce no meio do salto
+  const p=h.ph==='ar'?Math.min(1,h.ta/h.tAr):0,k=h.ph==='ar'?Math.sin(Math.PI*Math.max(0,Math.min(1,(p-.12)/.72))):0,M=h.man;
+  let rot=-h.pit,bx=0,by=0,rr=0,rx=0,ry=0,whip=0;
+  if(M==='backflip')rot-=Math.PI*2*Math.max(0,Math.min(1,(p-.1)/.8))*(1-0)*1;
+  if(M==='whip'){whip=k;rot+=k*.75}
+  if(M==='superman'){rr=-k*1.45;rx=-k*10*u;ry=-k*3*u}
+  if(M==='nacnac'){rr=-k*.55;rx=-k*8*u;ry=-k*2*u}
+  if(M==='cliffhanger'){rr=-k*Math.PI;rx=k*2*u;ry=-k*9*u}
+  if(M==='heelclicker'){rr=k*.6;rx=k*6*u;ry=-k*6*u}
+  if(M==='canCan'){rr=-k*.35;rx=-k*4*u;ry=-k*5*u}
+  const bob=h.ph!=='ar'?(Math.floor(h.t*14)%2):0;
+  ctx.translate(Math.round(h.x),Math.round(h.y-bob));ctx.scale(d,1);ctx.rotate(rot);ctx.translate(0,-mh*.45);      // gira em volta do meio da moto
+  const ry0=-mh*.55-14*u,rx0=-mw/2+5*u;      // piloto sentado (igual ao do grau)
+  ctx.save();const hx=rx0+rw*.5,hy=ry0+rh*.72;ctx.translate(hx+rx,hy+ry);ctx.rotate(rr);ctx.drawImage(rd,-rw*.5,-rh*.72,rw,rh);
+  if(M==='canCan'&&k>.2){ctx.fillStyle='#2b2f35';ctx.save();ctx.rotate(-1.1*k);ctx.fillRect(-2*u,-1*u,3*u,9*u);ctx.restore()}      // perna esticada pro lado
+  ctx.restore();
+  ctx.save();if(whip)ctx.scale(1,1-whip*.25);ctx.drawImage(m,-mw/2,-mh*.55,mw,mh);ctx.restore();
+  ctx.restore();
+  if(h.ph==='ar'&&p>.25&&p<.95){const a=Math.min(1,(p-.25)*6);ctx.save();ctx.globalAlpha=a;ctx.font='italic 900 16px Poppins,sans-serif';ctx.textAlign='center';const tx=(h.Lx+h.Ax)/2,ty=Math.max(14,Math.min(h.y0,h.y1)-h.peak-50);
+    ctx.fillStyle='#000';ctx.fillText(h.nome+' 🔥',tx+1,ty+1);ctx.fillStyle='#ffe066';ctx.fillText(h.nome+' 🔥',tx,ty);ctx.restore()}
+  if(h.ph==='sai'&&Math.abs(h.x-h.Ax)<160)say('Uhuuul!',h.x,Math.max(14,h.y-50),'#fff')}
 function updateHzn(dt){
+  if(hzn&&hzn.k==='mx'){updateMx(hzn,dt);return}
   if(hzn&&hzn.k==='moto'){const h=hzn;h.t+=dt;
     if(h.ph==='ride'){h.x+=h.dir*h.v*dt;if((h.x-h.cx)*h.dir>=0){h.ph='tombo';h.pt=0;h.x=h.cx;mudSound()}}
     else if(h.ph==='tombo'){h.pt+=dt;if(h.pt>4.2){h.ph='vai';h.pt=0}}
@@ -6544,11 +6895,12 @@ function updateHzn(dt){
   if((hznT-=dt)>0)return;hznT=10+Math.random()*12;
   if(grau||wolf)return;
   const night=isNight(),bag=night?hznBagN:hznBag;
-  if(!bag.length){bag.push(...(night?['noite','ovni','policia','estrela','coruja','saci','mula','boitata','fogos','vagalumes']:['trator','cervos','fazendeiro','moto','ovni','policia','aviao','caminhao','maritacas','peao','capivaras']).sort(()=>Math.random()-.5));if(bag[0]===hznLast)bag.push(bag.shift())}      // sorteio sem repetir: passa todas antes de voltar
+  if(!bag.length){bag.push(...(night?['noite','ovni','policia','estrela','coruja','saci','mula','boitata','fogos','vagalumes']:['trator','cervos','fazendeiro','moto','ovni','policia','aviao','caminhao','maritacas','peao','capivaras','motocross']).sort(()=>Math.random()-.5));if(bag[0]===hznLast)bag.push(bag.shift())}      // sorteio sem repetir: passa todas antes de voltar
   const k=bag.shift();hznLast=k;
   if(k==='noite'){const dir=Math.random()<.5?1:-1;      // alguém se transforma em lobisomem ou em morcego
     hzn={k:'noite',t:0,dir,x0:cv.width*(.25+Math.random()*.5),sx:dir>0?-60:cv.width+60,lobo:Math.random()<.5,look:Math.random()*SPR.npc.length|0};return}
   if(k==='ovni'){hzn={k,dir:Math.random()<.5?1:-1,t:0};initOvni(hzn);return}
+  if(k==='motocross'){hzn={k:'mx',dir:Math.random()<.5?1:-1,t:0};initMx(hzn);return}
   if(NIGHT_DUR[k]){const dir=Math.random()<.5?1:-1;hzn={k,t:0,dir,dur:NIGHT_DUR[k],x:cv.width*(.15+Math.random()*.6),seed:Math.random()*1000};      // cenas novas da noite
     if(k==='coruja'){const ps=[];for(let x0=26,n=0;x0<cv.width+20;x0+=58,n++){const x=x0+(n*37)%30;if(n%3===1&&x>cv.width*.15&&x<cv.width*.85)ps.push(x)}hzn.px=ps.length?ps[Math.random()*ps.length|0]:cv.width/2}
     if(k==='peao'){const vs=SPR.var&&SPR.var.vaca;hzn.boi=vs&&vs.length?vs[Math.random()*Math.min(3,vs.length)|0]:SPR.vaca;hzn.look=Math.random()*SPR.npc.length|0}
@@ -6563,6 +6915,7 @@ function drawHzn(na){const u=2,h=hzn,A=spA;ctx.save();if(na>0&&!h.dur)ctx.filter
   const put=(img,x,foot,flip)=>{const w=vw(img)*u,hh=vh(img)*u;ctx.save();ctx.translate(Math.round(x),Math.round(foot-hh));if(flip){ctx.translate(w,0);ctx.scale(-1,1)}ctx.drawImage(img,0,0,w,hh);ctx.restore()};
   const say=(txt,x,y,col)=>{ctx.font='bold 13px Poppins,sans-serif';ctx.textAlign='center';ctx.fillStyle='#000';ctx.fillText(txt,x+1,y+1);ctx.fillStyle=col||'#fff';ctx.fillText(txt,x,y)};
   const fl=h.dir<0;
+  if(h.k==='mx'){drawMx(h,u,say);ctx.restore();return}
   if(h.k==='trator'){const tr=SPR.trator.jd6125||SPR.trator[Object.keys(SPR.trator)[0]],by=skyNear(h.x)+6+Math.sin(h.t*9);put(tr,h.x-vw(tr),by,fl);
     for(let i=0;i<4;i++){const a=(h.t*1.4+i/4)%1;ctx.fillStyle=`rgba(80,80,80,${.4*(1-a)})`;ctx.beginPath();ctx.arc(h.x-vw(tr)+(fl?vw(tr)*1.4:vw(tr)*.6)-h.dir*a*14,by-vh(tr)*u-2-a*20,2+a*5,0,7);ctx.fill()}}
   else if(h.k==='cervos'){for(let i=0;i<5;i++){const x=h.x-h.dir*i*40,hop=Math.abs(Math.sin(h.t*10+i*1.3))*7,img=A.deer[Math.floor(h.t*9+i)%2];put(img,x-vw(img),skyNear(x)+6-hop,fl)}
@@ -6898,7 +7251,7 @@ function render(){
     else if(d.k===32)drawFuncNpc(d.n);
     else if(d.k===2)drawAnimal(d.a,d.a.led?d.a.moving:(d.a.vx||d.a.vy||d.a.flee>0||(lasso&&lasso.a===d.a)));
     else if(d.k===3)drawAnimal(d.a,d.a.vx||d.a.vy);
-    else if(d.k===4){drawPerson(SPR.npc[d.n.look],Object.assign({},d.n,{lift:d.n.hop||0}));drawNPCExtras(d.n)}
+    else if(d.k===4){if(d.n.hid)continue;if(d.n.beb&&d.n.dir==='up')drawNPCBebida(d.n);drawPerson(SPR.npc[d.n.look],Object.assign({},d.n,{lift:d.n.hop||0}));if(d.n.beb&&d.n.dir!=='up')drawNPCBebida(d.n);drawNPCExtras(d.n)}
     else if(d.k===28)drawTreeFall(d.f);
     else if(d.k===7){const img=motoShopSprite();ctx.drawImage(img,MOTO_LOT[0]*T-camx,MOTO_LOT[1]*T-camy-LT*S,img.width*S,img.height*S);drawShine(img,MOTO_LOT);
       ctx.font='bold 15px Poppins,sans-serif';ctx.textAlign='center';const sx=(MOTO_LOT[0]+MOTO_LOT[2]/2)*T-camx,sy=MOTO_LOT[1]*T-camy-LT*S+27*S+6;
@@ -7045,7 +7398,7 @@ function frame0(ts){
   const dt=Math.min(.05,(ts-last)/1000||0);last=ts;const mpVivo=mpSemPausa();if(!paused||mpVivo||panelKind==='academia'||!state)clock+=dt;      // pausado: o cenário congela também (água, nuvens, árvores, folhas)
   if(state){updateBell(dt);morteTick(dt);      // o sino toca mesmo com uma janela aberta (o jogo fica pausado, o sino não)
     mpTick(dt);
-    if(!paused||mpVivo){if(busRide)busTick(dt);else{update(dt);vidaTick(dt)}drunkTick(dt);if(MP.role!=='guest')nivelTick(dt);funcTick(dt);saveT+=dt;if(saveT>30){saveT=0;save()}}
+    if(!paused||mpVivo){if(busRide){busTick(dt);try{cenarioTick(dt)}catch(e){}}else{update(dt);vidaTick(dt)}drunkTick(dt);if(MP.role!=='guest')nivelTick(dt);funcTick(dt);saveT+=dt;if(saveT>30){saveT=0;save()}}
     hudT+=dt;if(hudT>.2){hudT=0;if(!paused||mpVivo)updateHUD()}
     if(paused&&!mpVivo&&panelKind!=='academia'){if(!pausaPintada){render();pausaPintada=true}}else{pausaPintada=false;render()}      // pausado: a tela fica parada, não precisa redesenhar
     if(panelKind==='academia'){if(liftT>0)liftT-=dt;drawGym()}}
