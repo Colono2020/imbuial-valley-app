@@ -333,7 +333,8 @@
   .v-body,.g-body{padding:12px 16px;overflow:auto;min-height:0}
   .mg-head{background:linear-gradient(#3a1f5a,#1a0e2e);border-bottom-color:#c9a2ff}.mg-head img{border-color:#c9a2ff}.mg-body{padding:12px 18px}.mg-row{display:flex;gap:8px}.mg-row input{flex:1;font-size:18px;padding:6px 10px;border-radius:8px;border:2px solid #c9a2ff;text-transform:uppercase}
   .zn-head{background:linear-gradient(#3a1640,#1c0f22);border-bottom-color:#ff4fa3}.zn-head img{border-color:#ff4fa3;background:#5a1f4a}.zn-body{padding:12px 18px}.zn-body h3{margin:8px 0 4px}.zn-row{display:flex;align-items:center;gap:10px;background:#fbeef5;border:2px solid #e8a0c4;border-radius:10px;padding:8px 10px;margin-bottom:6px}.zn-row>div{flex:1}.zn-row small{display:block;font-size:12px;color:#7a3a5a}
-  .bk-head{background:linear-gradient(#1f3a5f,#0f2440);border-bottom-color:#c9a227}.bk-head img{border-color:#c9a227}.bk-body{padding:14px 18px}.bk-body h3{margin:6px 0 4px}.bk-saldos{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:8px}.bk-saldos div{background:#fbf2d8;border:2px solid #c9a26b;border-radius:10px;padding:8px;text-align:center}.bk-saldos small{display:block;font-size:11px;color:#7a4a2a}.bk-saldos b{font-size:17px}.bk-btns{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+  .bk-head{background:linear-gradient(#1f3a5f,#0f2440);border-bottom-color:#c9a227}.bk-head img{border-color:#c9a227}.bk-body{padding:14px 18px}.bk-body h3{margin:6px 0 4px}.bk-saldos{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:8px}.bk-saldos div{background:#fbf2d8;border:2px solid #c9a26b;border-radius:10px;padding:8px;text-align:center}.bk-saldos small{display:block;font-size:11px;color:#7a4a2a}.bk-saldos b{font-size:17px}.bk-q{display:inline-flex;gap:3px;margin-left:4px}.bk-q input{width:90px;font-size:14px;padding:3px 6px;border-radius:8px;border:2px solid #7a8aa8;text-align:center}
+  .bk-btns{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
   .r-head{background:linear-gradient(#2f6fd1,#1a4796);border-bottom-color:#123372}.skinbox.lock{background:#eef2f8;border-color:#8fa6c8}.provador{flex:none;background:rgba(255,255,255,.14);border-radius:10px;padding:6px 8px;text-align:center;margin-right:84px}.provador img{width:auto!important;height:80px!important;border:0!important;background:none}.provador small{display:block;font-size:11px}
 .ccard .cprev{width:auto;height:60px}.skinbox{display:flex;gap:16px;align-items:flex-start;background:#fbf2d8;border:2px solid #c9a26b;border-radius:10px;padding:12px}.skinprev{flex:none;width:110px;height:110px;display:flex;align-items:center;justify-content:center;border-radius:8px;border:2px solid #7a4a2a;background:#6fb552}.skinprev img{max-width:100px;max-height:100px;image-rendering:pixelated}.r-head .sub img,.ccard small img{width:16px!important;height:16px!important;border:0!important;border-radius:0!important;vertical-align:-3px}
   /* ---- tela de abertura ---- */
@@ -399,7 +400,7 @@
   .lcard>img{width:52px;height:52px;image-rendering:pixelated;background:#fff;border-radius:10px;border:2px solid #e3cfa0;padding:4px}
   .lcard b{font-size:14px}.lcard small{font-size:11px;color:#7a4a2a;line-height:1.3}
   .lprice{background:#ffe9a0;border:2px solid #d4a72c;border-radius:20px;padding:1px 10px;font-weight:700;color:#6e4a10;margin-top:2px}.lprice img{width:16px;height:16px;vertical-align:-3px}
-  .lbtns{display:flex;gap:4px;justify-content:center;margin-top:4px;flex-wrap:wrap}.lhave{opacity:.85}
+  .lbtns{display:flex;gap:4px;justify-content:center;margin-top:4px;flex-wrap:wrap}.lqty{display:flex;gap:2px;width:100%;justify-content:center;margin-top:2px}.lqty input{width:64px;font-size:14px;padding:3px 6px;border-radius:8px;border:2px solid #c9b78a;text-align:center;background:#fffdf5}.lhave{opacity:.85}
   .ltag{position:absolute;top:6px;right:6px;font-size:10px;background:#7fb04f;color:#fff;border-radius:8px;padding:1px 6px}
   .lnote{font-size:12.5px;color:#6e4a2a;margin:4px 0 10px}
   /* ---- HUD personalizável ---- */
@@ -837,9 +838,9 @@ const VILAS=[      // vilas do sul, cercadas até o personagem chegar no nível
   {id:'v3',nome:'Iomerê',nivel:30,zone:[172,158,212,186],praca:[190,168,9,5]},      // sudeste, depois da pedreira
 ];
 const VSIGNS=[      // placas das vilas
-  {x:153.6,y:47.4,l:['⬆ Pinheiro Preto (nível 12)']},
-  {x:36.6,y:82.6,l:['⬇ Arroio Trinta (nível 20)']},
-  {x:153.6,y:54.6,l:['⬇ Iomerê (nível 30)']},
+  {x:153.6,y:45.4,l:['⬆ Pinheiro Preto (nível 12)']},
+  {x:36.6,y:84.6,l:['⬇ Arroio Trinta (nível 20)']},
+  {x:146.6,y:55.6,l:['⬇ Iomerê (nível 30)']},
   {x:184.4,y:18.6,l:['Pinheiro Preto'],city:1},{x:26.4,y:176.6,l:['Arroio Trinta'],city:1},{x:188.4,y:174.6,l:['Iomerê'],city:1},
 ];
 const vilaFonte=v=>[v.praca[0]+3,v.praca[1]+1,3,3];      // chafariz no meio da pracinha
@@ -932,14 +933,16 @@ const SEED1=20261117,SEED2=77120476;      // sementes do mundo original
 let mapSeeds='';
 function genMap(s1,s2){
   s1=s1||SEED1;s2=s2||SEED2;mapSeeds=s1+':'+s2;
-  ground=new Uint8Array(AW*MH);objs=new Array(AW*MH).fill(null);lotAt=new Array(AW*MH).fill(null);
+  ground=new Uint8Array(AW*MH);objs=new Array(AW*MH).fill(null);lotAt=new Array(AW*MH).fill(null);MONTE=new Uint8Array(AW*MH);
   genLeste(s1,s2);      // Videira, vilas, Pedreirinha e a natureza do leste
   genWest(s1);      // fazenda Imbuial e a estrada de chão (iguais)
   for(const[hx,hy]of CASAS_V)for(let y=hy-1;y<=hy+3;y++)for(let x=hx-2;x<=hx+3;x++){const i=y*AW-XMIN+x;if(!lotAt[i])objs[i]=null}
   for(let i=0;i<AW*MH;i++)if(objs[i]==='pine'&&hash2((i%AW+XMIN),(i/AW)|0,s1&255)<.6)objs[i]='tree';      // menos araucárias
-  finishNature(s1);genSakura(s1);zonaClareira();genVeg();for(const[hx,hy]of CASAS_V)for(let y=hy-3;y<=hy+5;y++)for(let x=hx-3;x<=hx+5;x++){const i=y*AW-XMIN+x,o=objs[i];if(o==='pine'||o==='tree'||o==='bush')objs[i]=null}PROF=null;NAT_I.clear();PINE_I.clear();
+  finishNature(s1);genSakura(s1);zonaClareira();genVeg();for(let i=0;i<AW*MH;i++)if(MONTE[i]){if(MONTE[i]>1||objs[i]!=='pine')objs[i]=null;if(VEG.mapa)VEG.mapa[i]=0}for(const[hx,hy]of CASAS_V)for(let y=hy-3;y<=hy+5;y++)for(let x=hx-3;x<=hx+5;x++){const i=y*AW-XMIN+x,o=objs[i];if(o==='pine'||o==='tree'||o==='bush')objs[i]=null}PROF=null;NAT_I.clear();PINE_I.clear();
 }
 // ---- Videira nova: praça no centro (chafariz), lojas em volta, ruas calçadas; vilas bem longe e a Pedreirinha perto ----
+const SERRAS=[[75,7,30,9,4,'Serra do Imbuial'],[212,62,15,26,4,'Morro do Leste'],[112,190,40,11,4,'Serra do Sul'],[76,122,10,8,3,'Morro da Mata'],[-70,168,26,14,4,'Serra do Oeste'],[188,96,8,6,2,'Coxilha']];
+let MONTE=null;      // altura do relevo em cada casa (0 = plano; 1 a 4 = morro, paredão e pico com neve)
 const VC=[34,50],PRACA_R=[20,45,48,56],CALCADA_R=[14,33,80,78];      // centro de Videira, a praça e onde a rua é de pedra
 const inCalc=(x,y)=>x>=CALCADA_R[0]&&x<=CALCADA_R[2]&&y>=CALCADA_R[1]&&y<=CALCADA_R[3];
 function genLeste(s1,s2){
@@ -953,12 +956,18 @@ function genLeste(s1,s2){
   H(10,13,24);V(12,24,51);H(12,19,50);                                         // avenida: do fim da estrada de chão até a praça
   for(let y=PRACA_R[1];y<=PRACA_R[3];y++)for(let x=PRACA_R[0];x<=PRACA_R[2];x++)road(x,y);      // praça
   V(33,38,44);H(31,37,38,1);                                                   // rua da igreja (norte)
-  H(18,50,60);V(33,57,169);H(14,56,68);                                         // rua de baixo, rua do sul (até Arroio Trinta) e rua das casas
+  // estrada de chão de verdade: sai reta da cidade e depois vai fazendo curvas pelo campo (as pontas ficam paradas, o meio serpenteia)
+  const curva=(pts,amp,sd)=>{for(let k=0;k<pts.length-1;k++){const a=pts[k],b=pts[k+1],L=Math.hypot(b[0]-a[0],b[1]-a[1]),nx=-(b[1]-a[1])/L,ny=(b[0]-a[0])/L;
+    for(let t=0;t<=L;t+=.25){const f=t/L,w=Math.sin(f*Math.PI)*(amp*Math.sin(t/8+sd+k)+amp*.45*Math.sin(t/3.7+sd*2+k)),x=Math.round(a[0]+(b[0]-a[0])*f+nx*w),y=Math.round(a[1]+(b[1]-a[1])*f+ny*w);
+      road(x,y);road(x+1,y);road(x,y+1);road(x+1,y+1)}}};
+  H(18,50,60);V(33,57,82);H(14,56,68);                                          // rua de baixo, começo da rua do sul e rua das casas
   H(33,42,77);                                                                  // entrada da Unoesc
-  H(49,151,50);                                                                 // avenida do leste: oficinas, ponte e o resto do vale
-  V(150,14,51);H(150,184,14);                                                   // até Pinheiro Preto (nordeste)
-  V(150,50,171);H(150,189,170);                                                 // até Iomerê (sudeste)
-  V(125,50,PEDR[1]+2);                                                          // até a Pedreirinha
+  curva([[33,82],[24,104],[39,128],[28,150],[32,169]],5,1);                     // até Arroio Trinta (sul)
+  H(49,112,50);                                                                 // avenida do leste: oficinas e a ponte (reta)
+  curva([[112,50],[131,46],[150,50]],3,2);                                      // depois da ponte segue fazendo curva até o cruzamento
+  curva([[150,50],[142,36],[157,23],[170,16],[185,14]],4,3);                    // até Pinheiro Preto (nordeste)
+  curva([[150,51],[159,79],[145,108],[163,138],[176,162],[190,170]],5,4);       // até Iomerê (sudeste)
+  curva([[125,49],[121,61],[126,PEDR[1]+2]],2.5,5);                             // até a Pedreirinha
   // 3) lotes da cidade
   const lote=(L,nm)=>{const[lx,ly,w,h]=L;for(let y=ly;y<ly+h;y++)for(let x=lx;x<lx+w;x++){const i=I(x,y);lotAt[i]=nm;objs[i]=null;if(ground[i]===1)ground[i]=0}
     const di=I(lx+(w>>1),ly+h);if(ground[di]===0)ground[di]=1};      // porta sempre dá na rua
@@ -979,7 +988,13 @@ function genLeste(s1,s2){
   // 6) natureza: campo com bosques, mata fechada na beira, pedreira cheia de pedra; a cidade fica limpa
   const perto=(x,y,r)=>{for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++){if(!ok(x+dx,y+dy))continue;const g=ground[I(x+dx,y+dy)];if(g===1||g===3)return true}return false};
   const inQ=(x,y)=>x>=QUARRY[0]&&x<=QUARRY[2]&&y>=QUARRY[1]&&y<=QUARRY[3];
-  for(let y=0;y<MH;y++)for(let x=XMIN;x<MW;x++){if(x<0&&y<MHB)continue;const i=I(x,y),u=rn(),v=rn();if(ground[i]!==0||lotAt[i]||objs[i])continue;
+  {const longe=(x,y,R,m)=>!(x>=R[0]-m&&x<=R[2]+m&&y>=R[1]-m&&y<=R[3]+m);
+    for(const[cx,cy,rx,ry,pk]of SERRAS)for(let y=Math.max(0,Math.floor(cy-ry-3));y<=Math.min(MH-1,cy+ry+3);y++)for(let x=Math.max(XMIN,Math.floor(cx-rx-3));x<=Math.min(MW-1,cx+rx+3);x++){
+      const i=I(x,y);if(ground[i]!==0||lotAt[i])continue;if(!longe(x,y,CITY_ZONE,4)||!longe(x,y,PEDR,3)||!longe(x,y,QUARRY,2))continue;if(VILAS.some(v=>!longe(x,y,v.zone,3)))continue;
+      if(x>=FARM[0]-6&&x<=FARM[2]+6&&y>=FARM[1]-6&&y<=FARM[3]+6)continue;if(perto(x,y,3))continue;
+      const d=Math.hypot((x-cx)/rx,(y-cy)/ry)+(vnoise(x,y,s1+91,6)-.5)*.55+(vnoise(x,y,s1+97,2.5)-.5)*.18,h=Math.max(0,Math.min(pk,Math.floor((1-d)*pk*1.45+.7)));
+      if(h>MONTE[i]){MONTE[i]=h;objs[i]=null}}}
+  for(let y=0;y<MH;y++)for(let x=XMIN;x<MW;x++){if(x<0&&y<MHB)continue;const i=I(x,y),u=rn(),v=rn();if(MONTE[i]){if(MONTE[i]===1&&u<.1)objs[i]='pine';continue}if(ground[i]!==0||lotAt[i]||objs[i])continue;
     if(x>=CITY_ZONE[0]&&x<=CITY_ZONE[2]&&y>=CITY_ZONE[1]&&y<=CITY_ZONE[3])continue;if(inPedr(x,y))continue;
     const vz=vilaZ(x,y);if(vz)continue;
     if(perto(x,y,1)&&u<.85)continue;
@@ -1354,6 +1369,7 @@ function walkable(tx,ty){
   if(tx<XMIN||ty<0||tx>=MW||ty>=MH)return false;
   {const v=vilaZ(tx,ty);if(v&&!vilaAberta(v))return false}      // vila do sul ainda trancada (cerca)
   const i=ty*AW-XMIN+tx,g=ground[i];
+  if(MONTE&&MONTE[i])return false;      // morro: não dá para subir
   if(g===2)return false;
   if(g===3&&!state.b.ponte)return false;
   if(lotAt[i])return false;
@@ -2961,7 +2977,7 @@ const SIGNS=[      // poucas placas, fora da estrada para não esconder o person
   {x:-103.8,y:31.6,l:['Fazenda Imbuial'],farm:1},
   {x:-96.5,y:22.4,l:['Videira ➡ é longe, vai de ônibus!']},
   {x:-50.5,y:DIRT_Y(-50)+3.6,l:['⚠ Buraco na pista','Na chuva vira lama']},
-  {x:128.6,y:53.6,l:['⬇ Pedreirinha ⛏','muita pedra pra quebrar'],pedr:1},
+  {x:129.6,y:54.6,l:['⬇ Pedreirinha ⛏','muita pedra pra quebrar'],pedr:1},
   {x:-45.4,y:DIRT_Y(-48)+3.4,l:['⬇ Lago das Sakuras 🌸','peixes raros'],sak:1},
   {x:121.6,y:74.6,l:['⛏ Pedreirinha'],city:1,pedr:1},
 ];
@@ -3124,6 +3140,9 @@ function drawMap(cvm){if(!cvm||!cvm.getContext)return;const g=cvm.getContext('2d
   // 1) chão pintado: grama com manchas suaves e sombra embaixo das matas
   for(let y=0;y<MH;y++)for(let x=XMIN;x<MW;x++){const n=vnoise(x,y,71,6)*.7+hash2(x,y,5)*.3;g.fillStyle=n>.55?pal[0]:pal[1];g.fillRect(x*P,y*P,P,P)}
   g.fillStyle='rgba(20,60,25,.22)';for(let y=1;y<MH-1;y++)for(let x=XMIN+1;x<MW-1;x++){let c=0;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)if(tree(objs[I(x+dx,y+dy)]))c++;if(c>=3)g.fillRect(x*P-2,y*P-2,P+4,P+4)}
+  // 1b) relevo: morros em degraus com sombra embaixo e neve no topo
+  {const cor=['','#93a35e','#a0896a','#aaa39a','#eceae6'],M=(x,y)=>x<XMIN||y<0||x>=MW||y>=MH?0:MONTE[I(x,y)];
+    for(let y=0;y<MH;y++)for(let x=XMIN;x<MW;x++){const h=M(x,y);if(!h)continue;g.fillStyle=cor[h];g.fillRect(x*P,y*P,P,P);if(M(x,y+1)<h){g.fillStyle='rgba(60,40,25,.55)';g.fillRect(x*P,y*P+P*.55,P,P*.45)}if(M(x,y-1)<h){g.fillStyle='rgba(255,255,255,.35)';g.fillRect(x*P,y*P,P,P*.2)}}}
   // 2) água com praia, beira rasa e marolinhas
   g.fillStyle='#e6d39b';for(let y=0;y<MH;y++)for(let x=XMIN;x<MW;x++)if(isW(x,y))g.fillRect(x*P-3,y*P-3,P+6,P+6);
   for(let y=0;y<MH;y++)for(let x=XMIN;x<MW;x++)if(isW(x,y)){const edge=!isW(x-1,y)||!isW(x+1,y)||!isW(x,y-1)||!isW(x,y+1);g.fillStyle=ehLago(x,y)?(edge?'#a8875a':'#86663b'):(edge?'#6cb9ea':'#3d8fd8');g.fillRect(x*P,y*P,P,P)}
@@ -3167,7 +3186,7 @@ function drawMap(cvm){if(!cvm||!cvm.getContext)return;const g=cvm.getContext('2d
     g.fillStyle=fg;g.textAlign='center';g.textBaseline='middle';g.fillText(t,x,yy+hh/2+1)};
   const area=(t,x,y,col,it)=>{g.font=`${it?'italic ':''}800 ${fr}px Poppins,sans-serif`;g.textAlign='center';g.textBaseline='middle';const w=(g.measureText?g.measureText(t).width:t.length*fr*.55);placed.push([x-w/2,y-fr/2,w,fr]);
     g.lineWidth=fr*.32;g.strokeStyle='rgba(255,255,255,.85)';g.strokeText(t,x,y);g.fillStyle=col;g.fillText(t,x,y)};
-  for(const[t,x,y,c]of[['Rio',riverX(12)+.5,12,'#5a3f22'],['Rio',riverX(130)+.5,130,'#5a3f22'],['Lago',PONDS[0][0],PONDS[0][1]+.3,'#5a3f22'],['Lago do leste',PONDS[1][0],PONDS[1][1]+.3,'#5a3f22'],['Açude',PONDS[2][0],PONDS[2][1]+.3,'#5a3f22'],['Floresta',40,8,'#1f4d2b'],['Floresta',-120,10,'#1f4d2b'],['Floresta',200,100,'#1f4d2b'],['Pasto do leste',172,45,'#3d5a1e'],['Pedreira',(QUARRY[0]+QUARRY[2])/2,(QUARRY[1]+QUARRY[3])/2,'#4a4f57'],['Pedreirinha',(PEDR[0]+PEDR[2])/2,(PEDR[1]+PEDR[3])/2,'#4a4038'],['Lago das Sakuras',SAKURA_LAGO[0],SAKURA_LAGO[1]+1.3,'#b0406a'],['Mata do sul',70,130,'#1f4d2b'],['Campos do sul',30,120,'#3d5a1e'],['Campos do leste',175,120,'#3d5a1e'],['Estrada de chão',-50,DIRT_Y(-50)-2.4,'#5a3a1e']])area(t,x*P,y*P,c,1);
+  for(const[t,x,y,c]of[['Rio',riverX(12)+.5,12,'#5a3f22'],['Rio',riverX(130)+.5,130,'#5a3f22'],['Lago',PONDS[0][0],PONDS[0][1]+.3,'#5a3f22'],['Lago do leste',PONDS[1][0],PONDS[1][1]+.3,'#5a3f22'],['Açude',PONDS[2][0],PONDS[2][1]+.3,'#5a3f22'],['Floresta',40,8,'#1f4d2b'],['Floresta',-120,10,'#1f4d2b'],['Floresta',200,100,'#1f4d2b'],['Pasto do leste',172,45,'#3d5a1e'],['Pedreira',(QUARRY[0]+QUARRY[2])/2,(QUARRY[1]+QUARRY[3])/2,'#4a4f57'],['Pedreirinha',(PEDR[0]+PEDR[2])/2,(PEDR[1]+PEDR[3])/2,'#4a4038'],['Lago das Sakuras',SAKURA_LAGO[0],SAKURA_LAGO[1]+1.3,'#b0406a'],['Mata do sul',62,140,'#1f4d2b'],...SERRAS.map(q=>[q[5],q[0],Math.min(MH-3,q[1]+q[3]+2.2),'#4a3a2a']),['Campos do sul',30,120,'#3d5a1e'],['Campos do leste',175,120,'#3d5a1e'],['Estrada de chão',-50,DIRT_Y(-50)-2.4,'#5a3a1e']])area(t,x*P,y*P,c,1);
   area('VIDEIRA',VC[0]*P,31.6*P,'#7a2a1a');area('Fazenda Imbuial',-107*P,30.4*P,'#5a3a1e');
   for(const v of VILAS){const[px,py,pw,ph]=v.praca;area(`${vilaAberta(v)?'🏘️':'🔒'} ${v.nome}`,(px+pw/2)*P,(py+ph+2.2)*P,vilaAberta(v)?'#5a3a1e':'#7a4a2a');if(!vilaAberta(v))pill(`nível ${v.nivel}`,(px+pw/2)*P,(py+ph+4.6)*P,'#fff3c4','#7a4a2a')}
   const lab=(L,t,bg,fg)=>pill(t,(L[0]+L[2]/2)*P,(L[1]-.25)*P,bg||'#fffaf0',fg||'#3b2416');
@@ -3674,7 +3693,7 @@ function drawClimaWorld(W,H){const hr=state.min/60,c=state.clima;
 /* ================= MULTIPLAYER: cooperativo no mundo do dono, até 4 jogadores, pela internet com código de sala =================
    Ligação: WebRTC (canal de dados direto entre os aparelhos). Para os aparelhos se acharem usa o servidor público grátis do PeerJS
    só como "telefonista" (sinalização). Quem hospeda manda no mundo; os convidados mandam o que fazem e o dono aplica e espalha. */
-const JOGO_VERSAO='2026-11-24a';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
+const JOGO_VERSAO='2026-11-24d';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
 const MP_MAX=4,MP_PREFIX=SLOT_KEYS[0].replace(/_slot_1$/,'').replace(/_/g,''),MP_SERVER='wss://0.peerjs.com:443/peerjs?key=peerjs';
 const MP_ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']},{urls:'stun:global.stun.twilio.com:3478'}]};
 const MP_LEVE=['p','energy','hunger','vida','forca','sujeira','sel','testoUntil','fomeT','coins','xpUntil','monster','napHoje','doze'];      // muda toda hora: vai junto em cada batida
@@ -5255,15 +5274,15 @@ function openLoja(tab){if(tab){lojaTab=tab;lojaSay=''}const l=state.b.mercado,d=
   if(!lojaSay)lojaSay=GILIARD_LINES[giliardLine++%GILIARD_LINES.length];
   const card=(icon,nome,info,preco,have,btns,tag,tag2)=>`<div class="lcard">${tag?`<span class="ltag">${tag}</span>`:''}<img src="${ICON[icon]||''}" alt=""><b>${nome}</b><small>${info}</small>
       <div class="lprice">${brl(preco)}</div>${have!=null?`<small class="lhave">na mochila: <b>${have}</b></small>`:''}${tag2||''}<div class="lbtns">${btns}</div></div>`;
-  const qb=(a,v,q,pr)=>`<button class="mini" data-a="lojaadd" data-v="${a==='buyseed'?'sem:'+v:v}|${q}">+${q}</button>`,noCart=k=>lojaCart[k]?`<small class="lincart">🛒 ${lojaCart[k]} no carrinho</small>`:'';
+  const qb=(a,v,q,pr)=>`<button class="mini" data-a="lojaadd" data-v="${a==='buyseed'?'sem:'+v:v}|${q}">+${q}</button>`,qd=k=>`<span class="lqty"><input id="qtd_${k.replace(':','_')}" type="number" min="1" max="999" inputmode="numeric" placeholder="qtd"><button class="mini" data-a="lojaqtd" data-v="${k}" title="Pôr essa quantidade no carrinho">🛒</button></span>`,noCart=k=>lojaCart[k]?`<small class="lincart">🛒 ${lojaCart[k]} no carrinho</small>`:'';
   let body='';
   if(t==='sementes'){const sea=season();body=`<p class="lnote">🌱 Todas as sementes, o ano todo · plante na terra arada (tecla <kbd>L</kbd> para arar)</p><div class="lgrid">`;
     for(const k in CROPS){const c=CROPS[k];const venda=Math.round(c.preco*bonus);
-      const ok=seedNivelOk(k);body+=card('sem_'+k,c.nome,`${c.dias} dia${c.dias>1?'s':''} para colher${c.rebrota?` · rebrota a cada ${c.rebrota}`:''}<br>vende por <b>${venda}</b> com o Mateus${TRATOR_SO.has(k)?'<br>🚜 <b>só colhe com trator</b>':''}`,c.sem,state.seeds[k]||0,ok?qb('buyseed',k,1,c.sem)+qb('buyseed',k,5,c.sem)+qb('buyseed',k,10,c.sem):`<button class="mini" disabled>🔒 Nível ${CROP_NIVEL[k]}</button>`,!ok?`⭐ nível ${CROP_NIVEL[k]}`:TRATOR_SO.has(k)?'🚜 trator':venda>=c.sem*3?'💰 lucro bom':'',noCart('sem:'+k))}
+      const ok=seedNivelOk(k);body+=card('sem_'+k,c.nome,`${c.dias} dia${c.dias>1?'s':''} para colher${c.rebrota?` · rebrota a cada ${c.rebrota}`:''}<br>vende por <b>${venda}</b> com o Mateus${TRATOR_SO.has(k)?'<br>🚜 <b>só colhe com trator</b>':''}`,c.sem,state.seeds[k]||0,ok?qb('buyseed',k,1,c.sem)+qb('buyseed',k,5,c.sem)+qb('buyseed',k,10,c.sem)+qd('sem:'+k):`<button class="mini" disabled>🔒 Nível ${CROP_NIVEL[k]}</button>`,!ok?`⭐ nível ${CROP_NIVEL[k]}`:TRATOR_SO.has(k)?'🚜 trator':venda>=c.sem*3?'💰 lucro bom':'',noCart('sem:'+k))}
     body+='</div>'}
   else if(t==='comida'){const rp=racaoPrice(l);body=`<div class="lgrid">`+
-      card('racao','Ração','alimenta 1 animal por 12 h<br>(ou faça com 2 capins na mochila)',rp,state.inv.racao,qb('buy','racao',1,rp)+qb('buy','racao',5,rp)+qb('buy','racao',10,rp),'🐔 animais',noCart('racao'))+
-      card('pao','Pão','mata a fome: <b>+45</b>',PAO_PRICE,state.inv.pao,qb('buy','pao',1,PAO_PRICE)+qb('buy','pao',3,PAO_PRICE),'🍞 quentinho',noCart('pao'))+'</div>'}
+      card('racao','Ração','alimenta 1 animal por 12 h<br>(ou faça com 2 capins na mochila)',rp,state.inv.racao,qb('buy','racao',1,rp)+qb('buy','racao',5,rp)+qb('buy','racao',10,rp)+qd('racao'),'🐔 animais',noCart('racao'))+
+      card('pao','Pão','mata a fome: <b>+45</b>',PAO_PRICE,state.inv.pao,qb('buy','pao',1,PAO_PRICE)+qb('buy','pao',3,PAO_PRICE)+qd('pao'),'🍞 quentinho',noCart('pao'))+'</div>'}
   else if(t==='ferramentas'){body=`<div class="lgrid">`+card('machado','Machado',`corta árvores mais rápido conforme a força<br>precisa de <b>Força ${AXE_MIN}</b> (você: ${state.forca.lvl})`,AXE_PRICE,null,
       state.flags.axe?'<span class="ok">✔ comprado</span>':lojaCart.axe?'<span class="ok">🛒 no carrinho</span>':`<button class="mini" data-a="lojaadd" data-v="axe|1">🛒 Pôr no carrinho</button>`,'🪓')+
       card('picareta','Picareta','quebra pedras (o machado não quebra)<br>mais força = menos golpes',PICK_PRICE,null,state.flags.pick?'<span class="ok">✔ comprada</span>':lojaCart.pick?'<span class="ok">🛒 no carrinho</span>':`<button class="mini" data-a="lojaadd" data-v="pick|1">🛒 Pôr no carrinho</button>`,'⛏️')+'</div>'}
@@ -5581,11 +5600,12 @@ const ACT={
   dozebuy(){dozeBuy()},
   barbtab(v){openBarb(v)},
   barbfaz(v){barbFaz(v)},
-  bancodep(v){bancoMove(true,v)},
+  bancodep(v){bancoMove('dep',v)},
+  bancosaqj(v){bancoMove('jur',v)},
   zonabeb(k){const e=ZONA_MENU.find(x=>x[0]===k);if(!e||state.coins<e[1]){sfx.no();return}state.coins=cent(state.coins-e[1]);state.inv[k]=(state.inv[k]||0)+1;sfx.coin();updateHUD();save();openZona.keep=1;openZona(['Saúde! Bebe devagar, hein.','Essa desce redondinha!'][Math.random()*2|0])},
   zonacama(){zonaCama()},
   magosenha(){magoSenha()},
-  bancosaq(v){bancoMove(false,v)},
+  bancosaq(v){bancoMove('saq',v)},
   mesa(v){const p=String(v||'').split(':'),a=p[0];
     if(a==='j'){const val=p[2]!=null?+p[2]:undefined;
       if(MP.role==='guest'&&MESA_V&&MESA_V.jogo&&!MESA_V.pausa){const J=MESA_V.jogo,s=J.eu;      // mostra a jogada na hora; o dono confirma logo depois
@@ -5640,6 +5660,7 @@ const ACT={
   lojaadd(v){const[k,n]=String(v).split('|'),q=+n||1,i=cartInfo(k);if(!i)return;if(k.startsWith('sem:')&&!seedNivelOk(k.slice(4)))return;
     if(i.uni){if((k==='axe'&&state.flags.axe)||(k==='pick'&&state.flags.pick))return;lojaCart[k]=1}else lojaCart[k]=(lojaCart[k]||0)+q;
     beep(880,.05,'square',.03);lojaSay=['Boa escolha!','Separei aqui pra ti.','Mais alguma coisa?','Tá no carrinho!'][Math.random()*4|0];openLoja()},
+  lojaqtd(k){const el=$('qtd_'+String(k).replace(':','_')),n=Math.floor(+((el&&el.value)||0));if(!(n>=1)){toast('Digite quantas unidades você quer.');return}ACT.lojaadd(k+'|'+Math.min(999,n))},
   lojarem(k){if(!lojaCart[k])return;const i=cartInfo(k);if(i&&i.uni||lojaCart[k]<=1)delete lojaCart[k];else lojaCart[k]--;openLoja()},
   lojalimpa(){lojaCart={};openLoja()},
   lojafim(){const tot=cartTotal();if(!tot)return;if(state.coins<tot){toast('Dinheiro não dá para tudo isso.');return}
@@ -5838,6 +5859,7 @@ function buildMiniBase(){const W=AW*MP4,H=MH*MP4,c=miniBase||document.createElem
   const agua=(x,y)=>{const v=G(x,y);return v===2},estr=v=>v===1||v===4||v===5;
   // chão
   for(let y=0;y<MH;y++)for(let x=XMIN;x<MW;x++){const i=I(x,y),gr=ground[i],px=(x-XMIN)*MP4,py=y*MP4,h=hash2(x,y,77);
+    if(MONTE&&MONTE[i]){const hh=MONTE[i];R(px,py,4,4,['','#7f9350','#8d7c62','#9a958e','#e6e4e0'][hh]);if(y+1<MH&&MONTE[i+AW]<hh)R(px,py+3,4,1,'#4a3c2f');continue}
     if(gr===2){const borda=!agua(x-1,y)||!agua(x+1,y)||!agua(x,y-1)||!agua(x,y+1),sk=naSakura(x,y);R(px,py,4,4,sk?(borda?'#8fdce0':'#45a9c4'):borda?'#8f7b50':'#6d6340');if(!borda&&h<.25)R(px+(h*12|0)%3,py+1,2,1,'#91845a');continue}
     if(gr===3){R(px,py,4,4,'#8a5c38');R(px,py,4,1,'#a9744f');R(px,py+2,4,1,'#6e4527');continue}
     if(gr===1){R(px,py,4,4,'#dcc08a');if(h<.3)R(px+1,py+1,1,1,'#c4a26c');continue}
@@ -6637,17 +6659,17 @@ function bancoSprite(){if(bancoCv)return bancoCv;const W=BANCO_LOT[2]*16,H=BANCO
     for(const x of[9,48]){r(x+1,38,7,H-48,OUTL);r(x+2,39,5,H-50,'#bfe6ff');r(x+2,39,5,2,'#eaf7ff');for(let y=41;y<H-11;y+=4)r(x+2,y,5,1,'#c9a227')}      // janelas com grade dourada
     r(23,H-30,18,27,OUTL);r(24,H-29,16,26,'#5a3a22');r(31.5,H-29,1,26,'#3a2416');r(26,H-26,4,8,'#6e4a2c');r(34,H-26,4,8,'#6e4a2c');r(30,H-16,1,2,'#e8c24a');r(33,H-16,1,2,'#e8c24a');r(23,H-31,18,1,'#c9a227');      // portão de madeira
     base(r,0,W,H);r(18,H-3,28,1,'#d8cfb8')})}
-function drawBancoPainel(p){const b=state.banco||{saldo:0,rendeu:0},sx=Math.round(BANCO_PAINEL[0]*T-camx),gy=Math.round(BANCO_PAINEL[1]*T-camy);      // painel de LED: saldo e quanto rendeu
+function drawBancoPainel(p){const b=state.banco?bancoConta():{saldo:0,rendeu:0,dep:0,jur:0},sx=Math.round(BANCO_PAINEL[0]*T-camx),gy=Math.round(BANCO_PAINEL[1]*T-camy);      // painel de LED: saldo e quanto rendeu
   if(sx<-120||sx>cv.width+120||gy<-160||gy>cv.height+60)return;
-  const w=132,h=58,x=sx-w/2,y=gy-h-34,hoje=b.ultDia===state.day?b.ult||0:0;
+  const w=172,h=58,x=sx-w/2,y=gy-h-34,hoje=b.ultDia===state.day?b.ult||0:0;
   shadow(sx,gy-1,10,3);ctx.fillStyle='#2b2f35';ctx.fillRect(sx-4,y+h,8,gy-y-h);ctx.fillStyle='#4a4f57';ctx.fillRect(sx-4,y+h,2,gy-y-h);
   ctx.fillStyle='#2b1d18';ctx.fillRect(x-3,y-3,w+6,h+6);ctx.fillStyle='#c9a227';ctx.fillRect(x-1,y-1,w+2,h+2);ctx.fillStyle='#0b1420';ctx.fillRect(x+1,y+1,w-2,h-2);
   ctx.fillStyle='rgba(120,255,160,.05)';for(let yy=y+2;yy<y+h-1;yy+=3)ctx.fillRect(x+2,yy,w-4,1);
   const pisca=Math.floor(clock*2)%2;ctx.textAlign='center';ctx.textBaseline='alphabetic';
   ctx.font='bold 10px Poppins,sans-serif';ctx.fillStyle='#ffe066';ctx.fillText('🏦 SALDO NO BANCO',sx,y+14);
   ctx.font='bold 16px "Courier New",monospace';ctx.save();ctx.shadowColor='#2fff7a';ctx.shadowBlur=8;ctx.fillStyle='#7dffa8';ctx.fillText(brl(b.saldo),sx,y+33);ctx.restore();
-  ctx.font='bold 10px Poppins,sans-serif';ctx.fillStyle=hoje>0?(pisca?'#7dffa8':'#4fe08a'):'#8fa6c8';ctx.fillText(hoje>0?`▲ rendeu hoje +${brl(hoje)}`:`rendeu no total ${brl(b.rendeu||0)}`,sx,y+49);
-  if(hoje>0&&Math.hypot(BANCO_PAINEL[0]-p.x,BANCO_PAINEL[1]-p.y)<4)tag(`já rendeu no total: ${brl(b.rendeu||0)}`,BANCO_PAINEL[0],BANCO_PAINEL[1]-2.55,'#ffe066')}
+  ctx.font='bold 10px Poppins,sans-serif';ctx.fillStyle=hoje>0?(pisca?'#7dffa8':'#4fe08a'):'#8fa6c8';ctx.fillText(hoje>0&&pisca?`▲ rendeu hoje +${brl(hoje)}`:`seu ${brl(b.dep||0)} · banco ${brl(b.jur||0)}`,sx,y+49);
+  if(hoje>0&&Math.hypot(BANCO_PAINEL[0]-p.x,BANCO_PAINEL[1]-p.y)<4)tag(`seu depósito ${brl(b.dep||0)} · rendimento ${brl(b.jur||0)} · já rendeu ${brl(b.rendeu||0)}`,BANCO_PAINEL[0],BANCO_PAINEL[1]-2.55,'#ffe066')}
 /* ---------- Zona Imbuial: casa noturna; a coelhinha recebe na porta, vende bebida e o quarto VIP ---------- */
 const ZONA_IMG={src:'data:image/png;base64,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',rosto:'data:image/png;base64,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',img:null};
 {const im=new Image();im.onload=()=>{const c=document.createElement('canvas');c.width=im.width;c.height=im.height;c.getContext('2d').drawImage(im,0,0);c.sc=1;c.pad=0;ZONA_IMG.img=c};im.src=ZONA_IMG.src}
@@ -6714,23 +6736,28 @@ function zonaCama(){if(state.coins<ZONA_CAMA){sfx.no();return}state.coins=cent(s
   toast('😵 Você desmaiou...');updateHUD();save();
   setTimeout(()=>{zonaFala={text:'Deixa de ser Safado!',ate:clock+5};toast('😳 Deixa de ser Safado!',5000);beep(880,.08,'square',.04)},2500)}
 function bancoTarget(p){if(Math.hypot(BANCO_POS[0]-p.x,BANCO_POS[1]-p.y)<1.4)return{k:'banco'};const[x,y,w,h]=BANCO_LOT,dx=Math.max(x-p.x,0,p.x-(x+w)),dy=Math.max(y-p.y,0,p.y-(y+h));return Math.hypot(dx,dy)<.75?{k:'banco'}:null}
-const bancoConta=()=>state.banco||(state.banco={saldo:0,rendeu:0});
+function bancoConta(){const b=state.banco||(state.banco={saldo:0,rendeu:0});
+  if(b.dep==null){b.jur=cent(Math.min(b.rendeu||0,b.saldo||0));b.dep=cent((b.saldo||0)-b.jur)}      // contas antigas: separa o depósito do rendimento
+  b.saldo=cent(b.dep+b.jur);return b}
 const cent=v=>Math.round(v*100)/100;
-function bancoRende(){const b=state.banco;if(!b||!(b.saldo>=.01))return;const j=cent(b.saldo*BANCO_TAXA);if(j<.01)return;
-  b.saldo=cent(b.saldo+j);b.rendeu=cent((b.rendeu||0)+j);b.ult=j;b.ultDia=state.day;setTimeout(()=>toast(`🏦 Banco Imbuial: seu dinheiro rendeu ${brl(j)} · saldo ${brl(b.saldo)}`),2500)}
+function bancoRende(){if(!state.banco)return;const b=bancoConta();if(!(b.saldo>=.01))return;const j=cent(b.saldo*BANCO_TAXA);if(j<.01)return;
+  b.jur=cent(b.jur+j);b.saldo=cent(b.dep+b.jur);b.rendeu=cent((b.rendeu||0)+j);b.ult=j;b.ultDia=state.day;setTimeout(()=>toast(`🏦 Banco Imbuial: seu dinheiro rendeu ${brl(j)} · saldo ${brl(b.saldo)}`),2500)}
 function openBanco(say){const b=bancoConta();if(say)bancoSay=say;else if(!openBanco.keep||!bancoSay)bancoSay=BANCO_FALAS[Math.random()*BANCO_FALAS.length|0];openBanco.keep=0;
   const vals=[10,100,1000,10000],bt=(a,v,lab,ok)=>`<button class="mini" data-a="${a}" data-v="${v}" ${ok?'':'disabled'}>${lab}</button>`;
-  const dep=vals.map(v=>bt('bancodep',v,brl(v),state.coins>=v)).join('')+bt('bancodep','tudo','Tudo',state.coins>=.01);
-  const saq=vals.map(v=>bt('bancosaq',v,brl(v),b.saldo>=v)).join('')+bt('bancosaq','tudo','Tudo',b.saldo>=.01);
+  const lin=(a,tem,id)=>vals.map(v=>bt(a,v,brl(v),tem>=v)).join('')+bt(a,'tudo','Tudo',tem>=.01)+`<span class="bk-q"><input id="${id}" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="valor"><button class="mini" data-a="${a}" data-v="campo:${id}" ${tem>=.01?'':'disabled'}>OK</button></span>`;
   showPanel('banco',`<div class="v-head bk-head"><button class="close" data-a="close">Fechar ✕</button><img src="${PORTRAIT.everton}" alt="">
       <div style="flex:1"><h1>🏦 Banco Imbuial</h1><div class="sub">gerente Everton · aberto das 08:00 às 18:00 · rende ${(BANCO_TAXA*100).toLocaleString('pt-BR')}% ao dia</div><div class="bubble dark">${bancoSay}</div></div></div>
-    <div class="bk-body"><div class="bk-saldos"><div><small>👛 Na carteira</small><b>${brl(state.coins)}</b></div><div><small>🏦 Guardado no banco</small><b>${brl(b.saldo)}</b></div>
-      <div><small>📈 Rende amanhã</small><b>${brl(cent(b.saldo*BANCO_TAXA))}</b></div><div><small>💰 Já rendeu</small><b>${brl(b.rendeu||0)}</b></div></div>
-      <h3>💰 Depositar</h3><div class="bk-btns">${dep}</div><h3>💵 Sacar</h3><div class="bk-btns">${saq}</div>
-      <p><small>Juros compostos, igual banco de verdade: o que rende entra no saldo e no outro dia rende também. O rendimento cai todo dia de manhã. Para comprar, saque antes: as lojas só aceitam o dinheiro da carteira.</small></p></div>`)}
-function bancoMove(dep,v){const b=bancoConta(),tem=dep?state.coins:b.saldo,q=cent(v==='tudo'?tem:Math.min(+v,tem));if(!(q>=.01)){sfx.no();return}
-  if(dep){state.coins=cent(state.coins-q);b.saldo=cent(b.saldo+q)}else{b.saldo=cent(b.saldo-q);state.coins=cent(state.coins+q)}
-  sfx.coin();updateHUD();save();openBanco.keep=1;openBanco(dep?['Depositado! Agora ele rende enquanto você dorme.','Guardado! Seu dinheiro tá mais seguro que galinha no galinheiro.'][Math.random()*2|0]:['Taí o seu dinheiro, conta direitinho!','Sacado! Só não gasta tudo no Triguinho, hein.'][Math.random()*2|0])}
+    <div class="bk-body"><div class="bk-saldos"><div><small>👛 Na carteira</small><b>${brl(state.coins)}</b></div><div><small>🙋 Seu depósito</small><b>${brl(b.dep)}</b></div><div><small>📈 Rendimento (pago pelo banco)</small><b>${brl(b.jur)}</b></div>
+      <div><small>🏦 Total no banco</small><b>${brl(b.saldo)}</b></div><div><small>⏭️ Rende amanhã</small><b>${brl(cent(b.saldo*BANCO_TAXA))}</b></div><div><small>💰 Já rendeu desde o início</small><b>${brl(b.rendeu||0)}</b></div></div>
+      <h3>💰 Depositar</h3><div class="bk-btns">${lin('bancodep',state.coins,'bkdep')}</div>
+      <h3>📈 Sacar só o rendimento</h3><div class="bk-btns">${lin('bancosaqj',b.jur,'bkj')}</div>
+      <h3>💵 Sacar do seu depósito</h3><div class="bk-btns">${lin('bancosaq',b.dep,'bkd')}</div>
+      <p><small>Juros compostos, igual banco de verdade: o rendimento fica guardado e no outro dia rende também. Dá para tirar só o que rendeu e deixar o seu dinheiro rendendo. Para comprar, saque antes: as lojas só aceitam o dinheiro da carteira.</small></p></div>`)}
+function bancoMove(tipo,v){const b=bancoConta(),tem=tipo==='dep'?state.coins:tipo==='jur'?b.jur:b.dep;
+  if(String(v).startsWith('campo:')){const el=$(String(v).slice(6));v=+((el&&el.value)||0);if(!(v>0)){toast('Digite um valor.');return}}
+  const q=cent(v==='tudo'?tem:Math.min(+v,tem));if(!(q>=.01)){sfx.no();return}
+  if(tipo==='dep'){state.coins=cent(state.coins-q);b.dep=cent(b.dep+q)}else{if(tipo==='jur')b.jur=cent(b.jur-q);else b.dep=cent(b.dep-q);state.coins=cent(state.coins+q)}
+  b.saldo=cent(b.dep+b.jur);sfx.coin();updateHUD();save();openBanco.keep=1;openBanco(tipo==='dep'?['Depositado! Agora ele rende enquanto você dorme.','Guardado! Seu dinheiro tá mais seguro que galinha no galinheiro.'][Math.random()*2|0]:tipo==='jur'?['Taí o seu rendimento! O depósito continua trabalhando pra você.','Tirou só o lucro? Esperto, hein!'][Math.random()*2|0]:['Taí o seu dinheiro, conta direitinho!','Sacado! Só não gasta tudo no Triguinho, hein.'][Math.random()*2|0])}
 function barbSprite(){if(barbCv)return barbCv;const W=BARB_LOT[2]*16,H=BARB_LOT[3]*16+LT;
   return barbCv=mk(W,H,(r,e)=>{
     r(1,18,W-2,H-21,'#8a3a2a');for(let y=19;y<H-3;y+=3)for(let x=1+((y/3|0)%2)*3;x<W-1;x+=6){r(x,y,5,2,'#9c4632');r(x,y,5,1,'#a8523c')}      // parede de tijolinho
@@ -7161,17 +7188,35 @@ function drawAgua(px,py,x,y){if(!PROF||PROF.length!==AW*MH)PROF=aguaProf();const
   const tw=Math.sin(clock*2.2+h*20);if(tw>.75){ctx.fillStyle='#e8dcb0';ctx.fillRect(px+Math.floor(h2*14)*u,py+Math.floor(h*14)*u,2*u,u)}}      // brilhinho do sol
 /* ---------- cache do chão em pedaços de 8×8 (o celular não precisa redesenhar 300 quadradinhos a cada quadro) ---------- */
 const GCH=8,gCache=new Map();let gFrame=0;
-function gTileCode(x,y,sea){const i=y*AW-XMIN+x,g=ground[i];if(isWaterAt(x,y))return 1;      // código numérico (sem criar texto a cada quadro: evita as travadinhas do coletor de lixo)
+function gTileCode(x,y,sea){const i=y*AW-XMIN+x,g=ground[i];if(isWaterAt(x,y))return 1;
+  if(MONTE&&MONTE[i]){const h=MONTE[i];let m=0;for(let k=0;k<4;k++){const nx=x+D4[k][0],ny=y+D4[k][1];if(nx<XMIN||ny<0||nx>=MW||ny>=MH||MONTE[ny*AW-XMIN+nx]<h)m|=1<<k}return 100+h*16+m}      // código numérico (sem criar texto a cada quadro: evita as travadinhas do coletor de lixo)
   if(g===3)return 2;
   if(g===1||g===4||g===5){let m=0;for(let k=0;k<4;k++){const nx=x+D4[k][0],ny=y+D4[k][1],j=ny*AW-XMIN+nx;if(nx>=XMIN&&ny>=0&&nx<MW&&ny<MH&&ground[j]===0&&!lotAt[j]&&!soilOn(j))m|=1<<k}return(g===1?16:g===5?32:state.rain?48:64)+m}
   if(soilOn(i))return(state.crops[i]?isWet(state.crops[i]):state.rain)?3:4;
   if(exChao(i))return state.rain?8:7;
   return!objs[i]&&!lotAt[i]?5:6}
 const exChao=i=>{const l=lotAt[i];return typeof l==='string'&&l.charCodeAt(0)===101&&l.startsWith('ex:')};      // chão embaixo das construções extras: terra (sem sobra de grama verde na borda)
+function drawMonteTile(c,x,y,px,py,h){const u=T/16,M=(xx,yy)=>xx<XMIN||yy<0||xx>=MW||yy>=MH?0:MONTE[yy*AW-XMIN+xx],R=(a,b,w,hh,cl)=>{c.fillStyle=cl;c.fillRect(px+a*u,py+b*u,w*u,hh*u)};
+  const P=[null,['#7d9a4e','#6a8642','#93b05e','#5a7238'],['#9a8462','#86714f','#b29b76','#6e5c40'],['#8e8a85','#77736e','#aaa6a0','#5f5b57'],['#bdbab4','#a4a19b','#dcd9d3','#8a8780']][Math.min(4,h)];
+  const n=vnoise(x,y,5,3);R(0,0,16,16,n<.4?P[1]:n>.65?P[2]:P[0]);
+  for(let k=0;k<5;k++){const a=(hash2(x,y,k+11)*12)|0,b=(hash2(y,x,k+3)*11)|0;R(a,b,3,2,P[3]);R(a,b,3,1,P[2]);R(a+1,b+2,2,1,'rgba(0,0,0,.25)')}      // pedras soltas
+  for(let k=0;k<6;k++){const a=(hash2(x*3,y,k+31)*15)|0,b=(hash2(y*3,x,k+37)*15)|0;R(a,b,1,1,k%2?P[2]:P[3])}
+  if(h<=2)for(let k=0;k<3;k++){const a=(hash2(x,y*5,k+51)*13)|0,b=(hash2(x*5,y,k+57)*12)|0;R(a,b+1,1,2,'#5f8a3a');R(a+1,b,1,3,'#78a64a');R(a+2,b+1,1,2,'#5f8a3a')}      // tufos de mato no pé do morro
+  if(h>=4){c.fillStyle='rgba(246,249,252,.92)';const cheio=M(x,y-1)>=4&&M(x-1,y)>=4&&M(x+1,y)>=4;if(cheio)R(0,0,16,16,'rgba(246,249,252,.85)');for(let k=0;k<3;k++){const a=(hash2(x,y,k+21)*10)|0,b=(hash2(y,x,k+29)*9)|0;R(a,b,5+k,2,'#f6f9fc');R(a+1,b+2,3+k,1,'#dfe6ee')}}      // neve no pico
+  else if(h===3&&hash2(x,y,41)<.3){R(5,4,4,1,'#eef2f5');R(6,5,2,1,'#dfe6ee')}
+  if(M(x,y-1)<h){R(0,0,16,1,'rgba(255,255,255,.35)');R(0,1,16,1,'rgba(255,255,255,.15)')}      // beirada de cima pega luz
+  if(M(x-1,y)<h)R(0,0,1,16,'rgba(255,255,255,.18)');
+  if(M(x+1,y)<h)R(15,0,1,16,'rgba(0,0,0,.3)');
+  if(M(x,y+1)<h){const wh=5+Math.min(h,3)*2,top=16-wh,W=h===1?['#62743e','#4e5e31','#7a8c4e']:h===2?['#6e5a42','#584734','#86704f']:['#66625c','#4f4b46','#7e7a74'];      // paredão em camadas
+    R(0,top,16,wh,W[0]);for(let yy=top+2;yy<16;yy+=3)R(0,yy,16,1,W[1]);for(let k=0;k<5;k++){const a=((x*7+k*5)%15),b=top+1+((k*3+y)%Math.max(1,wh-3));R(a,b,1,2,W[1]);R(a+1,b,1,1,W[2])}
+    R(0,top,16,1,W[2]);R(0,15,16,1,'rgba(0,0,0,.45)')}}
 function gDrawTile(c,x,y,px,py,sea){const i=y*AW-XMIN+x,g=ground[i];if(isWaterAt(x,y))return;
+  if(MONTE&&MONTE[i]){drawMonteTile(c,x,y,px,py,MONTE[i]);return}
   const img=g===0&&exChao(i)?(state.rain?SPR.mud:SPR.dirt)[(Math.imul(x,40503)^Math.imul(y,9973))>>>2&7]:g===5?SPR.gravel[(Math.imul(x,40503)^Math.imul(y,9973))>>>2&7]:g===4?(state.rain?SPR.mud:SPR.dirt)[(Math.imul(x,40503)^Math.imul(y,9973))>>>2&7]:g===1?SPR.path[(Math.imul(x,40503)^Math.imul(y,9973))>>>2&3]:g===3?SPR.bridge:soilOn(i)?((state.crops[i]?isWet(state.crops[i]):state.rain)?SPR.soilw:SPR.soil):SPR.grass[sea][(Math.imul(x,73856093)^Math.imul(y,19349663))>>>3&7];
   c.drawImage(img,px,py,T,T);
   if(g===1||g===4||g===5){for(let k=0;k<4;k++){const nx=x+D4[k][0],ny=y+D4[k][1],j=ny*AW-XMIN+nx;if(nx>=XMIN&&ny>=0&&nx<MW&&ny<MH&&ground[j]===0&&!lotAt[j]&&!soilOn(j))rustEdge(c,px,py,x,y,k)}}
+  if(MONTE&&y>0&&MONTE[i-AW]){c.fillStyle='rgba(20,30,10,.22)';c.fillRect(px,py,T,Math.round(T*.35))}      // sombrinha do paredão
+  if(g===0&&MONTE&&y>0&&MONTE[i-AW]){}
   else if(g===0&&!objs[i]&&!lotAt[i]&&!soilOn(i)){     // flores, pedrinhas e cogumelos
     const hsh=(Math.imul(x,374761393)^Math.imul(y,668265263))>>>0;let near=false;
     for(const[a,b]of D4){const nx=x+a,ny=y+b;if(nx>=XMIN&&ny>=0&&nx<MW&&ny<MH&&ground[ny*AW-XMIN+nx]===1){near=true;break}}
