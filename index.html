@@ -114,10 +114,11 @@
   #panel.motoloja .ok{color:#7ddc6a}
   #panel.mapa{width:min(1400px,98vw);max-height:97vh;padding:8px 12px;display:flex;flex-direction:column;overflow:hidden}
   #panel.mapa h2{margin:0 0 2px}#panel.mapa .legend{flex:none}
-  #panel.mapa .mapwrap{position:relative;flex:1 1 auto;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;border:3px solid #7a4a2a;border-radius:6px;background:#2f6ea6;margin-top:4px;cursor:grab;touch-action:pan-x pan-y}
+  #panel.mapa .mapbox{position:relative;flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
+  #panel.mapa .mapwrap{position:relative;flex:1 1 auto;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;border:3px solid #7a4a2a;border-radius:6px;background:#2f6ea6;margin-top:4px;cursor:grab;touch-action:none;overscroll-behavior:contain}
   #panel.mapa .mapwrap.arrasta{cursor:grabbing}
   #panel.mapa #mapcv{max-width:none;max-height:none;margin:0;border:0;border-radius:0;display:block}
-  #panel.mapa .mapzoom{position:sticky;float:right;top:6px;right:6px;margin:6px 6px -60px 0;display:flex;flex-direction:column;gap:6px;z-index:2}
+  #panel.mapa .mapzoom{position:absolute;top:12px;right:12px;display:flex;flex-direction:column;gap:6px;z-index:3}
   #panel.mapa .mapzoom button{width:40px;height:40px;padding:0;font-size:22px;line-height:1;border-radius:10px}
   @media (max-height:600px),(max-width:700px){#panel.mapa{padding:4px 6px;max-height:99vh;width:99vw;top:.5vh;transform:translate(-50%,0)}#panel.mapa h2{font-size:15px}#panel.mapa .msub{display:none}
     #panel.mapa .legend{flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;font-size:11px;gap:4px 10px;margin-top:4px;padding-bottom:2px}}
@@ -534,7 +535,7 @@
    Jogo 2D de fazenda/vila em um único arquivo.
    Tudo (mapa, sprites, sons) é gerado por código. */
 
-const T=48,S=3,MW=150,XMIN=-130,AW=MW-XMIN,MH=130,MW0=112,MHB=104,MH0=76,OLD_MW=72,OLD_MH=48,SAVE_KEY='imbuial_valley_save_v1';
+const T=48,S=3,MW=230,XMIN=-130,AW=MW-XMIN,MH=200,MW0=112,MHB=104,MH0=76,OLD_MW=72,OLD_MH=48,SAVE_KEY='imbuial_valley_save_v1';
 const MIN_PER_SEC=2.4;          // tempo contínuo: 24 h de jogo = 10 min reais
 const cv=document.getElementById('c'),ctx=cv.getContext('2d');
 const $=id=>document.getElementById(id);
@@ -640,12 +641,12 @@ const MOTOS={   // motos de trilha: vel = multiplicador da velocidade a pé
   fc450:{nome:'Husqvarna FC 450',cc:450,vel:2.45,preco:47500,cor:'#f4f4f4',cor2:'#1d3f8f',desc:'A mais rápida do vale. Chega antes do ladrão.'},
 };
 // ---- Força e academia ----
-const GYM_LOT=[31,20,4,3],BARB_LOT=[-4,20,4,3],BARB_POS=[-2.9,23.35];
-const BANCO_LOT=[75,20,4,3],BANCO_POS=[76.1,23.35],BANCO_TAXA=.005,BANCO_ABRE=480,BANCO_FECHA=1080,BANCO_PAINEL=[79.6,23.45];
-const ZONA_LOT=[138,101,4,3],ZONA_POS=[139.05,104.35],ZONA_CAMA=1000;      // Zona Imbuial: casa noturna escondida no canto sudeste do mapa, no fim da estrada da Pedreira, bem longe da fazenda (abre das 18:00 às 02:00)      // Banco Imbuial na ponta leste da avenida, depois da Agro Imbuial: rende 0,5% ao dia com juros compostos (R$ 100 rendem R$ 0,50); abre das 08:00 às 18:00      // lojas do centro mais espaçadas; barbearia do Gabriel na ponta oeste da avenida      // Videira reorganizada: praça no centro, igreja atrás, lojas em fila na avenida
-const CHURCH_LOT=[25,12,5,4];
+const GYM_LOT=[37,57,4,3],BARB_LOT=[43,42,4,3],BARB_POS=[44.1,45.35];
+const BANCO_LOT=[37,42,4,3],BANCO_POS=[38.1,45.35],BANCO_TAXA=.005,BANCO_ABRE=480,BANCO_FECHA=1080,BANCO_PAINEL=[41.6,45.45];
+const ZONA_LOT=[214,118,4,3],ZONA_POS=[215.05,121.35],ZONA_CAMA=1000;      // Zona Imbuial: casa noturna escondida no canto sudeste do mapa, no fim da estrada da Pedreira, bem longe da fazenda (abre das 18:00 às 02:00)      // Banco Imbuial na ponta leste da avenida, depois da Agro Imbuial: rende 0,5% ao dia com juros compostos (R$ 100 rendem R$ 0,50); abre das 08:00 às 18:00      // lojas do centro mais espaçadas; barbearia do Gabriel na ponta oeste da avenida      // Videira reorganizada: praça no centro, igreja atrás, lojas em fila na avenida
+const CHURCH_LOT=[32,34,5,4];
 // ---- Universidade (Unoesc Videira): árvore de estudos ----
-const UNI_LOT=[13,52,8,4];      // longe da vila, na parte de baixo do mapa
+const UNI_LOT=[37,73,8,4];      // longe da vila, na parte de baixo do mapa
 const STUDY_MAX=10;      // 10 níveis por curso: nível N = +N itens garantidos a cada coleta (sem porcentagem)
 const STUDIES={
   floresta:{nome:'Engenharia Florestal',ico:'🌳',desc:'madeira extra ao derrubar árvores',item:'madeira'},
@@ -688,9 +689,9 @@ const TRATORES={   // vel = multiplicador da velocidade a pé; larg = quadrados 
 };
 const TANK={moto:8,trator:40},tankOf=(kind,k)=>{const L=kind==='trator'?TRATORES:MOTOS,ord=Object.keys(L).sort((a,b)=>L[a].preco-L[b].preco);return TANK[kind]+Math.max(0,ord.indexOf(k))},      // cada veículo melhor tem +1 L de tanque
  FUEL_USE={moto:.004,trator:.02},GAS_PRICE={comum:6,aditivada:9},AD_BOOST=1.25;      // litros, litros por quadrado andado, moedas por litro; aditivada = +25% de velocidade
-const GAS_LOT=[54,20,5,3],LAVA_LOT=[60,20,4,3],TRATOR_LOT=[65,20,8,3];      // posto, lava-jato ao lado e a concessionária de tratores      // posto e concessionária de tratores: os dois do outro lado da ponte
-const PITOL_LOT=[14,20,4,3],LUAN_POS=[18.5,22.5];      // Pitol Calçados, no centro de Videira (onde era a casa antiga); Luan fica na porta
-const TRIG_LOT=[8,20,4,3],JUNIOR_POS=[12.5,22.5],TRIG_ABRE=18*60,TRIG_FECHA=6*60;      // casa de apostas Triguinho (Junior Amaral): aberta a noite inteira, das 18:00 às 6:00
+const GAS_LOT=[58,47,5,3],LAVA_LOT=[64,47,4,3],TRATOR_LOT=[69,47,8,3];      // posto, lava-jato ao lado e a concessionária de tratores      // posto e concessionária de tratores: os dois do outro lado da ponte
+const PITOL_LOT=[27,42,4,3],LUAN_POS=[31.5,44.5];      // Pitol Calçados, no centro de Videira (onde era a casa antiga); Luan fica na porta
+const TRIG_LOT=[27,57,4,3],JUNIOR_POS=[31.5,59.5],TRIG_ABRE=18*60,TRIG_FECHA=6*60;      // casa de apostas Triguinho (Junior Amaral): aberta a noite inteira, das 18:00 às 6:00
 const trigOpen=()=>state.min>=TRIG_ABRE||state.min<TRIG_FECHA;      // passa da meia-noite
 const JUNIOR_LINES=['Chega mais! Hoje a roleta tá quente.','Verde paga o dobro. Vermelho... aí é outra história.','Aposta com responsabilidade, hein. Ou não.','A roleta não tem favorito, parceiro. É sorte pura.',
   'Descalço que é pra sentir a energia da sorte.','Quem não arrisca não petisca!','Tá com medo? A roleta sente o medo.','Bora, bora! Gira essa roleta!'];let juniorLine=0;
@@ -760,32 +761,32 @@ const CLOTHES={
 const VIS_PELE='#f2c79c',VIS_CABELO='#5a3a1e';
 function pSexo(){try{return localStorage.getItem('imbuial_valley_sexo')==='m'?'m':'h'}catch(e){return'h'}}
 function pVis(){const v=(state&&state.visual)||{},d=pSexo()==='m';return{skin:v.skin||VIS_PELE,hair:v.hair||VIS_CABELO,hairStyle:v.hairStyle||(d?'comprido':'curto'),beard:d?null:v.beard||null,stache:d?null:v.stache||null,dama:d}}
-const THIAGO_POS=[59.5,22.6],THIAGO_SCALE=5;      // frentista do posto, da altura das janelas da Agro Imbuial
+const THIAGO_POS=[63.5,49.6],THIAGO_SCALE=5;      // frentista do posto, da altura das janelas da Agro Imbuial
 const THIAGO_LINES=['Opa! Vai completar? A aditivada deixa a moto voando!','Pode chegar, aqui é o Thiago!','Calibro o pneu de graça, hein.','Gasolina boa, sem batismo. Palavra de frentista!','Trator também abastece aqui, viu?',
   'Ô loco, meu! Que moto bonita!','Quem abastece aqui não fica na mão!','Hoje a gasolina tá em promoção... mentira!','Bora, bora, que o dia tá corrido!','Lavo o para-brisa? Ah, moto não tem...'];let thiagoLine=0;
 let thiagoSay=null,thiagoT=6;      // o Thiago fala sozinho de vez em quando, quando você está por perto
-const MATEUS_POS=[-105.7,37.8],GABRIEL_POS=[35.6,22.5];
+const MATEUS_POS=[-105.7,37.8],GABRIEL_POS=[41.6,59.5];
 const PHILO=['"Só sei que nada sei." — Sócrates','"Ninguém se banha duas vezes no mesmo rio." — Heráclito','"Somos o que fazemos repetidamente." — Aristóteles',
   '"Não são as coisas que nos perturbam, mas a opinião que temos delas." — Epicteto','"A sorte favorece os audazes." — Virgílio','"Conhece-te a ti mesmo." — Oráculo de Delfos',
   '"Não é que tenhamos pouco tempo; é que perdemos muito dele." — Sêneca','"A felicidade da sua vida depende da qualidade dos seus pensamentos." — Marco Aurélio',
   '"Uma jornada de mil léguas começa com um único passo." — Lao-Tsé','"Não importa quão devagar você vá, desde que não pare." — Confúcio',
   '"O homem é a medida de todas as coisas." — Protágoras','"Quem tem pouco não é pobre; pobre é quem deseja mais." — Sêneca'];
 let gabrielSay=null,gabNear=false,mateusGreet=null,mateusNear=false,spinA=0,mateusSay=null,sellSel={},sellQuote='',sellDone=0;
-const MOTO_LOT=[43,20,5,3],SELLER_POS=[48.35,22.75];      // ao lado da ponte, na margem oeste do rio
+const MOTO_LOT=[51,47,5,3],SELLER_POS=[56.35,49.75];      // ao lado da ponte, na margem oeste do rio
 const SELLER_LINES=['Fala, piloto! Moto boa é moto suja de barro.','Essa aqui sobe qualquer barranco do vale!','Faço preço bom pra quem paga no Pix.',
   'Capacete é obrigatório, hein! Tá, aqui no vale ninguém fiscaliza...','Já pegou o ladrão de moto? Ele não aguenta uma 450.','Chegou a peça? Não. Mas a moto chegou!'];
 const SPECIES={
-  galinha:{nome:'Galinha',prod:'ovo',every:10,pen:'galinheiro',zone:[6,6,44,42],zone2:[-128,4,-92,30],cap:6,need:1.2,spd:1.7,scale:.6},
-  pato:{nome:'Pato',prod:'pena',every:14,pen:'galinheiro',zone:[1,27,40,72],zone2:[-128,50,-75,92],cap:5,need:1.6,spd:1.9,scale:.6},
-  ovelha:{nome:'Ovelha',prod:'la',every:20,pen:'curral',zone:[36,3,47,72],zone2:[-92,50,-60,80],cap:6,need:2.2,spd:1.6,scale:1.15},
-  porco:{nome:'Porco',prod:'trufa',every:26,pen:'curral',zone:[2,1,46,12],zone2:[-128,2,-70,20],cap:4,need:2.6,spd:2.0,scale:1.25},
-  vaca:{nome:'Vaca',prod:'leite',every:18,pen:'curral',zone:[55,2,108,72],zone2:[-88,2,-20,20],cap:8,need:3.0,spd:1.5,scale:1.9},
+  galinha:{nome:'Galinha',prod:'ovo',every:10,pen:'galinheiro',zone:[4,4,70,28],zone2:[-128,4,-92,30],cap:6,need:1.2,spd:1.7,scale:.6},
+  pato:{nome:'Pato',prod:'pena',every:14,pen:'galinheiro',zone:[2,84,60,150],zone2:[-128,50,-75,92],cap:5,need:1.6,spd:1.9,scale:.6},
+  ovelha:{nome:'Ovelha',prod:'la',every:20,pen:'curral',zone:[40,84,92,150],zone2:[-92,50,-60,80],cap:6,need:2.2,spd:1.6,scale:1.15},
+  porco:{nome:'Porco',prod:'trufa',every:26,pen:'curral',zone:[60,3,94,24],zone2:[-128,2,-70,20],cap:4,need:2.6,spd:2.0,scale:1.25},
+  vaca:{nome:'Vaca',prod:'leite',every:18,pen:'curral',zone:[108,96,200,150],zone2:[-88,2,-20,20],cap:8,need:3.0,spd:1.5,scale:1.9},
 };
 const BLD={
   casa:{nome:'Casa',lot:[-112,35,5,3],max:Infinity,start:1,
     cost:[null,null,{c:150,m:20,p:10},{c:500,m:40,p:30}],
     desc:'Seu lar. Durma aqui para recuperar a energia. Melhorias aumentam a energia máxima.'},
-  mercado:{nome:'Loja',lot:[20,20,4,3],max:Infinity,start:1,
+  mercado:{nome:'Loja',lot:[21,42,4,3],max:Infinity,start:1,
     cost:[null,null,{c:250,m:30,p:20},{c:700,m:50,p:50}],
     desc:'A loja do Giliard: sementes, ração, pão e ferramentas. Para vender, procure o Mateus ao lado da sua casa. Melhorias aqui aumentam o preço que o Mateus paga.'},
   galinheiro:{nome:'Galinheiro',lot:[-116,41,6,3],max:Infinity,start:0,cap:[0,3,6,10],pen:[-114,41,4,3],
@@ -795,51 +796,51 @@ const BLD={
    
     cost:[null,{c:100,m:20,p:10},{c:300,m:40,p:25},{c:800,m:70,p:50}],
     desc:'Abriga ovelhas, porcos e vacas capturados.'},
-  praca:{nome:'Praça',lot:[26,19,3,3],max:Infinity,start:0,
+  praca:{nome:'Praça',lot:[33,49,3,3],max:Infinity,start:0,
     cost:[null,{c:150,m:10,p:25},{c:400,m:20,p:50},{c:1000,m:40,p:80}],
     desc:'Atrai moradores para a vila. Cada nível rende R$ 15,00 por dia.'},
-  ponte:{nome:'Ponte',lot:[47,23,1,1],max:1,start:0,
+  ponte:{nome:'Ponte',lot:[94,48,1,1],max:1,start:0,
     cost:[null,{c:200,m:30,p:30}],
     desc:'Atravessa o rio até o pasto do leste, onde vivem as vacas.'},
   // ---- vilas do sul: cada uma libera num nível do personagem e tem as suas construções, em ordem diferente, mais caras e com mais renda ----
-  assoc1:{nome:'Associação de Pinheiro Preto',vila:'v1',lot:[86,7,5,3],max:Infinity,start:0,renda:40,assoc:1,
+  assoc1:{nome:'Associação de Pinheiro Preto',vila:'v1',lot:[187,9,5,3],max:Infinity,start:0,renda:40,assoc:1,
     cost:[null,{c:500,m:40,p:30},{c:1200,m:70,p:50},{c:2600,m:110,p:80}],
     desc:'Sede dos colonos de Pinheiro Preto. Dá o direito de contratar mais um tratador e mais um lavrador, e rende dinheiro todo dia.'},
-  serraria:{nome:'Serraria',vila:'v1',lot:[75,11,7,3],max:Infinity,start:0,renda:70,
+  serraria:{nome:'Serraria',vila:'v1',lot:[176,13,7,3],max:Infinity,start:0,renda:70,
     cost:[null,{c:800,m:80,p:20},{c:1800,m:140,p:40},{c:3800,m:220,p:70}],
     desc:'Serra tábuas de pinus e eucalipto para a região toda. Rende dinheiro todo dia.'},
-  vinicola:{nome:'Vinícola',vila:'v1',lot:[94,11,6,3],max:Infinity,start:0,renda:95,
+  vinicola:{nome:'Vinícola',vila:'v1',lot:[195,13,6,3],max:Infinity,start:0,renda:95,
     cost:[null,{c:1100,m:60,p:60},{c:2500,m:100,p:100},{c:5200,m:160,p:150}],
     desc:'Vinho colonial das parreiras de Pinheiro Preto. Rende dinheiro todo dia.'},
-  queijaria:{nome:'Queijaria',vila:'v2',lot:[17,89,6,3],max:Infinity,start:0,renda:150,
+  queijaria:{nome:'Queijaria',vila:'v2',lot:[21,171,6,3],max:Infinity,start:0,renda:150,
     cost:[null,{c:2200,m:120,p:90},{c:4800,m:200,p:150},{c:9500,m:300,p:220}],
     desc:'Queijo colonial de Arroio Trinta, famoso no vale. Rende dinheiro todo dia.'},
-  assoc2:{nome:'Associação de Arroio Trinta',vila:'v2',lot:[26,85,5,3],max:Infinity,start:0,renda:80,assoc:1,
+  assoc2:{nome:'Associação de Arroio Trinta',vila:'v2',lot:[30,167,5,3],max:Infinity,start:0,renda:80,assoc:1,
     cost:[null,{c:3000,m:150,p:120},{c:6000,m:240,p:180},{c:11000,m:340,p:260}],
     desc:'Sede dos colonos de Arroio Trinta. Dá o direito de contratar mais um tratador e mais um lavrador, e rende dinheiro todo dia.'},
-  moinho:{nome:'Moinho Colonial',vila:'v2',lot:[34,89,6,3],max:Infinity,start:0,renda:190,
+  moinho:{nome:'Moinho Colonial',vila:'v2',lot:[38,171,6,3],max:Infinity,start:0,renda:190,
     cost:[null,{c:3800,m:200,p:140},{c:7500,m:300,p:220},{c:14000,m:420,p:320}],
     desc:'Moinho de roda d\'água que mói o milho e o trigo da colônia. Rende dinheiro todo dia.'},
-  frigorifico:{nome:'Frigorífico',vila:'v3',lot:[82,87,7,3],max:Infinity,start:0,renda:380,
+  frigorifico:{nome:'Frigorífico',vila:'v3',lot:[181,169,7,3],max:Infinity,start:0,renda:380,
     cost:[null,{c:7000,m:300,p:260},{c:14000,m:450,p:380},{c:26000,m:650,p:550}],
     desc:'Frigorífico de Iomerê, que compra a produção de toda a região. Rende muito dinheiro todo dia.'},
-  cooperativa:{nome:'Cooperativa',vila:'v3',lot:[101,87,7,3],max:Infinity,start:0,renda:300,
+  cooperativa:{nome:'Cooperativa',vila:'v3',lot:[200,169,7,3],max:Infinity,start:0,renda:300,
     cost:[null,{c:6000,m:260,p:220},{c:12000,m:400,p:340},{c:22000,m:580,p:480}],
     desc:'Cooperativa agrícola com silos e armazém. Rende muito dinheiro todo dia.'},
-  assoc3:{nome:'Associação de Iomerê',vila:'v3',lot:[93,83,5,3],max:Infinity,start:0,renda:160,assoc:1,
+  assoc3:{nome:'Associação de Iomerê',vila:'v3',lot:[192,165,5,3],max:Infinity,start:0,renda:160,assoc:1,
     cost:[null,{c:8000,m:320,p:280},{c:15000,m:480,p:400},{c:28000,m:700,p:600}],
     desc:'Sede dos colonos de Iomerê. Dá o direito de contratar mais um tratador e mais um lavrador, e rende dinheiro todo dia.'},
 };
 const VILAS=[      // vilas do sul, cercadas até o personagem chegar no nível
-  {id:'v1',nome:'Pinheiro Preto',nivel:12,zone:[70,2,105,21],praca:[84,10,9,5]},      // nordeste, no pasto do leste
-  {id:'v2',nome:'Arroio Trinta',nivel:20,zone:[8,80,44,100],praca:[24,88,9,5]},      // sudoeste, depois da mata do sul
-  {id:'v3',nome:'Iomerê',nivel:30,zone:[78,78,109,100],praca:[91,86,9,5]},      // sudeste, depois da pedreira
+  {id:'v1',nome:'Pinheiro Preto',nivel:12,zone:[168,3,206,26],praca:[185,12,9,5]},      // nordeste, no pasto do leste
+  {id:'v2',nome:'Arroio Trinta',nivel:20,zone:[12,160,50,186],praca:[28,170,9,5]},      // sudoeste, depois da mata do sul
+  {id:'v3',nome:'Iomerê',nivel:30,zone:[172,158,212,186],praca:[190,168,9,5]},      // sudeste, depois da pedreira
 ];
 const VSIGNS=[      // placas das vilas
-  {x:91.6,y:23.4,l:['⬆ Pinheiro Preto (nível 12)']},
-  {x:27.4,y:62.6,l:['⬇ Arroio Trinta (nível 20)']},
-  {x:94.4,y:62.6,l:['⬇ Iomerê (nível 30)']},
-  {x:83.4,y:16.6,l:['Pinheiro Preto'],city:1},{x:22.4,y:94.6,l:['Arroio Trinta'],city:1},{x:89.4,y:92.6,l:['Iomerê'],city:1},
+  {x:153.6,y:47.4,l:['⬆ Pinheiro Preto (nível 12)']},
+  {x:36.6,y:82.6,l:['⬇ Arroio Trinta (nível 20)']},
+  {x:153.6,y:54.6,l:['⬇ Iomerê (nível 30)']},
+  {x:184.4,y:18.6,l:['Pinheiro Preto'],city:1},{x:26.4,y:176.6,l:['Arroio Trinta'],city:1},{x:188.4,y:174.6,l:['Iomerê'],city:1},
 ];
 const vilaFonte=v=>[v.praca[0]+3,v.praca[1]+1,3,3];      // chafariz no meio da pracinha
 const vilaZ=(x,y)=>{for(const v of VILAS){const z=v.zone;if(x>=z[0]&&x<=z[2]&&y>=z[1]&&y<=z[3])return v}return null};
@@ -911,7 +912,7 @@ const DIRT_TAB=(()=>{const raw=x=>{const t=x-DIRT_X0,a=Math.max(0,Math.min(1,(t-
 const DIRT_Y=x=>DIRT_TAB[Math.max(DIRT_X0,Math.min(9,x))];      // estrada de chão cheia de curva
 const BUS=[      // ônibus Fazenda ⇄ Videira (R$ 5,00)
   {id:'fazenda',nome:'Ponto da Fazenda Imbuial',x:-102.5,y:23.5,dest:'videira'},
-  {id:'videira',nome:'Ponto de Videira',x:29.5,y:27.5,dest:'fazenda'},
+  {id:'videira',nome:'Ponto de Videira',x:16.5,y:52.5,dest:'fazenda'},
 ];
 const BUS_PRECO=5,BUS_MIN=40;
 const GABRIEL_LINES=['Bora treinar, monstro!','Olha esse muque!','Hoje é dia de perna, hein!','Tá fraco, hein? Vem pra academia!','Foco, força e fé!','Sem dor, sem ganho!','Toma o pré-treino e vem!'];
@@ -921,92 +922,87 @@ const PAO_PRICE=15,NAP_MAX=240;      // cochilo de dia: no máximo 4 h somadas p
 
 /* ---------- Mapa ---------- */
 let ground,objs,lotAt;
-const riverX=y=>52+Math.round(2*Math.sin(y/5));
+const riverX=y=>100+Math.round(3*Math.sin(y/7)+2*Math.sin(y/17+1));
 const ehLago=(x,y)=>!naSakura(x,y);      // rio, lagos e açudes: água barrenta (marrom); o Lago das Sakuras é azul e limpo
-const PONDS=[[8,35,4.5,3],[90,30,7,4.5],[34,67,5,3.5]];
+const PONDS=[[4,64,4,3],[82,28,7,4.5],[62,88,5,3.5]];
 const POND_K=[1.4,1.4,1.4,1.4,1.4,1.4];      // quanto cada lago cresce
 const RIO_W=4;      // meia-largura do rio principal: 9 casas (3× o rio antigo de 3)      // lago oeste (original), lago do leste, açude do sul
-const QUARRY=[86,52,108,73];                                   // pedreira (muita pedra)
+const QUARRY=[108,20,132,40];                                   // pedreira (muita pedra)
 const SEED1=20261117,SEED2=77120476;      // sementes do mundo original
 let mapSeeds='';
 function genMap(s1,s2){
   s1=s1||SEED1;s2=s2||SEED2;mapSeeds=s1+':'+s2;
-  const rn=mulberry32(s1);
   ground=new Uint8Array(AW*MH);objs=new Array(AW*MH).fill(null);lotAt=new Array(AW*MH).fill(null);
-  for(let y=0;y<MH;y++)for(let x=0;x<MW;x++){
-    let g=0;if(Math.abs(x-riverX(y))<=1)g=2;
-    for(const[cx,cy,rx,ry]of PONDS){const dx=(x-cx)/rx,dy=(y-cy)/ry;if(dx*dx+dy*dy<1)g=2}
-    ground[y*AW-XMIN+x]=g;
-  }
-  for(const y of[24,25])for(let x=49;x<=51;x++)ground[y*AW-XMIN+x]=3;
-  for(const y of[58,59])for(let x=riverX(y)-1;x<=riverX(y)+1;x++)ground[y*AW-XMIN+x]=3;      // segunda ponte, na estrada do sul (abre junto com a Ponte)
-  const path=(x,y)=>{if(ground[y*AW-XMIN+x]===0)ground[y*AW-XMIN+x]=1};
-  for(let x=10;x<=104;x++){path(x,24);path(x,25)}      // estradas com 2 quadrados de largura
-  path(22,23);      // porta da loja do Giliard
-  for(let y=25;y<=44;y++)path(36,y);for(let y=26;y<=43;y++)path(37,y);for(let x=28;x<=42;x++){path(x,44);path(x,45)}      // estrada da fazenda Imbuial
-  path(34,38);path(35,38);      // porta da casa
-  for(let x=24;x<=30;x++){path(x,18);path(x,22);path(x,23)}for(let y=18;y<=23;y++){path(24,y);path(30,y)}      // calçadão em volta da praça
-  path(33,23);      // entrada da academia
-  for(let y=16;y<=17;y++)path(27,y);      // da igreja até a praça
-  path(45,23);      // entrada da loja de motos
-  path(69,23);      // entrada da loja de tratores
-  path(62,23);path(63,23);      // entrada do lava-jato
-  path(56,23);      // entrada do posto
-  for(let y=25;y<=58;y++){path(24,y);path(25,y)}for(let x=17;x<=92;x++){path(x,58);path(x,59)}for(let y=56;y<=57;y++)path(17,y);      // ... e a entrada da universidade
-  for(let y=25;y<=57;y++){path(60,y);path(61,y)}      // estradas do sul e do leste
-  path(16,23);      // porta da Pitol Calçados
-  path(10,23);      // porta do Triguinho
-  for(const id in BLD){if(BLD[id].vila||id==='casa'||id==='galinheiro'||id==='curral')continue;const[lx,ly,w,h]=BLD[id].lot;for(let y=ly;y<ly+h;y++)for(let x=lx;x<lx+w;x++)lotAt[y*AW-XMIN+x]=id}
-  for(const[lx,ly,w,h]of LOTES_VELHOS)for(let y=ly;y<ly+h;y++)for(let x=lx;x<lx+w;x++)lotAt[y*AW-XMIN+x]='velho'      // as das vilas entram no genSouth
-  {const[lx,ly,w,h]=MOTO_LOT;for(let y=ly;y<ly+h;y++)for(let x=lx;x<lx+w;x++)lotAt[y*AW-XMIN+x]='motoloja'}
-  {const[lx,ly,w,h]=GYM_LOT;for(let y=ly;y<ly+h;y++)for(let x=lx;x<lx+w;x++)lotAt[y*AW-XMIN+x]='academia'}
-  {const[lx,ly,w,h]=CHURCH_LOT;for(let y=ly;y<ly+h;y++)for(let x=lx;x<lx+w;x++)lotAt[y*AW-XMIN+x]='igreja'}
-  {const[lx,ly,w,h]=UNI_LOT;for(let y=ly;y<ly+h;y++)for(let x=lx;x<lx+w;x++)lotAt[y*AW-XMIN+x]='universidade'}
-  for(const[nm,L]of[['posto',GAS_LOT],['lavajato',LAVA_LOT],['tratores',TRATOR_LOT],['pitol',PITOL_LOT],['triguinho',TRIG_LOT],['bar',BAR_LOT]]){const[lx,ly,w,h]=L;for(let y=ly;y<ly+h;y++)for(let x=lx;x<lx+w;x++)lotAt[y*AW-XMIN+x]=nm}
-  // a área original (72×48) é sorteada exatamente como antes, para o mapa antigo não mudar
-  const place=(x,y,u,v,dense,pt,pr)=>{const i=y*AW-XMIN+x;
-    if(u<pt)objs[i]=v<0.22?'pine':'tree';else if(u<pt+pr)objs[i]='rock';else if(u<pt+pr+0.02)objs[i]='bush';else if(u<pt+pr+0.09)objs[i]='capim'};
-  for(let y=0;y<OLD_MH;y++)for(let x=0;x<OLD_MW;x++){
-    const i=y*AW-XMIN+x,u=rn(),v=rn();
-    if(ground[i]!==0||lotAt[i])continue;
-    if(x>=VILLAGE[0]&&x<=VILLAGE[2]&&y>=VILLAGE[1]&&y<=VILLAGE[3])continue;
-    if(x>=44&&x<=57&&y>=22&&y<=27)continue;
-    if(x>=39&&x<=48&&y>=17&&y<=23)continue;      // pátio da loja de motos
-    const dense=y<11||(x<12&&y<22)||y>41,east=x>53;
-    place(x,y,u,v,dense,dense?0.26:east?0.04:0.07,east?0.06:0.025);
-  }
-  // área nova: leste, sul, pedreira e mata do sul
-  const rn2=mulberry32(s2);
-  for(let y=0;y<MH0;y++)for(let x=0;x<MW0;x++){      // MH0: o sorteio da parte de antes das vilas do sul continua igual
-    if(x<OLD_MW&&y<OLD_MH)continue;const i=y*AW-XMIN+x,u=rn2(),v=rn2();
-    if(ground[i]!==0||lotAt[i])continue;
-    const quarry=x>=QUARRY[0]&&x<=QUARRY[2]&&y>=QUARRY[1]&&y<=QUARRY[3],mata=y>=63&&x<46,edge=y<8||x>MW0-6||y>MH0-5;
-    if(quarry)place(x,y,u,v,0,.03,.34);
-    else if(mata||edge)place(x,y,u,v,1,.3,.02);
-    else place(x,y,u,v,0,x>53?.05:.08,x>53?.05:.03);
-  }
-  // terra das lavouras antigas fica livre de mato (quem já tinha lavoura continua com ela)
-  for(let y=15;y<=21;y++)for(let x=4;x<=13;x++)objs[y*AW-XMIN+x]=null;
-  for(let y=8;y<=17;y++)for(let x=17;x<=27;x++)objs[y*AW-XMIN+x]=null;      // adro da igreja
-  for(let y=48;y<=60;y++)for(let x=9;x<=26;x++)objs[y*AW-XMIN+x]=null;      // campus da universidade
-  for(let y=FARM_VELHA[1];y<=FARM_VELHA[3];y++)for(let x=FARM_VELHA[0];x<=FARM_VELHA[2];x++)objs[y*AW-XMIN+x]=null;      // onde ficava a fazenda Imbuial
-  for(let y=25;y<=31;y++)for(let x=35;x<=46;x++)objs[y*AW-XMIN+x]=null;      // beira da estrada da fazenda, posto e o Thiago
-  for(let y=16;y<=23;y++)for(let x=52;x<=71;x++)objs[y*AW-XMIN+x]=null;      // pátio do posto, do Thiago e da concessionária de tratores
-  for(let y=26;y<=31;y++)for(let x=4;x<=12;x++)objs[y*AW-XMIN+x]=null;
-  refineNature(s1);
+  genLeste(s1,s2);      // Videira, vilas, Pedreirinha e a natureza do leste
+  genWest(s1);      // fazenda Imbuial e a estrada de chão (iguais)
+  for(const[hx,hy]of CASAS_V)for(let y=hy-1;y<=hy+3;y++)for(let x=hx-2;x<=hx+3;x++){const i=y*AW-XMIN+x;if(!lotAt[i])objs[i]=null}
   for(let i=0;i<AW*MH;i++)if(objs[i]==='pine'&&hash2((i%AW+XMIN),(i/AW)|0,s1&255)<.6)objs[i]='tree';      // menos araucárias
-  for(let y=11;y<=23;y++)for(let x=9;x<=42;x++)objs[y*AW-XMIN+x]=null;      // (as lojas do oeste são limpas depois do sorteio, junto da A.C.C.P.U.V)      // centro de Videira limpo (praça, igreja e lojas)
-  for(const[x,y]of[[38,18],[41,17],[34,15],[20,15],[13,16],[17,13]])objs[y*AW-XMIN+x]='tree';      // árvores do parque e da rua
-  for(let y=18;y<=23;y++)for(let x=52;x<=74;x++)objs[y*AW-XMIN+x]=null;
-      // posto e o Thiago (do outro lado da ponte)
-  genSouth(s2);
-  for(let i=0;i<lotAt.length;i++)if(lotAt[i]==='velho')lotAt[i]=null;
-  genWest(s1);
-  {const[lx,ly,w,h]=ACC_LOT;for(let y=ly;y<ly+h;y++)for(let x=lx;x<lx+w;x++){lotAt[y*AW-XMIN+x]='acc';objs[y*AW-XMIN+x]=null}for(let x=lx;x<lx+w;x++)objs[(ly+h)*AW-XMIN+x]=null;objs[Math.floor(MAIK_POS[1])*AW-XMIN+Math.floor(MAIK_POS[0])]=null;for(let y=-1;y<=1;y++)for(let x=-1;x<=1;x++)objs[(Math.floor(DOZE_POS[1])+y)*AW-XMIN+Math.floor(DOZE_POS[0])+x]=null;for(let y=18;y<=23;y++)for(let x=BARB_LOT[0]-1;x<=9;x++)objs[y*AW-XMIN+x]=null;for(const[hx,hy]of CASAS_V)for(let y=hy-1;y<=hy+3;y++)for(let x=hx-2;x<=hx+3;x++){const i=y*AW-XMIN+x;objs[i]=null;if(y>=hy&&y<hy+2&&x>=hx&&x<hx+3)lotAt[i]='casav'}{const[bx,by,bw,bh]=BARB_LOT;for(let y=by;y<by+bh;y++)for(let x=bx;x<bx+bw;x++)lotAt[y*AW-XMIN+x]='barbearia';{const i=(by+bh)*AW-XMIN+bx+2;if(ground[i]===0)ground[i]=1}}for(let y=26;y<=28;y++)for(let x=38;x<=42;x++)objs[y*AW-XMIN+x]=null;{const[bx,by,bw,bh]=BANCO_LOT;for(let y=by-1;y<=by+bh;y++)for(let x=bx-1;x<=bx+bw;x++)objs[y*AW-XMIN+x]=null;for(let y=by;y<by+bh;y++)for(let x=bx;x<bx+bw;x++)lotAt[y*AW-XMIN+x]='banco';{const i=(by+bh)*AW-XMIN+bx+2;if(ground[i]===0)ground[i]=1}}}      // A.C.C.P.U.V (depois do sorteio, para não mudar o resto do mapa)
-  genExpand(s1);finishNature(s1);genSakura(s1);zonaClareira();genVeg();for(const[hx,hy]of CASAS_V)for(let y=hy-3;y<=hy+12;y++)for(let x=hx-3;x<=hx+5;x++){const i=y*AW-XMIN+x,o=objs[i];if(o==='pine'||(o==='tree'||o==='bush')&&y<=hy+7)objs[i]=null}PROF=null;NAT_I.clear();PINE_I.clear();
+  finishNature(s1);genSakura(s1);zonaClareira();genVeg();for(const[hx,hy]of CASAS_V)for(let y=hy-3;y<=hy+5;y++)for(let x=hx-3;x<=hx+5;x++){const i=y*AW-XMIN+x,o=objs[i];if(o==='pine'||o==='tree'||o==='bush')objs[i]=null}PROF=null;NAT_I.clear();PINE_I.clear();
 }
+// ---- Videira nova: praça no centro (chafariz), lojas em volta, ruas calçadas; vilas bem longe e a Pedreirinha perto ----
+const VC=[34,50],PRACA_R=[20,45,48,56],CALCADA_R=[14,33,80,78];      // centro de Videira, a praça e onde a rua é de pedra
+const inCalc=(x,y)=>x>=CALCADA_R[0]&&x<=CALCADA_R[2]&&y>=CALCADA_R[1]&&y<=CALCADA_R[3];
+function genLeste(s1,s2){
+  const rn=mulberry32((s1^0x51ed270b)>>>0),I=(x,y)=>y*AW-XMIN+x,ok=(x,y)=>x>=XMIN&&y>=0&&x<MW&&y<MH,tr=o=>o==='tree'||o==='pine';
+  // 1) chão: rio e lagos
+  for(let y=0;y<MH;y++)for(let x=0;x<MW;x++){let g=0;if(Math.abs(x-riverX(y))<=1)g=2;
+    for(const[cx,cy,rx,ry]of PONDS){const dx=(x-cx)/rx,dy=(y-cy)/ry;if(dx*dx+dy*dy<1)g=2}ground[I(x,y)]=g}
+  // 2) ruas (2 de largura); em cima do rio vira ponte
+  const road=(x,y)=>{if(!ok(x,y))return;const i=I(x,y);ground[i]=ground[i]===2||ground[i]===3?3:1;objs[i]=null};
+  const H=(x0,x1,y,w)=>{for(let x=Math.min(x0,x1);x<=Math.max(x0,x1);x++)for(let k=0;k<(w||2);k++)road(x,y+k)},V=(x,y0,y1,w)=>{for(let y=Math.min(y0,y1);y<=Math.max(y0,y1);y++)for(let k=0;k<(w||2);k++)road(x+k,y)};
+  H(10,13,24);V(12,24,51);H(12,19,50);                                         // avenida: do fim da estrada de chão até a praça
+  for(let y=PRACA_R[1];y<=PRACA_R[3];y++)for(let x=PRACA_R[0];x<=PRACA_R[2];x++)road(x,y);      // praça
+  V(33,38,44);H(31,37,38,1);                                                   // rua da igreja (norte)
+  H(18,50,60);V(33,57,169);H(14,56,68);                                         // rua de baixo, rua do sul (até Arroio Trinta) e rua das casas
+  H(33,42,77);                                                                  // entrada da Unoesc
+  H(49,151,50);                                                                 // avenida do leste: oficinas, ponte e o resto do vale
+  V(150,14,51);H(150,184,14);                                                   // até Pinheiro Preto (nordeste)
+  V(150,50,171);H(150,189,170);                                                 // até Iomerê (sudeste)
+  V(125,50,PEDR[1]+2);                                                          // até a Pedreirinha
+  // 3) lotes da cidade
+  const lote=(L,nm)=>{const[lx,ly,w,h]=L;for(let y=ly;y<ly+h;y++)for(let x=lx;x<lx+w;x++){const i=I(x,y);lotAt[i]=nm;objs[i]=null;if(ground[i]===1)ground[i]=0}
+    const di=I(lx+(w>>1),ly+h);if(ground[di]===0)ground[di]=1};      // porta sempre dá na rua
+  for(const id in BLD){if(BLD[id].vila||id==='casa'||id==='galinheiro'||id==='curral')continue;lote(BLD[id].lot,id)}
+  for(const[nm,L]of[['motoloja',MOTO_LOT],['academia',GYM_LOT],['igreja',CHURCH_LOT],['universidade',UNI_LOT],['posto',GAS_LOT],['lavajato',LAVA_LOT],['tratores',TRATOR_LOT],['pitol',PITOL_LOT],['triguinho',TRIG_LOT],['bar',BAR_LOT],['acc',ACC_LOT],['barbearia',BARB_LOT],['banco',BANCO_LOT]])lote(L,nm);
+  {const[px,py]=BLD.praca.lot;for(let y=py;y<py+3;y++)for(let x=px;x<px+3;x++)ground[I(x,y)]=1}      // o chafariz fica no meio da praça
+  for(const[hx,hy]of CASAS_V)for(let y=hy;y<hy+2;y++)for(let x=hx;x<hx+3;x++){const i=I(x,y);lotAt[i]='casav';objs[i]=null;if(ground[i]===1)ground[i]=0}
+  // 4) vilas: pracinha, chafariz, prédios e calçada
+  for(const v of VILAS){const[px,py,pw,ph]=v.praca;for(let y=py;y<py+ph;y++)for(let x=px;x<px+pw;x++)road(x,y);
+    const[fx,fy,fw,fh]=vilaFonte(v);for(let y=fy;y<fy+fh;y++)for(let x=fx;x<fx+fw;x++)lotAt[I(x,y)]='vpraca'}
+  for(const id in BLD)if(BLD[id].vila){const[lx,ly,w,hh]=BLD[id].lot;for(let y=ly;y<ly+hh;y++)for(let x=lx;x<lx+w;x++){lotAt[I(x,y)]=id;objs[I(x,y)]=null}for(let x=lx-1;x<=lx+w;x++)if(ground[I(x,ly+hh)]===0)ground[I(x,ly+hh)]=1}
+  // 5) Pedreirinha: cascalho e pedra para todo lado
+  for(let y=PEDR[1];y<=PEDR[3];y++)for(let x=PEDR[0];x<=PEDR[2];x++){const i=I(x,y);if(ground[i]===2)continue;
+    const cx=(PEDR[0]+PEDR[2])/2,cy=(PEDR[1]+PEDR[3])/2,d=Math.hypot((x-cx)/((PEDR[2]-PEDR[0])/2),(y-cy)/((PEDR[3]-PEDR[1])/2)),n=vnoise(x,y,s1+57,5),casc=d+(n-.5)*.5<.92;
+    if(casc&&ground[i]===0)ground[i]=5;if(ground[i]===1)continue;const u=rn();objs[i]=null;
+    if(casc){if(u<.38)objs[i]='rock';else if(u<.41)objs[i]='capim'}else if(u<.18)objs[i]='rock';else if(u<.26)objs[i]=rn()<.3?'pine':'tree';else if(u<.33)objs[i]='capim'}
+  for(let y=PEDR[1]+1;y<=PEDR[1]+5;y++)for(let x=123;x<=128;x++){const i=I(x,y);objs[i]=null;if(ground[i]===0)ground[i]=5}      // pátio da entrada
+  // 6) natureza: campo com bosques, mata fechada na beira, pedreira cheia de pedra; a cidade fica limpa
+  const perto=(x,y,r)=>{for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++){if(!ok(x+dx,y+dy))continue;const g=ground[I(x+dx,y+dy)];if(g===1||g===3)return true}return false};
+  const inQ=(x,y)=>x>=QUARRY[0]&&x<=QUARRY[2]&&y>=QUARRY[1]&&y<=QUARRY[3];
+  for(let y=0;y<MH;y++)for(let x=XMIN;x<MW;x++){if(x<0&&y<MHB)continue;const i=I(x,y),u=rn(),v=rn();if(ground[i]!==0||lotAt[i]||objs[i])continue;
+    if(x>=CITY_ZONE[0]&&x<=CITY_ZONE[2]&&y>=CITY_ZONE[1]&&y<=CITY_ZONE[3])continue;if(inPedr(x,y))continue;
+    const vz=vilaZ(x,y);if(vz)continue;
+    if(perto(x,y,1)&&u<.85)continue;
+    const edge=x>MW-4||y>MH-4||y<3||x<XMIN+3,mata=vnoise(x,y,s1+31,10)>.6;
+    if(inQ(x,y)){if(u<.03)objs[i]='tree';else if(u<.37)objs[i]='rock';continue}
+    const pt=edge?.34:mata?.22:.07,pr=.03;
+    if(u<pt){if(!edge&&(tr(objs[i-1])||tr(objs[i-AW])||tr(objs[i-AW-1])||tr(objs[i-AW+1])))continue;objs[i]=v<.18?'pine':'tree'}
+    else if(u<pt+pr)objs[i]='rock';else if(u<pt+pr+.02)objs[i]='bush';else if(u<pt+pr+.08)objs[i]='capim'}
+  // 7) vilas cercadas: centrinho limpo e árvores nos cantos
+  for(const v of VILAS){const[zx0,zy0,zx1,zy1]=v.zone;let x0=MW,y0=MH,x1=0,y1=0;
+    for(const id in BLD)if(BLD[id].vila===v.id){const[lx,ly,w,hh]=BLD[id].lot;x0=Math.min(x0,lx);y0=Math.min(y0,ly);x1=Math.max(x1,lx+w-1);y1=Math.max(y1,ly+hh)}
+    for(let y=zy0+1;y<zy1;y++)for(let x=zx0+1;x<zx1;x++){const i=I(x,y);if(ground[i]!==0||lotAt[i])continue;const n=vnoise(x,y,s1+77,6),u=rn();
+      if(x>=x0-3&&x<=x1+3&&y>=y0-3&&y<=y1+3)continue;if(perto(x,y,1))continue;if(u<(n>.6?.12:.04))objs[i]=u<.01?'pine':'tree';else if(u<.16)objs[i]='capim'}
+    for(const[dx,dy]of[[-3,-1],[x1-x0+3,-1],[-3,y1-y0+2],[x1-x0+3,y1-y0+2]]){const i=I(x0+dx,y0+dy);if(ground[i]===0&&!lotAt[i])objs[i]=(dx+dy)%2?'pine':'tree'}}
+  // 8) árvores da praça e das ruas, e espaço livre em volta de placas, ponto de ônibus e personagens
+  for(const[x,y]of[[21,46],[47,46],[21,55],[47,55],[25,64],[31,64],[36,64],[46,64],[16,63],[56,63],[29,40],[39,40]]){const i=I(x,y);if(!lotAt[i])objs[i]='tree'}
+  for(const s of[...SIGNS,...VSIGNS])for(let dy=-1;dy<=0;dy++)for(let dx=-2;dx<=2;dx++){if(!ok(Math.floor(s.x)+dx,Math.floor(s.y)+dy))continue;const i=I(Math.floor(s.x)+dx,Math.floor(s.y)+dy);if(!lotAt[i]&&ground[i]===0)objs[i]=null}
+  for(const P of[THIAGO_POS,GABRIEL_POS,SELLER_POS,LUAN_POS,JUNIOR_POS,XANDE_POS,MAIK_POS,BARB_POS,BANCO_POS,MESA_POS,DOZE_POS])for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const x=Math.floor(P[0])+dx,y=Math.floor(P[1])+dy;if(ok(x,y)&&!lotAt[I(x,y)])objs[I(x,y)]=null}
+  for(let y=CALCADA_R[1];y<=CALCADA_R[3];y++)for(let x=CALCADA_R[0];x<=CALCADA_R[2];x++){const i=I(x,y);if(objs[i]==='rock'||objs[i]==='pine')objs[i]=null}
+}
+
 // ---- mapa maior (leste e sul) e a Pedreirinha, no canto de baixo à direita ----
-const PEDR=[116,104,145,126],PEDR_ROAD=110;      // Pedreirinha (área cheia de pedra) e a estrada que desce até ela
+const PEDR=[112,72,140,94],PEDR_ROAD=125;      // Pedreirinha (área cheia de pedra) e a estrada que desce até ela
 const inPedr=(x,y)=>x>=PEDR[0]&&x<=PEDR[2]&&y>=PEDR[1]&&y<=PEDR[3];
 const PONDS_W=[[-86,52,4.5,3],[-58,10,6,3.5],[-122,70,5,4]];      // açudes do oeste (fazenda)
 function genExpand(s1){
@@ -1223,7 +1219,7 @@ function drawVeg(i,x,y,moita){const v=VEG.mapa[i]-1,q=VEG.q[v],im=VEG.img;if(!im
 function zonaClareira(){const[bx,by,bw,bh]=ZONA_LOT,I=(x,y)=>y*AW-XMIN+x;      // Zona Imbuial: lote, clareira e a trilha até a estrada da Pedreirinha
   for(let y=by-3;y<=by+bh+3;y++)for(let x=bx-4;x<=bx+bw+3;x++){if(x>=MW||y>=MH)continue;objs[I(x,y)]=null;if(ground[I(x,y)]===6)ground[I(x,y)]=0}
   const rua=(x,y)=>{const i=I(x,y),g=ground[i];if(g!==2&&g!==3&&!lotAt[i]){ground[i]=1;objs[i]=null}for(const d of[-1,1])if(objs[I(x,y+d)]==='rock'||objs[I(x,y+d)]==='tree'||objs[I(x,y+d)]==='pine')objs[I(x,y+d)]=null};
-  for(let x=PEDR[0]+5;x<=bx+3;x++){rua(x,PEDR[1]+2);rua(x,PEDR[1]+3)}for(let y=by+bh;y<PEDR[1]+2;y++){rua(bx+1,y);rua(bx+2,y)}}      // a estrada da Pedreirinha continua até a porta
+  void rua}      // sem trilha: o Imbu Model é segredo, só acha quem sabe o caminho
 function genSakura(s1){const rn=mulberry32((s1^0x5a4b3c2d)>>>0),I=(x,y)=>y*AW-XMIN+x,[cx,cy,rx,ry]=SAKURA_LAGO;SAKURA.clear();
   const livre=(x,y)=>{const i=I(x,y);return!lotAt[i]&&ground[i]!==1&&ground[i]!==3&&ground[i]!==4&&ground[i]!==5};
   for(let y=Math.floor(cy-ry-9);y<=cy+ry+9;y++)for(let x=Math.floor(cx-rx-9);x<=cx+rx+9;x++){if(x<=XMIN+2||y<2||x>=MW-2||y>=MH-2)continue;const i=I(x,y);if(!livre(x,y))continue;
@@ -1271,7 +1267,7 @@ const APPLE_HIT=.1;      // chance de cair uma maçã a cada golpe numa macieira
 function hash2(x,y,s){let h=Math.imul(x,374761393)^Math.imul(y,668265263)^Math.imul(s,982451653);h=Math.imul(h^(h>>>13),1274126177);return((h^(h>>>16))>>>0)/4294967296}
 function vnoise(x,y,s,g){const fx=x/g,fy=y/g,x0=Math.floor(fx),y0=Math.floor(fy),sm=t=>t*t*(3-2*t),u=sm(fx-x0),v=sm(fy-y0),
   a=hash2(x0,y0,s),b=hash2(x0+1,y0,s),c=hash2(x0,y0+1,s),d=hash2(x0+1,y0+1,s);return a+(b-a)*u+(c-a)*v+(a-b-c+d)*u*v}
-const CITY_ZONE=[9,11,48,31];      // centro de Videira e arredores: árvores bem espaçadas, sem pedras
+const CITY_ZONE=[10,32,80,80];      // centro de Videira e arredores: árvores bem espaçadas, sem pedras
 function refineNature(seed){
   const rn=mulberry32((seed^0x5bd1e995)>>>0),isTree=o=>o==='tree'||o==='pine',inQuarry=(x,y)=>x>=QUARRY[0]&&x<=QUARRY[2]&&y>=QUARRY[1]&&y<=QUARRY[3];
   const inCity=(x,y)=>x>=CITY_ZONE[0]&&x<=CITY_ZONE[2]&&y>=CITY_ZONE[1]&&y<=CITY_ZONE[3];
@@ -1330,6 +1326,7 @@ function save(){if(curSlot==null||MP.role==='guest')return;if(MP.role==='host')m
   localStorage.setItem(SLOT_KEYS[curSlot],JSON.stringify(carried.length?Object.assign({},state,{animals:state.animals.concat(carried)}):state))}catch(e){}}
 function migrateMap(s){      // saves do mapa antigo (72 de largura): converte posições e transforma a lavoura por níveis em terra arada
   const om=s.mw||OLD_MW,ox=s.mx||0;
+  if(om!==AW&&s.p&&s.p.x>-6){s.p.x=HOME[0];s.p.y=HOME[1];s.p.dir='down';s.riding=false}      // o mapa cresceu e Videira mudou: quem estava na cidade acorda em casa
   if(om!==AW||ox!==XMIN){const re=o=>{const n={};for(const k in o){const i=+k,x=i%om+ox,y=(i/om)|0;n[y*AW-XMIN+x]=o[k]}return n};
     s.crops=re(s.crops||{});s.depleted=re(s.depleted||{});if(s.soil)s.soil=re(s.soil)}
   if(!s.soil){s.soil={};const l=s.b.lavoura||0;for(let y=0;y<OLD_MH;y++)for(let x=0;x<OLD_MW;x++){const v=oldSoilLvl(x,y);if(v&&v<=l)s.soil[y*AW-XMIN+x]=1}
@@ -2089,6 +2086,9 @@ function buildSprites(){
   SPR.path=[0,1,2,3].map(v=>mk(16,16,(r,e)=>{r(0,0,16,16,'#cfa871');for(let i=0;i<22;i++)r(rn()*16|0,rn()*16|0,1+(rn()<.3),1,['#c09662','#dcb987','#b88d5a','#e3c696'][rn()*4|0]);
     if(rn()<.6){const x=rn()*12|0,y=rn()*12|0;e(x+2,y+2,2+rn()*2,1.2+rn(),'#bf9461')}if(v%2)r(rn()*10|0,(rn()*14|0)+1,4+(rn()*4|0),1,'#b98f5c');
     for(let i=0;i<v;i++){const x=3+rn()*10|0,y=3+rn()*10|0,w=1.5+rn()*1.5;e(x,y+.6,w,w-.6,'#9c8968');e(x,y,w,w-.8,'#c4b292');r(x-1,y-1,1,1,'#e6dac0')}}));      // terra batida, irregular
+  SPR.cobble=[0,1,2,3].map(v=>mk(16,16,(r,e)=>{r(0,0,16,16,'#8a7f74');const R=mulberry32(91+v*17);
+    for(let row=0;row<4;row++){let x=-((row*3+v)%4);while(x<16){const w=3+(R()*2|0),y=row*4,c=['#b8ada0','#a99e91','#c2b8ab','#9f9488','#b1a698'][R()*5|0];
+      r(Math.max(0,x)+.5,y+.5,Math.min(w,16-x)-1,3,c);r(Math.max(0,x)+.5,y+.5,Math.min(w,16-x)-1,1,'#d2c9bd');r(Math.max(0,x)+.5,y+3,Math.min(w,16-x)-1,.5,'#7d7368');x+=w}}}));      // calçamento de pedra de Videira
   SPR.gravel=[0,1,2,3,4,5,6,7].map(v=>mk(16,16,(r,e)=>{r(0,0,16,16,'#a39b8c');for(let i=0;i<26;i++){const x=rn()*16|0,y=rn()*16|0,c=['#8d8576','#b7af9f','#968e7f','#c8c0b0','#7d766a'][rn()*5|0];r(x,y,1+(rn()<.3),1,c)}
     for(let i=0;i<2+(v&1);i++){const x=1+rn()*12|0,y=1+rn()*12|0,w=1.4+rn()*1.4;e(x,y+.5,w,w*.7,'#6f685d');e(x,y,w,w*.65,['#b3b9c2','#bfb5a5','#9a9184'][rn()*3|0]);r(x-1,y-1,1,1,'#e2ddd2')}
     if(v===3){r(4,9,7,1,'#7d766a');r(5,10,5,1,'#8d8576')}if(v===6){r(2,3,2,2,'#5f9a48');r(12,12,2,1,'#5f9a48')}}));      // cascalho da Pedreirinha
@@ -2954,15 +2954,16 @@ function doSell(){let tot=0;for(const k in sellSel){const q=Math.min(sellSel[k],
 
 /* ---------- Placas de estrada (verdes, estilo brasileiro) ---------- */
 const SIGNS=[      // poucas placas, fora da estrada para não esconder o personagem
-  {x:21.5,y:27.6,l:['Bem-vindo a Videira','⬇ Unoesc Videira'],city:1},
-  {x:33.4,y:27.6,l:['⬅ Videira (Centro)','➡ Ponte, Posto e Tratores']},
+  {x:17.6,y:48.6,l:['Bem-vindo a Videira','➡ Praça central'],city:1},
+  {x:50.6,y:53.6,l:['⬅ Praça de Videira','➡ Ponte, Posto e Tratores']},
+  {x:36.6,y:71.6,l:['⬇ Unoesc Videira']},
   {x:5.5,y:31.6,l:['⬅ Fazenda Imbuial','estrada de chão · sem asfalto']},
   {x:-103.8,y:31.6,l:['Fazenda Imbuial'],farm:1},
   {x:-96.5,y:22.4,l:['Videira ➡ é longe, vai de ônibus!']},
   {x:-50.5,y:DIRT_Y(-50)+3.6,l:['⚠ Buraco na pista','Na chuva vira lama']},
-  {x:113.6,y:23.4,l:['⬇ Pedreirinha ⛏','muita pedra pra quebrar'],pedr:1},
+  {x:128.6,y:53.6,l:['⬇ Pedreirinha ⛏','muita pedra pra quebrar'],pedr:1},
   {x:-45.4,y:DIRT_Y(-48)+3.4,l:['⬇ Lago das Sakuras 🌸','peixes raros'],sak:1},
-  {x:118.6,y:105.6,l:['⛏ Pedreirinha'],city:1,pedr:1},
+  {x:121.6,y:74.6,l:['⛏ Pedreirinha'],city:1,pedr:1},
 ];
 function drawSign(s){const sx=Math.round(s.x*T-camx),gy=Math.round(s.y*T-camy),big=s.city||s.farm;
   ctx.font='bold 13px Poppins,sans-serif';const w=Math.round(Math.max(...s.l.map((t,i)=>{ctx.font=`bold ${i===0&&big?15:13}px Poppins,sans-serif`;return ctx.measureText(t).width}))+24),hh=s.l.length*18+12,top=gy-56-hh;
@@ -3090,14 +3091,14 @@ const MAP_PX=10;
 function openMap(){
   const lg=[['#e8c860','Você'],...(MP.role?[['#4fa3e0','Amigos na sala']]:[]),['#d4302a','Ladrão'],['#ffffff','Animal solto'],['#8a5a36','Lavoura'],['#f0dcae','Estrada'],['#c39159','Estrada de chão'],['#3d8fd8','Água']],ico='🏠 Casa · 🛒 Loja · ⛲ Praça · 💪 Gym · 🏍️ Motos · ⛽ Posto · 🚜 Tratores · 👕 Pitol · 🎰 Triguinho · 🍺 Xande · ⛪ Igreja · 🎓 Unoesc · 🚌 Ônibus';
   showPanel('mapa',`${X}<h2>🗺️ Mapa de Imbuial Valley</h2><p class="msub" style="margin:0"><small>${vilaTitle()} · Dia ${fmt(state.day)} · aperte <kbd>M</kbd> ou <kbd>Esc</kbd> para fechar · ➕➖ ou roda do mouse para dar zoom, arraste para andar</small></p>
-    <div class="mapwrap" id="mapwrap"><div class="mapzoom"><button data-a="mapzoom" data-v="1">➕</button><button data-a="mapzoom" data-v="-1">➖</button></div><canvas id="mapcv" width="${AW*MAP_PX}" height="${MH*MAP_PX}"></canvas></div>
+    <div class="mapbox"><div class="mapzoom"><button data-a="mapzoom" data-v="1">➕</button><button data-a="mapzoom" data-v="-1">➖</button><button data-a="mapzoom" data-v="0" title="Centralizar em você">🎯</button></div><div class="mapwrap" id="mapwrap"><canvas id="mapcv" width="${AW*MAP_PX}" height="${MH*MAP_PX}"></canvas></div></div>
     <div class="legend">${lg.map(([c,n])=>`<span><i style="background:${c}"></i>${n}</span>`).join('')}</div><div class="legend" style="margin-top:2px">${ico}</div>`);
   mapFit(true);mapArrastar();setTimeout(()=>{if(panelKind==='mapa')mapFit(true)},260)}
 /* o mapa se ajusta à tela do aparelho: ocupa todo o espaço livre, e o zoom (➕➖, roda do mouse ou pinça) amplia em volta de você */
 let mapZoom=1;
 function mapFit(centrar){const wrap=$('mapwrap'),cv=$('mapcv');if(!wrap||!cv||!wrap.getBoundingClientRect)return;
   const pn=$('panel'),leg=pn?[...pn.querySelectorAll('.legend')].reduce((h,e)=>h+e.offsetHeight+4,0):40,maxP=pn&&getComputedStyle?parseFloat(getComputedStyle(pn).maxHeight)||innerHeight*.9:innerHeight*.9;
-  const livreH=Math.max(120,Math.min(maxP,innerHeight*.985)-wrap.offsetTop-leg-22),livreW=Math.max(160,wrap.clientWidth||innerWidth*.95),ratio=cv.width/cv.height;
+  const topo=pn&&pn.getBoundingClientRect?wrap.getBoundingClientRect().top-pn.getBoundingClientRect().top:wrap.offsetTop,livreH=Math.max(120,Math.min(maxP,innerHeight*.985)-topo-leg-22),livreW=Math.max(160,wrap.clientWidth||innerWidth*.95),ratio=cv.width/cv.height;
   const base=Math.max(livreW,Math.min(livreH*ratio,livreW*5)),w=Math.round(base*mapZoom);
   wrap.style.maxHeight=Math.round(Math.min(livreH,w/ratio)+6)+'px';wrap.style.height=Math.round(Math.min(livreH,w/ratio)+6)+'px';
   const fx=wrap.scrollWidth>wrap.clientWidth?(wrap.scrollLeft+wrap.clientWidth/2)/wrap.scrollWidth:.5,fy=wrap.scrollHeight>wrap.clientHeight?(wrap.scrollTop+wrap.clientHeight/2)/wrap.scrollHeight:.5;
@@ -3107,12 +3108,13 @@ function mapZoomPor(d,centrar){const z=Math.max(1,Math.min(6,+(mapZoom*(d>0?1.5:
 function mapArrastar(){const wrap=$('mapwrap');if(!wrap||!wrap.addEventListener)return;let ar=null,pin=null;const toques=new Map();
   wrap.addEventListener('wheel',ev=>{ev.preventDefault();mapZoomPor(ev.deltaY<0?1:-1)},{passive:false});
   wrap.addEventListener('pointerdown',ev=>{if(ev.target.closest&&ev.target.closest('button'))return;toques.set(ev.pointerId,[ev.clientX,ev.clientY]);
-    if(toques.size===2){const[a,b]=[...toques.values()];pin=Math.hypot(a[0]-b[0],a[1]-b[1]);ar=null}else if(ev.pointerType==='mouse'){ar=[ev.clientX,ev.clientY,wrap.scrollLeft,wrap.scrollTop];wrap.classList.add('arrasta')}});
+    if(toques.size===2){const[a,b]=[...toques.values()];pin=Math.hypot(a[0]-b[0],a[1]-b[1]);ar=null}else if(toques.size===1){ar=[ev.clientX,ev.clientY,wrap.scrollLeft,wrap.scrollTop];wrap.classList.add('arrasta');try{wrap.setPointerCapture(ev.pointerId)}catch(e){}}ev.preventDefault()});
   wrap.addEventListener('pointermove',ev=>{if(toques.has(ev.pointerId))toques.set(ev.pointerId,[ev.clientX,ev.clientY]);
     if(pin&&toques.size===2){const[a,b]=[...toques.values()],d=Math.hypot(a[0]-b[0],a[1]-b[1]);if(d>pin*1.35){pin=d;mapZoomPor(1)}else if(d<pin/1.35){pin=d;mapZoomPor(-1)}return}
-    if(ar){wrap.scrollLeft=ar[2]-(ev.clientX-ar[0]);wrap.scrollTop=ar[3]-(ev.clientY-ar[1])}});
+    if(ar){wrap.scrollLeft=ar[2]-(ev.clientX-ar[0]);wrap.scrollTop=ar[3]-(ev.clientY-ar[1]);ev.preventDefault()}});
+  wrap.addEventListener('touchmove',ev=>ev.preventDefault(),{passive:false});
   const fim=ev=>{toques.delete(ev.pointerId);if(toques.size<2)pin=null;ar=null;wrap.classList.remove('arrasta')};
-  for(const e of['pointerup','pointercancel','pointerleave'])wrap.addEventListener(e,fim)}
+  for(const e of['pointerup','pointercancel'])wrap.addEventListener(e,fim)}
 addEventListener('resize',()=>{if(panelKind==='mapa')setTimeout(()=>mapFit(false),60)});
 function drawMap(cvm){if(!cvm||!cvm.getContext)return;const g=cvm.getContext('2d'),P=MAP_PX,sea=season();if(g.translate)g.translate(-XMIN*P,0);
   const k=Math.max(1.4,cvm.width/((cvm.clientWidth||0)>50?cvm.clientWidth:cvm.width/2.6)),I=(x,y)=>y*AW-XMIN+x;      // k: quanto o canvas encolhe na tela (letra e ícone ficam legíveis)
@@ -3165,8 +3167,8 @@ function drawMap(cvm){if(!cvm||!cvm.getContext)return;const g=cvm.getContext('2d
     g.fillStyle=fg;g.textAlign='center';g.textBaseline='middle';g.fillText(t,x,yy+hh/2+1)};
   const area=(t,x,y,col,it)=>{g.font=`${it?'italic ':''}800 ${fr}px Poppins,sans-serif`;g.textAlign='center';g.textBaseline='middle';const w=(g.measureText?g.measureText(t).width:t.length*fr*.55);placed.push([x-w/2,y-fr/2,w,fr]);
     g.lineWidth=fr*.32;g.strokeStyle='rgba(255,255,255,.85)';g.strokeText(t,x,y);g.fillStyle=col;g.fillText(t,x,y)};
-  for(const[t,x,y,c]of[['Rio',52.5,9,'#5a3f22'],['Lago',8,35.3,'#5a3f22'],['Lago do leste',90,30.3,'#5a3f22'],['Açude',34,67.3,'#5a3f22'],['Floresta',26,4.5,'#1f4d2b'],['Floresta',-120,10,'#1f4d2b'],['Pasto do leste',66,12,'#3d5a1e'],['Pedreira',97,63,'#4a4f57'],['Pedreirinha',131,115,'#4a4038'],['Lago das Sakuras',SAKURA_LAGO[0],SAKURA_LAGO[1]+1.3,'#b0406a'],['Mata do sul',18,70,'#1f4d2b'],['Campos do sul',40,52,'#3d5a1e'],['Estrada de chão',-50,DIRT_Y(-50)-2.4,'#5a3a1e']])area(t,x*P,y*P,c,1);
-  area('VIDEIRA',27*P,15.2*P,'#7a2a1a');area('Fazenda Imbuial',-107*P,30.4*P,'#5a3a1e');
+  for(const[t,x,y,c]of[['Rio',riverX(12)+.5,12,'#5a3f22'],['Rio',riverX(130)+.5,130,'#5a3f22'],['Lago',PONDS[0][0],PONDS[0][1]+.3,'#5a3f22'],['Lago do leste',PONDS[1][0],PONDS[1][1]+.3,'#5a3f22'],['Açude',PONDS[2][0],PONDS[2][1]+.3,'#5a3f22'],['Floresta',40,8,'#1f4d2b'],['Floresta',-120,10,'#1f4d2b'],['Floresta',200,100,'#1f4d2b'],['Pasto do leste',172,45,'#3d5a1e'],['Pedreira',(QUARRY[0]+QUARRY[2])/2,(QUARRY[1]+QUARRY[3])/2,'#4a4f57'],['Pedreirinha',(PEDR[0]+PEDR[2])/2,(PEDR[1]+PEDR[3])/2,'#4a4038'],['Lago das Sakuras',SAKURA_LAGO[0],SAKURA_LAGO[1]+1.3,'#b0406a'],['Mata do sul',70,130,'#1f4d2b'],['Campos do sul',30,120,'#3d5a1e'],['Campos do leste',175,120,'#3d5a1e'],['Estrada de chão',-50,DIRT_Y(-50)-2.4,'#5a3a1e']])area(t,x*P,y*P,c,1);
+  area('VIDEIRA',VC[0]*P,31.6*P,'#7a2a1a');area('Fazenda Imbuial',-107*P,30.4*P,'#5a3a1e');
   for(const v of VILAS){const[px,py,pw,ph]=v.praca;area(`${vilaAberta(v)?'🏘️':'🔒'} ${v.nome}`,(px+pw/2)*P,(py+ph+2.2)*P,vilaAberta(v)?'#5a3a1e':'#7a4a2a');if(!vilaAberta(v))pill(`nível ${v.nivel}`,(px+pw/2)*P,(py+ph+4.6)*P,'#fff3c4','#7a4a2a')}
   const lab=(L,t,bg,fg)=>pill(t,(L[0]+L[2]/2)*P,(L[1]-.25)*P,bg||'#fffaf0',fg||'#3b2416');
   const ICO={casa:'🏠 Casa',galinheiro:'🐔 Galinheiro',curral:'🐄 Curral',mercado:'🛒',praca:'⛲',ponte:'🌉'};
@@ -3608,7 +3610,7 @@ function syncPens(){const ins={},used={};for(const t of['galinheiro','curral']){
     const old=velhos.find(p=>p.ref===a&&mesmo(p))||(velhos[i]&&mesmo(velhos[i])?velhos[i]:null)||velhos.find(mesmo);
     if(old){pego.add(old);old.ref=a;return old}
     return{ref:a,sp:a.sp,cor:a.cor|0,pen,x:b[0]+Math.random()*(b[1]-b[0]),y:b[2]+Math.random()*(b[3]-b[2]),vx:0,vy:0,timer:Math.random()*2,face:1}})}
-function syncNPCs(){const n=Math.min(16,state.b.praca*2);while(npcs.length<n)npcs.push({x:24.5,y:23.5,vx:0,vy:0,timer:0,dir:'down',walk:0,look:npcs.length%4});npcs.length=Math.min(npcs.length,n)}
+function syncNPCs(){const n=Math.min(16,state.b.praca*2);while(npcs.length<n)npcs.push({x:28.5,y:52.5,vx:0,vy:0,timer:0,dir:'down',walk:0,look:npcs.length%4});npcs.length=Math.min(npcs.length,n)}
 function wander(e,dt,speed,zone){
   e.timer-=dt;
   if(e.timer<=0){e.timer=1+Math.random()*3;
@@ -3672,7 +3674,7 @@ function drawClimaWorld(W,H){const hr=state.min/60,c=state.clima;
 /* ================= MULTIPLAYER: cooperativo no mundo do dono, até 4 jogadores, pela internet com código de sala =================
    Ligação: WebRTC (canal de dados direto entre os aparelhos). Para os aparelhos se acharem usa o servidor público grátis do PeerJS
    só como "telefonista" (sinalização). Quem hospeda manda no mundo; os convidados mandam o que fazem e o dono aplica e espalha. */
-const JOGO_VERSAO='2026-11-23zo';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
+const JOGO_VERSAO='2026-11-24a';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
 const MP_MAX=4,MP_PREFIX=SLOT_KEYS[0].replace(/_slot_1$/,'').replace(/_/g,''),MP_SERVER='wss://0.peerjs.com:443/peerjs?key=peerjs';
 const MP_ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']},{urls:'stun:global.stun.twilio.com:3478'}]};
 const MP_LEVE=['p','energy','hunger','vida','forca','sujeira','sel','testoUntil','fomeT','coins','xpUntil','monster','napHoje','doze'];      // muda toda hora: vai junto em cada batida
@@ -4263,7 +4265,7 @@ function busViagem(id,conv){const b=BUS.find(q=>q.id===id),d=b&&BUS.find(q=>q.id
   [392,330].forEach((f,i)=>setTimeout(()=>beep(f,.22,'square',.05),i*260));      // buzina
   busUI(true)}
 function busPath(id){const pts=[];      // do ponto de saída até o outro ponto, pela estrada de chão e pela avenida
-  for(let x=Math.round(BUS[0].x);x<=9;x++)pts.push([x,DIRT_Y(x)+1]);for(let x=10;x<=Math.round(BUS[1].x);x++)pts.push([x,25]);
+  for(let x=Math.round(BUS[0].x);x<=9;x++)pts.push([x,DIRT_Y(x)+1]);for(let x=10;x<=12;x++)pts.push([x,25]);for(let y=26;y<=51;y++)pts.push([12.9,y]);for(let x=14;x<=Math.round(BUS[1].x);x++)pts.push([x,51]);
   return id==='fazenda'?pts:pts.reverse()}
 let busRide=null;
 // enquanto viaja de ônibus o cenário continua vivo (horizonte, bichos, povo da cidade)
@@ -5717,7 +5719,7 @@ const ACT={
   rtirar(v){const[t,m]=v.split(':');state.roupas.eq[t]=null;applyOutfit();save();openClothes.keep=1;openClothes(m)},
   guarda(){openClothes('guarda')},
   estilo(v){state.roupas.estilo=state.roupas.estilo==='sobrev'?'classico':'sobrev';applyOutfit();save();sfx.get();openClothes.keep=1;openClothes(v||clothMode)},
-  mapzoom(v){mapZoomPor(+v,true)},
+  mapzoom(v){if(+v===0)mapFit(true);else mapZoomPor(+v,false)},
   skinlib(){if(skinUnlocked()||state.coins<SKIN_PRECO)return;state.coins-=SKIN_PRECO;state.roupas.skinLib=true;sfx.build();save();openClothes(clothMode,'skin','Desbloqueado! Agora é só escolher a imagem no seu PC.')},
   skinuse(v){if(!skinUnlocked())return;state.roupas.skin=v==='1';applyOutfit();save();openClothes.keep=1;openClothes(clothMode)},
   skinbig(v){if(!SKIN.cfg)return;SKIN.cfg.big=v==='1';saveSkin();buildSkin()},
@@ -6189,14 +6191,14 @@ function drawTreeFall(f){const img=f.img,sc=img.sc||S,w=img.width*sc,h=img.heigh
   if(f.t>.7&&f.t<1.6){const q=(f.t-.7)/.9;for(let i=0;i<9;i++){const a=i/9*Math.PI,r=10+q*40;ctx.fillStyle=`rgba(200,180,140,${.55*(1-q)})`;ctx.beginPath();ctx.arc(bx+f.dir*h*.55+Math.cos(a)*r*(i%2?1:-1),by-4-Math.sin(a)*r*.35,7+q*10,0,7);ctx.fill()}
     for(let i=0;i<7;i++){const a=(i*1.7)%6.28;ctx.fillStyle=`rgba(79,174,90,${1-q})`;ctx.fillRect(bx+f.dir*h*.6+Math.cos(a)*q*50,by-10-Math.sin(a)*q*30+q*q*30,4,3)}}}
 // ---- moradores com vida: passeiam, vão pescar no rio, param para conversar e cumprimentam você ----
-const BAR_PORTA=[38.35,23.35],BAR_BEB=['raiska','vinho_pet','cerveja','cerveja'];
+const BAR_PORTA=[22.35,60.35],BAR_BEB=['raiska','vinho_pet','cerveja','cerveja'];
 const NPC_BAR_SAI=['Saúde! 🍻','Uma gelada pra alegrar!','O Xande caprichou!','Essa é por minha conta!','Hoje tem!'];
 const NPC_BAR_BEBE=['Ahh, que delícia!','Essa tá gelada!','Mais uma e vou pra casa...','Saúde, vizinho!','Hic!','Bah, que trago bom!'];
 const NPC_PAPO=['E aí, tudo bem?','Viu o preço do milho?','Choveu bem ontem!','Bah, que calor!','Vai na missa domingo?','O Gabriel tá forte, hein!','Minha galinha botou dois ovos!','Dizem que tem lobisomem...','Vamo num churrasco?','A uva tá doce esse ano!','Viu o disco voador?!','O Mateus achou caro de novo.'];
 const NPC_OI=['Opa! 👋','Bom dia, vizinho!','E aí! 👋','Bah, tchê!','Salve! 👋','Tudo certo?'];
 const NPC_PESCA=['Peguei um lambari! 🐟','Olha o tamanho desse! 🐟','Hoje tá dando peixe!','Escapou... 😩'];
 let FISH_SPOTS=null;
-function fishSpots(){if(FISH_SPOTS)return FISH_SPOTS;FISH_SPOTS=[];for(let y=17;y<=34;y++)for(let x=36;x<=52;x++){const i=y*AW-XMIN+x;if(ground[i]!==0||lotAt[i]||objs[i])continue;
+function fishSpots(){if(FISH_SPOTS)return FISH_SPOTS;FISH_SPOTS=[];for(let y=18;y<=40;y++)for(let x=70;x<=97;x++){const i=y*AW-XMIN+x;if(ground[i]!==0||lotAt[i]||objs[i])continue;
   for(const[a,b]of D4){const j=(y+b)*AW-XMIN+x+a;if(ground[j]===2){FISH_SPOTS.push([x+.5,y+.5,a,b]);break}}}return FISH_SPOTS}
 function npcWalkTo(n,tx,ty,dt,sp){const dx=tx-n.x,dy=ty-n.y,d=Math.hypot(dx,dy);if(d<.15){n.vx=n.vy=0;return true}
   n.vx=dx/d*sp;n.vy=dy/d*sp;const x0=n.x,y0=n.y;move(n,n.vx*dt,n.vy*dt,.3);if(Math.hypot(n.x-x0,n.y-y0)<sp*dt*.3)n.stuck=(n.stuck||0)+dt;else n.stuck=0;if(n.vx)n.face=n.vx>0?1:-1;return false}
@@ -6219,14 +6221,14 @@ function updateNPC(n,dt,p){if(n.sayT>0){n.sayT-=dt;if(n.sayT<=0)n.say=null}if(n.
       n.tx=BAR_PORTA[0]+(Math.random()-.5)*4;n.ty=BAR_PORTA[1]+1.4+Math.random()*1.6;n.stuck=0;n.dir='down'}return}
     if(n.ph==='sai'){if(npcWalkTo(n,n.tx,n.ty,dt,1)||n.stuck>1.5){n.ph='bebe';n.actT=22+Math.random()*16;n.gole=2+Math.random()*2}npcDir(n);return}
     n.actT-=dt;n.gole-=dt;if(n.gole<=0){n.gole=4+Math.random()*3;n.sip=1.1;if(Math.random()<.45){n.say=NPC_BAR_BEBE[Math.random()*NPC_BAR_BEBE.length|0];n.sayT=2.2}}
-    if(n.sip>0){n.sip-=dt;n.vx=n.vy=0;n.walk=0}else{wander(n,dt,.7,[30,20,44,29]);if(n.vx||n.vy){n.walk+=dt*5;n.dir=Math.abs(n.vx)>Math.abs(n.vy)?(n.vx<0?'left':'right'):(n.vy<0?'up':'down')}else n.walk=0}
+    if(n.sip>0){n.sip-=dt;n.vx=n.vy=0;n.walk=0}else{wander(n,dt,.7,[18,58,32,63]);if(n.vx||n.vy){n.walk+=dt*5;n.dir=Math.abs(n.vx)>Math.abs(n.vy)?(n.vx<0?'left':'right'):(n.vy<0?'up':'down')}else n.walk=0}
     if(n.actT<=0){n.act='anda';n.beb=null;n.sip=0}return}
   if(n.act==='papo'){const o=n.par;if(!o||o.act!=='papo'){n.act='anda';return}
     if(n.ph==='vai'){if(npcWalkTo(n,n.tx,n.ty,dt,1.1)||n.stuck>1.5){n.ph='fala';n.vx=n.vy=0}npcDir(n)}
     else{n.walk=0;n.dir=o.x<n.x?'left':'right';n.actT-=dt;if(o.ph==='fala'&&n.fala){n.ft=(n.ft||0)-dt;if(n.ft<=0){n.ft=2.2;const who=(n.turn=(n.turn||0)+1)%2?n:o;who.say=NPC_PAPO[Math.random()*NPC_PAPO.length|0];who.sayT=2}}
       if(n.actT<=0){n.act='anda';n.fala=0;o.act='anda';o.fala=0}}
     return}
-  n.act='anda';wander(n,dt,1.1,[15,17,35,29]);if(n.vx||n.vy){n.walk+=dt*6;n.dir=Math.abs(n.vx)>Math.abs(n.vy)?(n.vx<0?'left':'right'):(n.vy<0?'up':'down')}else n.walk=0}
+  n.act='anda';wander(n,dt,1.1,[20,45,48,56]);if(n.vx||n.vy){n.walk+=dt*6;n.dir=Math.abs(n.vx)>Math.abs(n.vy)?(n.vx<0?'left':'right'):(n.vy<0?'up':'down')}else n.walk=0}
 function drawNPCBebida(n){const sx=Math.round(n.x*T-camx),sy=Math.round((n.y+.28)*T-camy),d=n.dir,sip=n.sip>0?Math.sin(Math.min(1,(1.1-n.sip)/.3)*Math.PI/2)*(n.sip<.3?n.sip/.3:1):0;
   const hx=sx+(d==='left'?-13:d==='right'?13:d==='up'?-12:12),hy=sy-24-sip*20,R=(x,y,w,h,c)=>{ctx.fillStyle=c;ctx.fillRect(Math.round(hx+x),Math.round(hy+y),w,h)};
   ctx.save();if(sip>.5){ctx.translate(hx,hy);ctx.rotate((d==='left'?1:-1)*.6);ctx.translate(-hx,-hy)}
@@ -6243,7 +6245,7 @@ function drawNPCExtras(n){const sx=Math.round(n.x*T-camx),sy=Math.round((n.y+.28
     if(n.splash>0){ctx.strokeStyle=`rgba(255,255,255,${Math.min(1,n.splash*1.6)})`;ctx.beginPath();ctx.ellipse(bx,byy+3,8+(.5-n.splash)*20,3,0,0,7);ctx.stroke()}}
   if(n.say)bubbles.push([n.say,sx,sy-62-(n.hop||0)])}
 /* ---------- Bar do Xande: cardápio, bebidas que deixam a tela balançando e caça-níquel ---------- */
-const BAR_LOT=[37,20,4,3],XANDE_POS=[39.1,23.3];
+const BAR_LOT=[21,57,4,3],XANDE_POS=[23.1,60.3];
 const BAR_MENU=[['raiska',15,'Destilado gelado. Deixa a tela balançando por 20 s.'],['vinho_pet',12,'Vinho colonial na garrafa pet verde. Também balança tudo por 20 s.'],
   ['pao_alho',10,'Pão de alho quentinho na brasa.'],['linguica',18,'Linguiça assada, mata bem a fome.'],['alface_temp',8,'Alface temperado com vinagre e sal.']];
 const barPreco=k=>{const e=BAR_MENU.find(x=>x[0]===k);return e?Math.max(1,Math.round(e[1]*bolsaMult(k)*100)/100):0};      // o Xande segue a Bolsa de Videira
@@ -6331,7 +6333,7 @@ function fodResolve(G){if(G.fase!=='jogo'||!G.mesa.length||G.mesa.length<fodVivo
   if(fodVivos(G).every(q=>!G.maos[q].length))fodFimRodada(G)}
 
 // ---- a mesa (o dono da sala é o juiz; cada um só recebe o que pode ver) ----
-const MESA_POS=[40.2,27.3],MESA_APOSTA_MAX=50000;
+const MESA_POS=[25.6,63.4],MESA_APOSTA_MAX=50000;
 const MESA={lugares:[null,null,null,null],G:null,ids:null,aposta:null,pote:0,pago:false};
 let MESA_V=null;      // o que este jogador vê da mesa
 const mesaEu=()=>MP.role==='host'?'h':MP.myId;
@@ -6476,8 +6478,8 @@ function mesaFecha(){const G=MESA.G;if(G&&!G.fim&&MESA.pote&&MESA.ids){const par
   clearTimeout(MESA.to);Object.assign(MESA,{lugares:[null,null,null,null],G:null,ids:null,aposta:null,prop:null,pausa:null,pote:0,pago:false});MESA_V=null}
 
 /* ---------- A.C.C.P.U.V — loja de suplementos da Maikelen (centro de Videira) ---------- */
-const ACC_LOT=[2,20,4,3],MAIK_POS=[4.1,23.3];
-const DOZE_POS=[97.5,91.4],DOZE_PRECO=300000;      // Caça & Pesca do Seu Ademir, na praça de Iomerê: o único lugar que vende a doze
+const ACC_LOT=[43,57,4,3],MAIK_POS=[45.1,60.3];
+const DOZE_POS=[196.5,173.4],DOZE_PRECO=300000;      // Caça & Pesca do Seu Ademir, na praça de Iomerê: o único lugar que vende a doze
 const ACC_MENU=[
   {k:'estimulante',nome:'Estimulante cerebral',preco:100,ico:'🧠',desc:'XP em dobro por 5 horas (do jogo).'},
   {k:'monster',nome:'Energético Monster',preco:85,ico:'🥤',desc:'Sobe aos poucos +50 de energia e +50 de fome.'},
@@ -6500,7 +6502,7 @@ function drawAccLeds(ox,oy){if(!ledNoite())return;const W=ACC_LOT[2]*16,k=S,core
 const H_ACC=()=>ACC_LOT[3]*16+LT;
 function accTarget(p){if(Math.hypot(MAIK_POS[0]-p.x,MAIK_POS[1]-p.y)<1.4)return{k:'acc'};const[x,y,w,h]=ACC_LOT,dx=Math.max(x-p.x,0,p.x-(x+w)),dy=Math.max(y-p.y,0,p.y-(y+h));return Math.hypot(dx,dy)<.75?{k:'acc'}:null}
 /* ---------- Expediente de Videira: cada funcionário tem horário, casa perto do centro e volta a pé pela estrada (às vezes junto, conversando) ---------- */
-const CASAS_V=[[-8,28],[-2,28],[12,28],[17,28],[62,28],[67,28],[72,28]];      // casinhas dos funcionários (3×2), ao sul da avenida, bem espaçadas
+const CASAS_V=[[16,66],[21,66],[26,66],[37,66],[42,66],[47,66],[52,66]];      // casinhas dos funcionários (3×2), ao sul da avenida, bem espaçadas
 const EXP_V=1.05;      // casas por minuto de jogo andando (≈2,5 casas por segundo)
 const EXP_RY=24.55,EXP_RY2=25.05;      // faixa da estrada por onde andam (o segundo vai do lado)
 const EXP=[      // id, posição (array que já é usada pelo resto do jogo), casa, horários [chegada, saída], quem acompanha
@@ -6515,10 +6517,16 @@ const EXP=[      // id, posição (array que já é usada pelo resto do jogo), c
 const EXP_BASE={gym:GABRIEL_POS.slice(),barb:BARB_POS.slice()};for(const e of EXP)for(const s of e.stays)if(!EXP_BASE[s[2]])EXP_BASE[s[2]]=e.pos.slice();
 const EXP_FALA=[['E aí, dia puxado?','Nem me fala, não parei um minuto!'],['Bora num chimarrão amanhã?','Fechou! Eu levo a cuia.'],['Viu o jogo da Chape?','Vi! Que golaço no fim!'],
   ['Tá esfriando, hein.','Frio de renguear cusco!'],['Vendeu bem hoje?','Mais ou menos... e tu?'],['Amanhã tem baile no salão!','Opa, tô dentro!'],['Que fome, tchê!','Hoje é polenta lá em casa.']];
-const expDoor=c=>{const[hx]=CASAS_V[c];return[hx+1.5,30.35]};
-function expRota(A,B,ry){const pts=[];      // A e B: [x,y] de trabalho ou {casa:n}
-  const sai=P=>P.casa!=null?(()=>{const[hx]=CASAS_V[P.casa],d=expDoor(P.casa);return[d,[d[0],30.75],[hx-.75,30.75],[hx-.75,ry]]})():[P,[P[0],ry]];
-  const a=sai(A),b=sai(B).reverse();return pts.concat(a,b)}
+const expDoor=c=>{const[hx,hy]=CASAS_V[c];return[hx+1.5,hy+2.35]};
+function expCaminho(P,o){      // de casa ou do trabalho até o encontro na rua do sul (entre a rua de baixo e a rua das casas)
+  const SX=33.5+o,HUB=[SX,64.5];
+  if(P.casa!=null){const d=expDoor(P.casa);return[d,[d[0],68.5+o],[SX,68.5+o],HUB]}
+  const[x,y]=P;
+  if(y>=56)return[P,[x,60.5+o],[SX,60.5+o],HUB];      // lojas de baixo: porta na rua de baixo
+  if(y<46.5)return[P,[x,47+o],[29.5+o,47+o],[29.5+o,53.5+o],[SX,53.5+o],HUB];      // lojas de cima: atravessa a praça (dá a volta no chafariz)
+  if(x>48)return[P,[x,51+o],[37.5+o,51+o],[37.5+o,53.5+o],[SX,53.5+o],HUB];      // oficinas da avenida do leste
+  return[P,[x,53.5+o],[SX,53.5+o],HUB]}
+function expRota(A,B,ry){const o=ry===EXP_RY2?.5:0;return expCaminho(A,o).concat(expCaminho(B,o).reverse())}
 function expLen(pts){let L=0;for(let i=1;i<pts.length;i++)L+=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);return L}
 function expAt(pts,d){for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],l=Math.hypot(b[0]-a[0],b[1]-a[1]);if(d<=l||i===pts.length-1){const k=l?Math.max(0,Math.min(1,d/l)):1,dx=b[0]-a[0],dy=b[1]-a[1];
   return{x:a[0]+dx*k,y:a[1]+dy*k,dir:Math.abs(dx)>Math.abs(dy)?(dx<0?'left':'right'):(dy<0?'up':'down')}}d-=l}const z=pts[pts.length-1];return{x:z[0],y:z[1],dir:'down'}}
