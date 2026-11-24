@@ -3693,11 +3693,11 @@ function drawClimaWorld(W,H){const hr=state.min/60,c=state.clima;
 /* ================= MULTIPLAYER: cooperativo no mundo do dono, até 4 jogadores, pela internet com código de sala =================
    Ligação: WebRTC (canal de dados direto entre os aparelhos). Para os aparelhos se acharem usa o servidor público grátis do PeerJS
    só como "telefonista" (sinalização). Quem hospeda manda no mundo; os convidados mandam o que fazem e o dono aplica e espalha. */
-const JOGO_VERSAO='2026-11-24d';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
+const JOGO_VERSAO='2026-11-24f';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
 const MP_MAX=4,MP_PREFIX=SLOT_KEYS[0].replace(/_slot_1$/,'').replace(/_/g,''),MP_SERVER='wss://0.peerjs.com:443/peerjs?key=peerjs';
 const MP_ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']},{urls:'stun:global.stun.twilio.com:3478'}]};
 const MP_LEVE=['p','energy','hunger','vida','forca','sujeira','sel','testoUntil','fomeT','coins','xpUntil','monster','napHoje','doze'];      // muda toda hora: vai junto em cada batida
-const MP_PROG=['inv','seeds','nivel','flags','roupas','visual','estudos','found','motos','moto','tratores','trator','fuel','vsuj'];      // progresso de cada jogador: mochila, peixes, sementes, nível, roupas, veículos…
+const MP_PROG=['inv','seeds','nivel','flags','roupas','visual','estudos','found','motos','moto','tratores','trator','fuel','vsuj','banco','mequip','motoCustom'];      // banco e personalização da moto também são de cada um      // progresso de cada jogador: mochila, peixes, sementes, nível, roupas, veículos…
 const MP_PESSOAL=[...MP_LEVE,...MP_PROG];      // cada jogador tem o seu; o resto do state é o mundo do dono
 const MP_FORA_DIFF=new Set([...MP_PESSOAL,'saved','min','day','rain','clima','riding','rideKind','jogs','progDono']);
 // o progresso de quem não é o dono fica guardado no próprio mundo, pelo nome (volta igual quando a pessoa entra de novo)
@@ -3876,7 +3876,7 @@ function mpComo(g,fn){const keep={};for(const k of MP_PESSOAL)keep[k]=state[k];c
     if(lasso&&!g.lasso){g.lasso=lasso;lasso.a.lassoBy=g.id;lasso.a.lt=0}      // o convidado começou a laçar: o dono segue o laço dele
     for(const k of MP_PESSOAL)g[k]=state[k];for(const k of MP_PESSOAL)state[k]=keep[k];state.riding=rd[0];state.rideKind=rd[1];
     fish=fi;lasso=la;led=le;plow=pl;panelKind=pk;paused=pz;Object.assign(keys,kk);tractorTile=tt;MP.cap=null;if(pl!==plow||cap.plow)plowBar()}
-  mpSend(g.link,{t:'fx',panel:cap.panel,close:cap.close,toasts:cap.toasts,beeps:cap.beeps,floats:floats.slice(cap.f0).map(f=>[f.x,f.y,f.text,f.col]),me:mpPessoal(g)});
+  mpSend(g.link,{t:'fx',panel:cap.panel,close:cap.close,toasts:cap.toasts,beeps:cap.beeps,floats:floats.slice(cap.f0).map(f=>[f.x,f.y,f.text,f.col]),me:mpPessoal(g),bebado:cap.bebado||0,faint:cap.faint||0,safado:cap.safado||0});
   MP.wT=99}      // manda as mudanças do mundo logo
 function mpPosGuarda(){if(!state)return;for(const id in MP.players){const g=MP.players[id];if(!g.me&&g.nome&&g.inv)progGuarda(nvChave(g.nome),g)}const P=state.mpPos=state.mpPos||{};if(MP.nome)P[nvChave(MP.nome)]={x:+state.p.x.toFixed(2),y:+state.p.y.toFixed(2)};for(const id in MP.players){const g=MP.players[id];if(!g.me&&g.p&&g.nome)P[nvChave(g.nome)]={x:+g.p.x.toFixed(2),y:+g.p.y.toFixed(2)}}}
 // ---------- laço dos convidados (o dono simula, igual ao dele) ----------
@@ -3957,7 +3957,7 @@ function mpGuestMsg(m){
   if(m.t==='prog'){for(const k in m.d)if(MP_PROG.includes(k))state[k]=m.d[k];if('roupas' in m.d||'visual' in m.d){applyOutfit();pPortK=''}updateHUD();return}
   if(m.t==='w'){const d=m.d;for(const k in d)if(!MP_PESSOAL.includes(k))state[k]=d[k];
     if('b' in d||'extras' in d||'animals' in d){applyExtras();syncPens()}if('b' in d)syncNPCs();if('soil' in d||'b' in d||'extras' in d||'depleted' in d)miniBase=null;return}
-  if(m.t==='fx'){if(m.me){Object.assign(state,m.me);if(m.me.roupas)applyOutfit()}for(const[f,d,ty,v]of m.beeps||[])beep(f,d,ty,v);for(const[x,y,tx,c]of m.floats||[])float(x,y,tx,c);for(const[t,ms]of m.toasts||[])toast(t,ms);
+  if(m.t==='fx'){if(m.bebado)bebadoT=m.bebado;if(m.faint)faintFx=m.faint;if(m.safado)setTimeout(zonaSafado,2500);if(m.me){Object.assign(state,m.me);if(m.me.roupas)applyOutfit()}for(const[f,d,ty,v]of m.beeps||[])beep(f,d,ty,v);for(const[x,y,tx,c]of m.floats||[])float(x,y,tx,c);for(const[t,ms]of m.toasts||[])toast(t,ms);
     if(m.panel){MP.incoming=true;showPanel(m.panel.kind,m.panel.html);MP.incoming=false}else if(m.close&&MP.remote)closePanel();updateHUD();return}
   if(m.t==='chat'){mpFala(m.id,m.m);return}
   if(m.t==='pixreq'){pixPainel(m);sfx.coin();return}
@@ -4564,7 +4564,7 @@ function morning(){          // 6h: começa um novo dia
   state.forca.hoje=0;
   // lavoura: o que estava molhado cresce um dia
   for(const i in state.crops){const c=state.crops[i];if(isWet(c)&&!c.r){c.g++;if(c.g>=CROPS[c.c].dias)c.r=true}c.w=false}
-  state.day++;bancoRende();ensureBolsa();if((state.day-1)%BOLSA_DIAS===0)bolsaDia();      // a bolsa troca os preços a cada 7 dias
+  state.day++;bancoRendeTodos();ensureBolsa();if((state.day-1)%BOLSA_DIAS===0)bolsaDia();      // a bolsa troca os preços a cada 7 dias
   state.rain=Math.random()<RAIN_DAY;rollClima();
   for(const k in state.depleted)if(state.depleted[k]<=state.day)delete state.depleted[k];
   wild=wild.filter(a=>a.led||canStand(a.x,a.y,.3)&&!inVila(a.x,a.y));spawnWild();
@@ -5730,7 +5730,7 @@ const ACT={
   hudok(){closeHudEdit()},
   feed(id){for(const a of state.animals)if(SPECIES[a.sp].pen===id&&a.fed<720&&state.inv.racao>0){state.inv.racao--;a.fed+=1440;state.flags.fed=1}sfx.get();openBld(id)},
   collect(id){const st=state.stock[id];let ex=0;for(const k in st){const x=studyRoll('zoo',st[k]);state.inv[k]+=st[k]+x;ex+=x;st[k]=0}if(ex)toast(`Zootecnia: +${ex} produto${ex>1?'s':''} extra!`);state.flags.collected=1;sfx.coin();openBld(id)},
-  eat(k){if(state.inv[k]>0){state.inv[k]--;const c=ITEMS[k].comida;if(ITEMS[k].alcool){bebadoT=20;toast('🥴 Eita... a cabeça tá girando!')}state.hunger=Math.min(100,state.hunger+c);state.energy=Math.min(maxEnergy(),state.energy+Math.round(c/3));sfx.get()}openInv()},
+  eat(k){if(state.inv[k]>0){state.inv[k]--;const c=ITEMS[k].comida;if(ITEMS[k].alcool){if(typeof MP!=='undefined'&&MP.cap)MP.cap.bebado=20;else bebadoT=20;toast('🥴 Eita... a cabeça tá girando!')}state.hunger=Math.min(100,state.hunger+c);state.energy=Math.min(maxEnergy(),state.energy+Math.round(c/3));sfx.get()}openInv()},
   craftrod(){if(!state.flags.rod&&state.inv.madeira>=8){state.inv.madeira-=8;state.flags.rod=1;sfx.build();toast('Vara de pescar pronta! Fique de frente para o rio ou o lago e aperte E.')}openInv()},
   invtab(v){openInv(v)},
   rtab(v){const[t,m]=v.split(':');openClothes.keep=1;openClothes(m,t)},
@@ -6731,15 +6731,21 @@ function openZona(say){if(say)zonaSay=say;else if(!openZona.keep||!zonaSay)zonaS
     <div class="zn-body"><h3>🍸 Bebidas</h3>${linhas}
       <h3>🛏️ Quarto VIP</h3><div class="zn-row"><div><b>Cama do quarto VIP</b><small>Uma horinha de "descanso" lá em cima. Não tem reembolso.</small></div><button class="mini" data-a="zonacama" ${state.coins>=ZONA_CAMA?'':'disabled'}>${brl(ZONA_CAMA)}</button></div></div>`)}
 function zonaCama(){if(state.coins<ZONA_CAMA){sfx.no();return}state.coins=cent(state.coins-ZONA_CAMA);closePanel();
-  faintFx=2.4;if(!playSound('desmaio',1,true)){beep(440,.18,'triangle',.06);setTimeout(()=>beep(330,.2,'triangle',.06),180);setTimeout(()=>beep(220,.45,'triangle',.06),380)}
+  if(MP.cap)MP.cap.faint=2.4;else faintFx=2.4;if(!playSound('desmaio',1,true)){beep(440,.18,'triangle',.06);setTimeout(()=>beep(330,.2,'triangle',.06),180);setTimeout(()=>beep(220,.45,'triangle',.06),380)}
   if(!MP.cap){advanceAnimals(60);state.min+=60;if(state.min>=1440){state.min-=1440;respawnRocks()}}state.energy=Math.min(maxEnergy(),state.energy+20);
   toast('😵 Você desmaiou...');updateHUD();save();
-  setTimeout(()=>{zonaFala={text:'Deixa de ser Safado!',ate:clock+5};toast('😳 Deixa de ser Safado!',5000);beep(880,.08,'square',.04)},2500)}
+  if(MP.cap){MP.cap.safado=1;return}setTimeout(zonaSafado,2500)}
+function zonaSafado(){zonaFala={text:'Deixa de ser Safado!',ate:clock+5};toast('😳 Deixa de ser Safado!',5000);beep(880,.08,'square',.04)}
 function bancoTarget(p){if(Math.hypot(BANCO_POS[0]-p.x,BANCO_POS[1]-p.y)<1.4)return{k:'banco'};const[x,y,w,h]=BANCO_LOT,dx=Math.max(x-p.x,0,p.x-(x+w)),dy=Math.max(y-p.y,0,p.y-(y+h));return Math.hypot(dx,dy)<.75?{k:'banco'}:null}
 function bancoConta(){const b=state.banco||(state.banco={saldo:0,rendeu:0});
   if(b.dep==null){b.jur=cent(Math.min(b.rendeu||0,b.saldo||0));b.dep=cent((b.saldo||0)-b.jur)}      // contas antigas: separa o depósito do rendimento
   b.saldo=cent(b.dep+b.jur);return b}
 const cent=v=>Math.round(v*100)/100;
+function rendeConta(b){if(!b)return 0;if(b.dep==null){b.jur=cent(Math.min(b.rendeu||0,b.saldo||0));b.dep=cent((b.saldo||0)-b.jur)}const tot=cent(b.dep+b.jur),j=cent(tot*BANCO_TAXA);if(j<.01)return 0;
+  b.jur=cent(b.jur+j);b.saldo=cent(b.dep+b.jur);b.rendeu=cent((b.rendeu||0)+j);b.ult=j;b.ultDia=state.day;return j}
+function bancoRendeTodos(){bancoRende();      // a conta de cada jogador rende separada: quem está na sala e quem já jogou neste mundo
+  if(typeof MP!=='undefined'&&MP.players)for(const id in MP.players){const g=MP.players[id];if(g&&!g.me&&g.banco)rendeConta(g.banco)}
+  if(state.jogs)for(const k in state.jogs){const j=state.jogs[k];if(j&&j.banco)rendeConta(j.banco)}}
 function bancoRende(){if(!state.banco)return;const b=bancoConta();if(!(b.saldo>=.01))return;const j=cent(b.saldo*BANCO_TAXA);if(j<.01)return;
   b.jur=cent(b.jur+j);b.saldo=cent(b.dep+b.jur);b.rendeu=cent((b.rendeu||0)+j);b.ult=j;b.ultDia=state.day;setTimeout(()=>toast(`🏦 Banco Imbuial: seu dinheiro rendeu ${brl(j)} · saldo ${brl(b.saldo)}`),2500)}
 function openBanco(say){const b=bancoConta();if(say)bancoSay=say;else if(!openBanco.keep||!bancoSay)bancoSay=BANCO_FALAS[Math.random()*BANCO_FALAS.length|0];openBanco.keep=0;
