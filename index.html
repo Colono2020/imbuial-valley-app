@@ -704,10 +704,10 @@ const TRATORES={   // vel = multiplicador da velocidade a pé; larg = quadrados 
   jd6125:{nome:'John Deere 6125J',cv:125,vel:1.3,larg:5,preco:156000,cor:'#2f8a3a',cor2:'#f2c218',desc:'O verdão: rápido e com área de 5×5. O sonho da roça.'},
 };
 /* ---------- implementos do trator (plantadeira, pulverizador, ceifa) e pragas da lavoura ---------- */
-const IMPLEM={plantadeira:{nome:'Plantadeira',ico:'🌱',preco:38000,desc:'Planta a semente em uso numa faixa de 16 canteiros (8 de cada lado do trator).'},
-  pulverizador:{nome:'Pulverizador',ico:'💨',preco:32000,desc:'Passa veneno numa faixa de 16 canteiros: mata erva daninha e insetos e protege por 3 dias. Gasta 1 L de veneno a cada 16 canteiros.'},
-  ceifa:{nome:'Ceifa (plataforma)',ico:'🌾',preco:55000,desc:'Colhe tudo que estiver pronto numa faixa de 16 canteiros (8 de cada lado). Também tira as plantas podres.'}};
-const IMP_LADO=8,VENENO_PRECO=12;
+const IMPLEM={plantadeira:{nome:'Plantadeira',ico:'🌱',preco:38000,desc:'Planta a semente em uso numa faixa de 8 canteiros (4 de cada lado do trator).'},
+  pulverizador:{nome:'Pulverizador',ico:'💨',preco:32000,desc:'Passa veneno numa faixa de 8 canteiros: mata erva daninha e insetos e protege por 3 dias. Gasta 1 L de veneno a cada 8 canteiros.'},
+  ceifa:{nome:'Colheitadeira (ceifa)',ico:'🌾',preco:55000,desc:'Vira uma colheitadeira com plataforma na frente. Colhe tudo que estiver pronto numa faixa de 8 canteiros (4 de cada lado). Também tira as plantas podres.'}};
+const IMP_LADO=4,VENENO_PRECO=12;
 const impl=()=>state.implem||(state.implem={own:{},eng:null});
 const implEng=()=>{const q=impl();return q.eng&&q.own[q.eng]?q.eng:null};
 function pragaDia(){const day=state.day;let lv=[];try{lv=lavouras()}catch(e){}let podres=0;const novos=[];
@@ -720,27 +720,29 @@ function pragaDia(){const day=state.day;let lv=[];try{lv=lavouras()}catch(e){}le
     for(const i of pl){const c=state.crops[i];if(c.prot>=day)continue;if(Math.hypot(i%AW-x0,((i/AW)|0)-y0)<=R){c.praga=tipo;n++}}
     if(n)setTimeout(()=>toast(tipo==='erva'?`🌿 Apareceu erva daninha em ${n} canteiros! Passe o pulverizador com veneno, senão a colheita sai de qualidade ruim.`:`🐛 Praga de insetos em ${n} canteiros! Passe o pulverizador com veneno antes que as plantas apodreçam.`,9000),4500)}
   if(podres)setTimeout(()=>toast(`🥀 Os insetos apodreceram ${podres} planta${podres>1?'s':''} (não rendem nada).`,7000),6000)}
-function implFaixa(cx,cy,dir){const hor=dir==='left'||dir==='right',out=[];for(let k=-IMP_LADO;k<=IMP_LADO;k++){const x=hor?cx:cx+k,y=hor?cy+k:cy;if(x>=XMIN&&y>=0&&x<MW&&y<MH)out.push([x,y])}return out}
+function implFaixa(cx,cy,dir){const hor=dir==='left'||dir==='right',out=[];for(let k=-IMP_LADO;k<IMP_LADO;k++){const x=hor?cx:cx+k,y=hor?cy+k:cy;if(x>=XMIN&&y>=0&&x<MW&&y<MH)out.push([x,y])}return out}
 function implTrabalha(im,cx,cy){const p=state.p;let col=0,pl=0,sp=0;
   if(im==='pulverizador'&&(state.inv.veneno|0)<=0){if(clock-(implTrabalha.av||0)>5){implTrabalha.av=clock;toast('💨 Sem veneno! Compre veneno na Agro Imbuial (aba do trator).')}return}
   for(const[x,y]of implFaixa(cx,cy,p.dir)){const i=y*AW-XMIN+x;if(!soilOn(i))continue;const c=state.crops[i];
     if(im==='ceifa'){if(c&&(c.r||c.podre))col+=harvestAt(i)}
     else if(im==='plantadeira'){if(!c&&seedOk(state.sel)){state.seeds[state.sel]--;state.crops[i]={c:state.sel,g:0,w:false,r:false};pl++}}
     else if(c&&!c.podre){c.praga=null;c.prot=state.day+3;sp++;if(Math.random()<.3)partBurst(x+.5,y+.3,2,['#cfe9ff','#e8f6ff','#b8dcf2'],.8,.6,1,.6,2)}}
-  if(sp){state.venAcc=(state.venAcc||0)+sp/16;while(state.venAcc>=1&&state.inv.veneno>0){state.venAcc--;state.inv.veneno--}}
+  if(sp){state.venAcc=(state.venAcc||0)+sp/8;while(state.venAcc>=1&&state.inv.veneno>0){state.venAcc--;state.inv.veneno--}}
   if(pl)addNivelXp(pl*XP_PLANTIO);
   if(col)float(p.x,p.y-1.2,`+${col} colhidos`,'#ffe066');if(pl)float(p.x+.6,p.y-.6,`${pl} plantados`,'#bfe6a0');if(col||pl)beep(440,.05,'square',.03)}
-function drawImplem(p,sx,gy,fl){const im=implEng();if(!im)return;const hor=p.dir==='left'||p.dir==='right'||p.dir==null,cx=Math.floor(p.x),cy=Math.floor(p.y),L=(2*IMP_LADO+1)*T;
-  ctx.save();if(hor){const frente=im==='ceifa',bx=sx+(frente?(fl?-1:1):(fl?1:-1))*T*1.15,top=(cy-IMP_LADO)*T-camy;
+function drawImplem(p,sx,gy,fl){const im=implEng();if(!im)return;const hor=p.dir==='left'||p.dir==='right'||p.dir==null,cx=Math.floor(p.x),cy=Math.floor(p.y),L=2*IMP_LADO*T;
+  ctx.save();if(hor){const frente=im==='ceifa',bx=sx+(frente?(fl?-1:1)*T*1.45:(fl?1:-1)*T*1.15),top=(cy-IMP_LADO)*T-camy;
       ctx.fillStyle='#3a3a3a';ctx.fillRect(Math.min(bx,sx),gy-14,Math.abs(bx-sx),4);
-      if(im==='pulverizador'){ctx.fillStyle='#8d939c';ctx.fillRect(bx-3,top,6,L);for(let k=0;k<=2*IMP_LADO;k++){ctx.fillStyle='#2b2b2b';ctx.fillRect(bx-5,top+k*T+T/2-2,10,4);if(p.walk){ctx.fillStyle='rgba(200,230,255,.35)';ctx.beginPath();ctx.ellipse(bx+(fl?6:-6),top+k*T+T/2+6,10,7,0,0,7);ctx.fill()}}ctx.fillStyle='#e8e8e8';ctx.fillRect(sx+(fl?18:-34),gy-58,16,20)}
-      else if(im==='plantadeira'){ctx.fillStyle='#1f5a2a';ctx.fillRect(bx-5,top,10,L);for(let k=0;k<=2*IMP_LADO;k++){ctx.fillStyle='#f2c218';ctx.fillRect(bx-8,top+k*T+8,16,12);ctx.fillStyle='#6b4a2b';ctx.fillRect(bx-3,top+k*T+24,6,10)}}
-      else{ctx.fillStyle='#c4302b';ctx.fillRect(bx-7,top,14,L);ctx.fillStyle='#f2c218';for(let k=0;k<L;k+=12)ctx.fillRect(bx-5,top+((k+Math.floor(clock*60))%L),10,4);ctx.fillStyle='#8d939c';for(let k=0;k<=2*IMP_LADO;k++)ctx.fillRect(bx+(fl?-12:6),top+k*T+T/2-3,6,6)}}
-    else{const up=p.dir==='up',frente=im==='ceifa',by=gy+((frente?up:!up)?-T*.9:T*.45),left=(cx-IMP_LADO)*T-camx;
+      if(im==='pulverizador'){ctx.fillStyle='#8d939c';ctx.fillRect(bx-3,top,6,L);for(let k=0;k<2*IMP_LADO;k++){ctx.fillStyle='#2b2b2b';ctx.fillRect(bx-5,top+k*T+T/2-2,10,4);if(p.walk){ctx.fillStyle='rgba(200,230,255,.35)';ctx.beginPath();ctx.ellipse(bx+(fl?6:-6),top+k*T+T/2+6,10,7,0,0,7);ctx.fill()}}ctx.fillStyle='#e8e8e8';ctx.fillRect(sx+(fl?18:-34),gy-58,16,20)}
+      else if(im==='plantadeira'){ctx.fillStyle='#1f5a2a';ctx.fillRect(bx-5,top,10,L);for(let k=0;k<2*IMP_LADO;k++){ctx.fillStyle='#f2c218';ctx.fillRect(bx-8,top+k*T+8,16,12);ctx.fillStyle='#6b4a2b';ctx.fillRect(bx-3,top+k*T+24,6,10)}}
+      else{const d=fl?-1:1;ctx.fillStyle='#1f6a2a';ctx.fillRect(bx-16,top-4,32,L+8);ctx.fillStyle='#2f8a3a';ctx.fillRect(bx-14,top,28,L);ctx.fillStyle='#4fae55';ctx.fillRect(bx-14,top,4,L);ctx.fillStyle='#8d939c';ctx.fillRect(bx+d*15-2,top,4,L);for(let k=0;k<L;k+=8)ctx.fillRect(bx+d*18-1,top+k,3,4);      // plataforma verde e a barra de corte
+      const a=clock*6;ctx.fillStyle='#f2c218';for(let j=0;j<4;j++){const o=Math.sin(a+j*1.57)*7;ctx.fillRect(bx+o-2,top+2,3,L-4)}ctx.fillStyle='#1c1c1c';ctx.fillRect(bx-1,top,2,L);      // molinete girando
+      ctx.fillStyle='#f2c218';ctx.fillRect(bx-16,top-8,32,6);ctx.fillRect(bx-16,top+L+2,32,6)}}
+    else{const up=p.dir==='up',frente=im==='ceifa',by=frente?(up?gy-88:gy+8):gy+(!up?-T*.9:T*.45),left=(cx-IMP_LADO)*T-camx;
       ctx.fillStyle='#3a3a3a';ctx.fillRect(sx-2,Math.min(by,gy-10),4,Math.abs(by-gy+10));
-      if(im==='pulverizador'){ctx.fillStyle='#8d939c';ctx.fillRect(left,by-3,L,6);for(let k=0;k<=2*IMP_LADO;k++){ctx.fillStyle='#2b2b2b';ctx.fillRect(left+k*T+T/2-2,by-5,4,10);if(p.walk){ctx.fillStyle='rgba(200,230,255,.35)';ctx.beginPath();ctx.ellipse(left+k*T+T/2,by+8,8,9,0,0,7);ctx.fill()}}}
-      else if(im==='plantadeira'){ctx.fillStyle='#1f5a2a';ctx.fillRect(left,by-5,L,10);for(let k=0;k<=2*IMP_LADO;k++){ctx.fillStyle='#f2c218';ctx.fillRect(left+k*T+16,by-10,16,12)}}
-      else{ctx.fillStyle='#c4302b';ctx.fillRect(left,by-7,L,14);ctx.fillStyle='#f2c218';for(let k=0;k<L;k+=14)ctx.fillRect(left+((k+Math.floor(clock*60))%L),by-5,5,10)}}
+      if(im==='pulverizador'){ctx.fillStyle='#8d939c';ctx.fillRect(left,by-3,L,6);for(let k=0;k<2*IMP_LADO;k++){ctx.fillStyle='#2b2b2b';ctx.fillRect(left+k*T+T/2-2,by-5,4,10);if(p.walk){ctx.fillStyle='rgba(200,230,255,.35)';ctx.beginPath();ctx.ellipse(left+k*T+T/2,by+8,8,9,0,0,7);ctx.fill()}}}
+      else if(im==='plantadeira'){ctx.fillStyle='#1f5a2a';ctx.fillRect(left,by-5,L,10);for(let k=0;k<2*IMP_LADO;k++){ctx.fillStyle='#f2c218';ctx.fillRect(left+k*T+16,by-10,16,12)}}
+      else{ctx.fillStyle='#1f6a2a';ctx.fillRect(left-4,by-18,L+8,32);ctx.fillStyle='#2f8a3a';ctx.fillRect(left,by-16,L,28);ctx.fillStyle='#4fae55';ctx.fillRect(left,by-16,L,4);ctx.fillStyle='#8d939c';ctx.fillRect(left,by+10,L,3);const a=clock*6;ctx.fillStyle='#f2c218';for(let j=0;j<4;j++){const o=Math.sin(a+j*1.57)*6;ctx.fillRect(left+2,by+o-2,L-4,3)}ctx.fillStyle='#1c1c1c';ctx.fillRect(left,by-1,L,2);ctx.fillStyle='#f2c218';ctx.fillRect(left-8,by-18,6,32);ctx.fillRect(left+L+2,by-18,6,32)}}
   ctx.restore()}
 const TANK={moto:8,trator:40},tankOf=(kind,k)=>{const L=kind==='trator'?TRATORES:MOTOS,ord=Object.keys(L).sort((a,b)=>L[a].preco-L[b].preco);return TANK[kind]+Math.max(0,ord.indexOf(k))},      // cada veículo melhor tem +1 L de tanque
  FUEL_USE={moto:.004,trator:.02},GAS_PRICE={comum:6,aditivada:9},AD_BOOST=1.25;      // litros, litros por quadrado andado, moedas por litro; aditivada = +25% de velocidade
@@ -1580,6 +1582,44 @@ function tratorSpriteHD(t){const c=document.createElement('canvas');c.width=64;c
   roda(16,33,14.5,7);roda(51,39,8.5,4.5);
   r(2,16,28,4,C);r(2,16,28,1,CL);r(2,19,28,1,CD);r(0,17,3,8,C);      // paralama sobre a roda grande
   const o=outline(c);o.sc=S/2;o.pad=.5;return o}
+// ---- trator de frente (descendo) e de costas (subindo), em 2 camadas: atrás do piloto e na frente dele ----
+function hdCv(W,H,fn){const c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d');
+  const r=(x,y,w,h,col)=>{g.fillStyle=col;g.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h))};
+  const e=(cx,cy,rx,ry,col)=>{g.fillStyle=col;for(let y=Math.ceil(cy-ry);y<=cy+ry;y++){const k=1-((y-cy)/ry)**2;if(k<0)continue;const dx=rx*Math.sqrt(k),x0=Math.round(cx-dx);g.fillRect(x0,y,Math.max(1,Math.round(cx+dx)-x0),1)}};
+  fn(r,e);const o=outline(c);o.sc=S/2;o.pad=.5;return o}
+function tratorVistas(t){const C=t.cor,C2=t.cor2,CL=shd(C,.25),CD=shd(C,-.3),PR='#1a1a1a',W=48,H=54;
+  const pneu=(r,x,y,w,h)=>{r(x,y,w,h,PR);for(let k=y+1;k<y+h;k+=3)r(x,k,w,1,'#333');r(x+1,y,1,h,'#2a2a2a')};
+  const F0=hdCv(W,H,(r,e)=>{r(6,0,36,3,C);r(6,0,36,1,CL);r(7,3,3,22,'#2b2b2b');r(38,3,3,22,'#2b2b2b');r(10,3,28,20,'rgba(191,230,255,.35)');r(14,10,20,8,'#3a3a3a')});      // teto, colunas e banco
+  const F1=hdCv(W,H,(r,e)=>{pneu(r,0,22,9,30);pneu(r,39,22,9,30);r(0,20,12,4,C);r(36,20,12,4,C);r(0,20,12,1,CL);r(36,20,12,1,CL);      // pneus de trás (aparecem dos lados) e paralamas
+    r(14,24,20,22,C);r(14,24,20,2,CL);r(14,44,20,2,CD);r(17,30,14,12,'#2b2b2b');for(let y=31;y<42;y+=2)r(18,y,12,1,'#777');r(15,25,4,3,'#ffe066');r(29,25,4,3,'#ffe066');r(14,28,20,1,C2);      // capô, grade e faróis
+    r(33,4,3,20,'#2b2b2b');r(32,3,5,2,'#444');      // escapamento
+    pneu(r,10,42,6,11);pneu(r,32,42,6,11);r(16,46,16,3,'#4a4f57')});      // pneus da frente e eixo
+  const T0=hdCv(W,H,(r,e)=>{r(6,0,36,3,C);r(6,0,36,1,CL);r(7,3,3,22,'#2b2b2b');r(38,3,3,22,'#2b2b2b');r(10,3,28,20,'rgba(191,230,255,.3)');r(13,2,22,2,'#ff5a3a')});
+  const T1=hdCv(W,H,(r,e)=>{pneu(r,0,20,11,33);pneu(r,37,20,11,33);r(0,18,13,4,C);r(35,18,13,4,C);r(0,18,13,1,CL);r(35,18,13,1,CL);r(1,22,2,3,'#d42a2a');r(45,22,2,3,'#d42a2a');      // pneus de trás bem grandes e lanternas
+    r(11,24,26,16,C);r(11,24,26,2,CL);r(11,38,26,2,CD);r(15,30,18,6,'#3a3f47');r(22,36,4,10,'#555');r(16,44,16,3,'#555');r(14,42,4,4,'#444');r(30,42,4,4,'#444');      // traseira, tomada de força e engate
+    r(33,4,3,20,'#2b2b2b')});
+  return{F0,F1,T0,T1}}
+// ---- colheitadeira (quando a ceifa está engatada): de lado, de frente e de costas ----
+function colheitadeiraSpr(){if(colheitadeiraSpr.c)return colheitadeiraSpr.c;const G='#2f8a3a',GL='#4fae55',GD='#1f6a2a',Y='#f2c218',YD='#c99a0e',PR='#1a1a1a';
+  const roda=(r,e,x,y,R,ar)=>{e(x,y,R,R,PR);for(let a=0;a<20;a++){const b=a/20*Math.PI*2;r(x+Math.cos(b)*(R-1)-1.5,y+Math.sin(b)*(R-1)-1,3,2,'#333')}e(x,y,R*.62,R*.62,'#2a2a2a');e(x,y,ar,ar,Y);e(x-ar*.3,y-ar*.3,ar*.5,ar*.5,shd(Y,.3));e(x,y,ar*.3,ar*.3,'#555')};
+  const L=hdCv(88,64,(r,e)=>{
+    e(38,10,16,6,G);r(22,10,32,8,G);r(24,6,28,3,GL);r(22,16,32,1,GD);      // tanque graneleiro em cima
+    r(20,13,40,4,G);r(2,12,22,4,G);r(0,10,4,6,G);r(2,12,22,1,GL);r(0,9,5,2,GD);      // tubo descarregador indo para trás
+    r(8,18,62,26,G);r(8,18,62,2,GL);r(8,42,62,2,GD);r(10,30,58,2,Y);r(10,32,58,1,YD);for(let x=14;x<34;x+=4)r(x,22,2,6,GD);      // corpo, faixa amarela e grade do motor
+    r(58,4,20,18,'#2b2b2b');r(60,6,16,13,'#bfe6ff');r(62,7,4,9,'rgba(255,255,255,.6)');r(66,10,5,5,'#e3b48c');r(66,9,5,1,'#2a2018');r(57,2,23,3,G);r(57,2,23,1,GL);      // cabine com o operador
+    r(70,22,10,20,G);r(70,22,10,2,GL);r(78,26,4,10,'#555');      // frente (alimentador)
+    r(4,40,10,4,'#4a4f57');roda(r,e,60,48,15,7);roda(r,e,14,52,10,5)});
+  const F=hdCv(64,62,(r,e)=>{
+    e(32,8,18,7,G);r(14,8,36,8,G);r(16,4,32,3,GL);      // tanque
+    r(8,14,48,26,G);r(8,14,48,2,GL);r(8,38,48,2,GD);r(20,10,24,16,'#2b2b2b');r(22,12,20,12,'#bfe6ff');r(29,15,6,6,'#e3b48c');r(29,14,6,1,'#2a2018');r(19,8,26,3,G);      // corpo e cabine de frente
+    r(10,30,44,2,Y);r(22,34,20,12,GD);r(24,36,16,8,'#555');      // faixa e alimentador
+    for(const x of[2,48]){r(x,26,14,34,PR);for(let y=27;y<60;y+=3)r(x,y,14,1,'#333');r(x+4,36,6,14,Y)}});      // rodas grandes (amarelas) dos lados
+  const T=hdCv(64,62,(r,e)=>{
+    e(32,8,18,7,G);r(14,8,36,8,G);r(16,4,32,3,GL);
+    r(8,14,48,30,G);r(8,14,48,2,GL);r(8,42,48,2,GD);for(let y=18;y<34;y+=3)r(14,y,36,2,GD);r(10,36,44,2,Y);r(10,20,3,4,'#d42a2a');r(51,20,3,4,'#d42a2a');      // traseira com a grade do motor
+    r(22,44,20,6,'#4a4f57');r(30,2,4,10,G);      // eixo de trás e tubo dobrado
+    for(const x of[8,46]){r(x,44,10,16,PR);for(let y=45;y<60;y+=3)r(x,y,10,1,'#333');r(x+3,48,4,8,Y)}});
+  return colheitadeiraSpr.c={L,F,T}}
 function tractorSprite(t){return mk(32,24,(r,e)=>{const c=t.cor,c2=t.cor2;
   e(8,16,7.5,7.5,'#1c1c1c');e(8,16,4,4,c2);e(8,16,1.6,1.6,'#555');for(let a=0;a<12;a++){const x=8+Math.cos(a*.52)*7,y=16+Math.sin(a*.52)*7;r(x,y,1,1,'#3a3a3a')}   // roda de trás
   e(26,19,4.5,4.5,'#1c1c1c');e(26,19,2.2,2.2,c2);                                                         // roda da frente
@@ -2258,7 +2298,7 @@ function buildSprites(){
   SPR.var={};for(const sp in ANIM_VARS)SPR.var[sp]=ANIM_VARS[sp].map(v=>recolor(SPR[sp],v));
   SPR.seller=npcSet(NPC_LOOKS.alison);SPR.mateus=mateusSet();SPR.mateusGreet=hdFrames(lookNpc(NPC_LOOKS.mateus,'mateus'),'down',['acena0','acena1']);SPR.greet={};for(const k in GREET_DRAW)SPR.greet[k]=npcGreet(NPC_LOOKS[k],k==='alison'?'side':'down',k);SPR.giliard=npcSet(NPC_LOOKS.giliard);SPR.maikelen=npcSet(NPC_LOOKS.maikelen);SPR.xande=npcSet(NPC_LOOKS.xande);SPR.xandeFr=xandeFrames();SPR.gabriel=npcSet(NPC_LOOKS.gabriel);SPR.gabrielBarb=hdSet(Object.assign(lookNpc(NPC_LOOKS.gabriel,'gabriel'),{top:'#f4f4f4',sleeve:'longa',glasses:null,avental:'#2a1c14',gravata:'#8a1a24',pants:'#2a2a30',shoes:{col:'#1c1c1c',style:'tenis'}}));SPR.thiago=npcSet(NPC_LOOKS.thiago);SPR.everton=altoSet(hdSet(Object.assign(lookNpc(NPC_LOOKS.everton,'everton'),{gravata:'#c9a227',sleeve:'longa'})),1.14);SPR.luan=npcSet(NPC_LOOKS.luan);SPR.junior=npcSet(NPC_LOOKS.junior);
   SPR.moto={};SPR.motoF={};SPR.motoT={};for(const k in MOTOS){SPR.moto[k]=motoSpriteHD(MOTOS[k]);SPR.motoF[k]=motoVistaHD(MOTOS[k],0);SPR.motoT[k]=motoVistaHD(MOTOS[k],1)}
-  SPR.trator={};for(const k in TRATORES)SPR.trator[k]=tratorSpriteHD(TRATORES[k]);
+  SPR.trator={};SPR.tratorV={};for(const k in TRATORES){SPR.trator[k]=tratorSpriteHD(TRATORES[k]);SPR.tratorV[k]=tratorVistas(TRATORES[k])}
   SPR.thief=personSet({hat:'#26262e',shirt:'#3a3a46',pants:'#1f1f27',skin:'#d9b08c'});
   SPR.npc=[{hat:'#8fb5e8',shirt:'#f5d76e',pants:'#6b4a33',skin:'#e8b88a'},{hat:'#c98a3d',shirt:'#7fb04f',pants:'#444a5a',skin:'#c99570'},
     {hat:'#e88fb5',shirt:'#9b6fd5',pants:'#3b5a3b',skin:'#f2c79c'},{hat:'#eeeeee',shirt:'#3d9aa6',pants:'#5a3a1e',skin:'#a87550'}].map(personSet);
@@ -2974,12 +3014,12 @@ function openTractorShop(say){const fast=Math.max(...Object.values(TRATORES).map
         :`<span class="price">${brl(t.preco)}</span><button data-a="tratorbuy" data-v="${k}" ${state.coins>=t.preco?'':'disabled'}>Comprar</button>`}</div></div>`}
   showPanel('tratores',`<div class="s-head t-head"><button class="close" data-a="close">Fechar ✕</button><h1>🚜 Agro Imbuial · Tratores</h1><div class="sub">${say||'Trator novo de fábrica, tanque cheio. Tecla <kbd>T</kbd> sobe e desce.'} · saldo <b>${brl(state.coins)}</b></div></div>
     <div class="s-body" style="display:block"><div class="s-list">${cards}</div>
-    <h3 style="margin:14px 0 6px">🧰 Equipamentos <small>(engate um no trator · faixa de 16 canteiros, 8 de cada lado)</small></h3><div class="s-list">${Object.keys(IMPLEM).map(k=>{const E=IMPLEM[k],q=impl(),own=q.own[k],on=q.eng===k;
-      return`<div class="mcard${on?' sel':''}"><div class="mi" style="font-size:40px;display:flex;align-items:center;justify-content:center">${E.ico}</div><div class="g"><b>${E.nome}</b> <span class="cc" style="background:#3f6b28">16 canteiros</span><br><small>${E.desc}</small></div>
+    <h3 style="margin:14px 0 6px">🧰 Equipamentos <small>(engate um no trator · faixa de 8 canteiros, 4 de cada lado)</small></h3><div class="s-list">${Object.keys(IMPLEM).map(k=>{const E=IMPLEM[k],q=impl(),own=q.own[k],on=q.eng===k;
+      return`<div class="mcard${on?' sel':''}"><div class="mi" style="font-size:40px;display:flex;align-items:center;justify-content:center">${E.ico}</div><div class="g"><b>${E.nome}</b> <span class="cc" style="background:#3f6b28">8 canteiros</span><br><small>${E.desc}</small></div>
         <div class="act">${own?(on?'<button class="alt" data-a="implon" data-v="">Desengatar</button><small class="ok">engatado</small>':`<button data-a="implon" data-v="${k}">Engatar</button>`):`<span class="price">${brl(E.preco)}</span><button data-a="implbuy" data-v="${k}" ${state.coins>=E.preco?'':'disabled'}>Comprar</button>`}</div></div>`}).join('')}
       <div class="mcard"><div class="mi" style="font-size:40px;display:flex;align-items:center;justify-content:center">🧪</div><div class="g"><b>Veneno</b> <span class="cc">${brl(VENENO_PRECO)}/L</span><br><small>Para o pulverizador. Você tem <b>${state.inv.veneno|0} L</b>.</small></div>
         <div class="act"><button data-a="venbuy" data-v="10" ${state.coins>=VENENO_PRECO*10?'':'disabled'}>+10 L</button><button data-a="venbuy" data-v="50" ${state.coins>=VENENO_PRECO*50?'':'disabled'}>+50 L</button></div></div></div>
-    <p><small>Sem equipamento engatado, o trator colhe e planta em volta dele (área do trator). Com equipamento, ele faz só o serviço do equipamento, numa faixa de 16 canteiros de lado.<br>🐛 <b>Pragas:</b> às vezes aparece <b>erva daninha</b> (a colheita sai só de qualidade ruim) ou <b>insetos</b> (perde produto e algumas plantas apodrecem). Passe o pulverizador com veneno para acabar com elas.</small></p>
+    <p><small>Sem equipamento engatado, o trator colhe e planta em volta dele (área do trator). Com equipamento, ele faz só o serviço do equipamento, numa faixa de 8 canteiros de lado.<br>🐛 <b>Pragas:</b> às vezes aparece <b>erva daninha</b> (a colheita sai só de qualidade ruim) ou <b>insetos</b> (perde produto e algumas plantas apodrecem). Passe o pulverizador com veneno para acabar com elas.</small></p>
     <p><small>Com o trator, passe por cima da terra arada: ele <b>colhe</b> o que estiver pronto e <b>planta</b> a semente em uso (tecla <kbd>Q</kbd> troca) em toda a área em volta. Gasta gasolina: abasteça no posto.</small></p></div>`)}
 // ---- enfeites de Videira: postes, bancos e canteiros (só decoração, não bloqueiam) ----
 const VDECOR=[['poste',23.6,17.9],['poste',31.4,17.9],['poste',36.4,23.0],['poste',12.9,23.0],['poste',6.9,23.0],['poste',0.9,23.0],['poste',18.9,19.6],
@@ -3854,7 +3894,7 @@ function drawClimaWorld(W,H){const hr=state.min/60,c=state.clima;
 /* ================= MULTIPLAYER: cooperativo no mundo do dono, até 4 jogadores, pela internet com código de sala =================
    Ligação: WebRTC (canal de dados direto entre os aparelhos). Para os aparelhos se acharem usa o servidor público grátis do PeerJS
    só como "telefonista" (sinalização). Quem hospeda manda no mundo; os convidados mandam o que fazem e o dono aplica e espalha. */
-const JOGO_VERSAO='2026-11-26g';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
+const JOGO_VERSAO='2026-11-26h';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
 const MP_MAX=4,MP_PREFIX=SLOT_KEYS[0].replace(/_slot_1$/,'').replace(/_/g,''),MP_SERVER='wss://0.peerjs.com:443/peerjs?key=peerjs';
 const MP_ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']},{urls:'stun:global.stun.twilio.com:3478'}]};
 const MP_LEVE=['p','energy','hunger','vida','forca','sujeira','sel','testoUntil','fomeT','coins','xpUntil','monster','napHoje','doze'];      // muda toda hora: vai junto em cada batida
@@ -4458,7 +4498,7 @@ function cenarioTick(dt){const p=state.p;
   for(const f of floats)f.t+=dt;floats=floats.filter(f=>f.t<1.4)}
 function busTick(dt){const r=busRide;if(!r)return;r.t+=dt;const f=Math.min(1,r.t/r.dur),s=(.5-.5*Math.cos(Math.PI*f))*r.L;      // sai devagar e chega devagar
   let i=1;while(i<r.cum.length-1&&r.cum[i]<s)i++;const a=r.pts[i-1],b=r.pts[i],seg=(r.cum[i]-r.cum[i-1])||1,u=Math.max(0,Math.min(1,(s-r.cum[i-1])/seg));
-  r.x=a[0]+(b[0]-a[0])*u;r.y=a[1]+(b[1]-a[1])*u;state.p.x=r.x;state.p.y=r.y;      // a câmera segue o ônibus
+  r.x=a[0]+(b[0]-a[0])*u;r.y=a[1]+(b[1]-a[1])*u;{const dx=b[0]-a[0],dy=b[1]-a[1];r.dirV=Math.abs(dy)>Math.abs(dx)*1.5?(dy<0?'up':'down'):null;if(dx)r.flip=dx<0}state.p.x=r.x;state.p.y=r.y;      // a câmera segue o ônibus
   r.fum=busFumaca(r.fum||[],r.x,r.y+.45,r.flip,dt,9);r.falaT=(r.falaT||0)-dt;if(r.falaT<=0){r.falaT=4;r.fala=BUS_FALAS[Math.random()*BUS_FALAS.length|0];const fe=$('busfala');if(fe)fe.textContent=r.fala}
   if(Math.random()<dt*14)r.dust.push({x:r.x+(r.flip?1.6:-1.6),y:r.y+(Math.random()-.5)*.4,t:0});for(const d of r.dust)d.t+=dt;r.dust=r.dust.filter(d=>d.t<1.2);
   const ui=$('busride');if(ui&&ui.querySelector){const bar=ui.querySelector('.br-track i'),ic=ui.querySelector('.br-track em');const pc=(r.b.id==='fazenda'?f:1-f)*100;if(bar){bar.style.left=(r.b.id==='fazenda'?0:pc)+'%';bar.style.width=(f*100)+'%'}if(ic)ic.style.left=pc+'%'}
@@ -4494,7 +4534,18 @@ const busSprite=(()=>{let c=null;return()=>{if(c)return c;c=outline(mk(BUS_W,BUS
 function busRoda(cx,cy,R,rot){ctx.fillStyle='#1c1c1c';ctx.beginPath();ctx.arc(cx,cy,R,0,7);ctx.fill();ctx.fillStyle='#8d939c';ctx.beginPath();ctx.arc(cx,cy,R*.5,0,7);ctx.fill();
   ctx.strokeStyle='#c9ced8';ctx.lineWidth=Math.max(1.5,R*.18);for(let k=0;k<3;k++){const a=rot+k*Math.PI/3;ctx.beginPath();ctx.moveTo(cx+Math.cos(a)*R*.45,cy+Math.sin(a)*R*.45);ctx.lineTo(cx-Math.cos(a)*R*.45,cy-Math.sin(a)*R*.45);ctx.stroke()}}
 // pés do ônibus em (wx,wy); flip = indo para a esquerda; bump = sacolejo; rot = giro das rodas
-function drawBusAt(wx,wy,flip,bump,rot){const k=S*1.15,w=BUS_W*k,h=BUS_H*k,ox=Math.round(wx*T-camx),oy=Math.round(wy*T-camy)+(bump||0);
+const busVistas=(()=>{let c=null;return()=>{if(c)return c;const W='#f4f4ee',W2='#d9d9d0',G='#2e8b57',G2='#1f6b3f',Y='#f5c542',V='#5f97bd',V2='#9fd0ec';
+  const F=outline(mk(30,34,(r,e)=>{r(5,0,8,2,'#8a5c38');r(15,0,9,2,'#2f6fd1');r(2,2,26,2,'#e9e9e2');r(1,4,28,23,W);r(1,25,28,2,W2);
+    r(4,5,22,2,'#1c1c1c');r(6,5,18,1,'#ffb84a');r(3,8,24,9,'#7fb6d8');r(3,8,24,1,V2);r(14,8,1,9,'#3a3f47');r(7,11,4,4,'#e3b48c');r(7,10,4,1,'#2a2018');r(6,14,6,1,'#1c1c1c');      // letreiro, para-brisa e motorista
+    r(1,18,28,3,G);r(1,21,28,1,Y);r(1,22,28,1,G2);r(3,23,4,2,'#fff6b0');r(23,23,4,2,'#fff6b0');r(11,23,8,2,'#3a3f47');r(0,26,30,2,'#3a3f47');      // faixas, faróis e para-choque
+    r(2,28,5,6,'#2a2a2a');r(23,28,5,6,'#2a2a2a')}));
+  const B=outline(mk(30,34,(r,e)=>{r(5,0,8,2,'#8a5c38');r(15,0,9,2,'#c4302b');r(2,2,26,2,'#e9e9e2');r(1,4,28,23,W);r(1,25,28,2,W2);
+    r(3,6,24,8,V);r(3,6,24,1,V2);for(const[x,sk,hr]of[[6,'#f1d0b0','#3b2a1a'],[13,'#c99570','#151515'],[20,'#f3c9a0','#a8784a']]){r(x,10,3,3,sk);r(x,9,3,1,hr)}      // vidro de trás com passageiros
+    r(1,16,28,3,G);r(1,19,28,1,Y);r(1,20,28,1,G2);r(6,21,18,4,'#8a8f98');for(let x=7;x<23;x+=2)r(x,22,1,2,'#3a3f47');r(2,22,3,3,'#d42a2a');r(25,22,3,3,'#d42a2a');r(0,26,30,2,'#3a3f47');      // grade do motor e lanternas
+    r(2,28,5,6,'#2a2a2a');r(23,28,5,6,'#2a2a2a')}));
+  return c={F,B}}})();
+function drawBusAt(wx,wy,flip,bump,rot,dirV){if(dirV){const V=busVistas(),im=dirV==='up'?V.B:V.F,k=S*1.15,w=im.width*k,h=im.height*k,ox=Math.round(wx*T-camx),oy=Math.round(wy*T-camy)+(bump||0);
+    shadow(ox,oy-2,w*.5,8);ctx.drawImage(im,Math.round(ox-w/2),Math.round(oy-h),Math.round(w),Math.round(h));return}const k=S*1.15,w=BUS_W*k,h=BUS_H*k,ox=Math.round(wx*T-camx),oy=Math.round(wy*T-camy)+(bump||0);
   shadow(ox,oy-2,w*.48,9);
   const noite=state&&(state.min<360||state.min>=1110);
   if(noite){ctx.save();ctx.globalAlpha=.22;ctx.fillStyle='#fff3b0';ctx.beginPath();const fx=ox+(flip?-1:1)*w*.48,fy=oy-h*.33;ctx.moveTo(fx,fy);ctx.lineTo(fx+(flip?-1:1)*170,fy-40);ctx.lineTo(fx+(flip?-1:1)*170,fy+40);ctx.fill();ctx.restore()}      // farol aceso à noite
@@ -4505,7 +4556,7 @@ function drawFumaca(lista){for(const f of lista){const a=1-f.t/1.4;ctx.fillStyle
 const BUS_FALAS=['🧔 Motorista: "Segura firme que lá vem buraco!"','👵 "Moço, essa estrada não melhora nunca, né?"','🧔 Motorista: "Próxima parada… a única!"','🐔 Tem uma galinha no corredor. Ninguém sabe de quem é.','🧔 Motorista: "Esse ônibus é mais velho que a ponte!"','👦 "Mãe, falta muito?"','📻 No rádio: modão sertanejo no último volume.','🧔 Motorista: "Vai chover, a estrada vira sabão!"'];
 function drawBusRide(){const r=busRide;if(!r)return;
   for(const d of r.dust){const a=1-d.t/1.2;ctx.fillStyle=state.rain?`rgba(110,80,50,${.45*a})`:`rgba(190,160,120,${.4*a})`;ctx.beginPath();ctx.arc(d.x*T-camx,(d.y+.3)*T-camy-d.t*14,6+d.t*16,0,7);ctx.fill()}
-  if(r.fum)drawFumaca(r.fum);const sp=Math.sin(Math.PI*Math.min(1,r.t/r.dur));drawBusAt(r.x,r.y+.45,r.flip,Math.round(Math.sin(r.t*18)*1.5*sp+(hash2(Math.floor(r.x),Math.floor(r.y),3)<.15?3:0)),r.t*(4+10*sp))}
+  if(r.fum)drawFumaca(r.fum);const sp=Math.sin(Math.PI*Math.min(1,r.t/r.dur));drawBusAt(r.x,r.y+.45,r.flip,Math.round(Math.sin(r.t*18)*1.5*sp+(hash2(Math.floor(r.x),Math.floor(r.y),3)<.15?3:0)),r.t*(4+10*sp),r.dirV)}
 let busFx=null;      // ônibus indo embora depois de deixar o jogador
 function drawBusStop(b){const sx=Math.round(b.x*T-camx),gy=Math.round(b.y*T-camy);shadow(sx,gy-2,40,6);
   ctx.fillStyle='#3a3f47';ctx.fillRect(sx-44,gy-62,4,60);ctx.fillRect(sx+40,gy-62,4,60);      // abrigo
@@ -6235,6 +6286,19 @@ function motoVertical(m,k,sx,gy,dir,mov,head,set,lift){      // moto de frente (
   {const o=dirtOver(img,dirtStage(vehDirt()));if(o)blit(o,sx,gy-bump)}
   const L=Math.round(sx-img.width*u/2),Tp=gy-bump-img.height*u+(img.pad||0)*S,x0=L+(tras?10:11)*u,ww=(tras?6:4)*u,ph=((spinA||0)*2)%3;      // cravos do pneu correndo
   ctx.fillStyle='#454545';for(let y=19+ph;y<31;y+=3)ctx.fillRect(Math.round(x0),Math.round(Tp+(y+1)*u),Math.round(ww),Math.round(u))}
+function drawTratorV(p,head){const sx=Math.round(p.x*T-camx),gy=Math.round((p.y+.28)*T-camy),bump=p.walk&&Math.floor(clock*18)%2?1:0,fl=p.face<0,vert=p.dir==='up'||p.dir==='down',cf=implEng()==='ceifa';
+  if(!vert&&!cf)return false;
+  const poeira=y=>{if(p.walk&&Math.floor(clock*10)%3===0){ctx.fillStyle='rgba(185,160,120,.55)';ctx.beginPath();ctx.arc(sx+(Math.random()-.5)*40,y,6+Math.random()*5,0,7);ctx.fill()}};
+  if(cf){const C=colheitadeiraSpr();drawImplem(p,sx,gy,fl);
+    if(!vert){shadow(sx,gy-2,62,10);blit(C.L,sx,gy-bump,fl);poeira(gy-8);return true}
+    shadow(sx,gy-2,50,9);blit(p.dir==='up'?C.T:C.F,sx,gy-bump,false);poeira(p.dir==='up'?gy+4:gy-60);return true}
+  const V=SPR.tratorV&&SPR.tratorV[state.trator];if(!V)return false;const up=p.dir==='up';
+  drawImplem(p,sx,gy,fl);shadow(sx,gy-2,40,9);poeira(up?gy+4:gy-50);
+  blit(up?V.T0:V.F0,sx,gy-bump,false);
+  if(SPR.player&&SPR.player.sit)blit(SPR.player.sit[0],sx,gy-38-bump,false);
+  else{const rs=SPR.player;drawPerson(rs,{x:p.x,y:p.y,dir:up?'up':'down',walk:0,lift:(rs.hd?36:38)+bump,noShadow:1},head)}
+  blit(up?V.T1:V.F1,sx,gy-bump,false);{const o=dirtOver(up?V.T1:V.F1,dirtStage(vehDirt()));if(o)blit(o,sx,gy-bump,false)}
+  return true}
 function drawRider(p,head){
   if(state.rideKind!=='trator'&&(p.dir==='up'||p.dir==='down')&&SPR.motoF&&SPR.motoF[state.moto]){if(p.walk)spinA=clock*(p.vel||14);
     const sx=Math.round(p.x*T-camx),gy=Math.round((p.y+.28)*T-camy);
@@ -6242,6 +6306,7 @@ function drawRider(p,head){
     const rs=riderSet(),cap=q.cap&&!skinOn()&&!estiloSobrev();motoVertical(SPR.moto,mp,sx,gy,p.dir,p.walk,cap?null:head,rs,rs.hd?14:18);
     {const bump=p.walk&&Math.floor(clock*18)%2?1:0;drawCamisaNum(sx,gy-(rs.hd?14:18)-(p.dir==='up'?6:0)-bump-CAMISA_DY,p.dir)}
     if(cap){const bump=p.walk&&Math.floor(clock*18)%2?1:0;drawCapacete(q.cap,q.capCor,sx,gy-(rs.hd?14:18)-(p.dir==='up'?6:0)-bump-CAP_DY,p.dir)}return}
+  if(state.rideKind==='trator'&&drawTratorV(p,head))return;
   const tr=state.rideKind==='trator',m=tr?SPR.trator[state.trator]:motoPlayer(state.moto).S,sx=Math.round(p.x*T-camx),gy=Math.round((p.y+.28)*T-camy),bump=p.walk&&Math.floor(clock*18)%2?1:0,fl=p.face<0;
   if(tr)drawImplem(p,sx,gy,fl);shadow(sx,gy-2,tr?44:36,tr?8:6);blit(m,sx,gy-bump,fl);{const o=dirtOver(m,dirtStage(vehDirt()));if(o)blit(o,sx,gy-bump,fl)}
   if(!tr){if(p.walk)spinA=clock*(p.vel||14);const w=vw(m)*S,top=gy-bump-vh(m)*S+(m.pad||0)*S;for(const wx of[6.5,22.5])wheelSpin(fl?sx+w/2-wx*S:sx-w/2+wx*S,top+13.5*S,fl?-spinA:spinA)}
