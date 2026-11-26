@@ -537,7 +537,7 @@
    Tudo (mapa, sprites, sons) é gerado por código. */
 
 const T=48,S=3,MW=230,XMIN=-130,AW=MW-XMIN,MH=200,MW0=112,MHB=104,MH0=76,OLD_MW=72,OLD_MH=48,SAVE_KEY='imbuial_valley_save_v1';
-const MIN_PER_SEC=2.4;          // tempo contínuo: 24 h de jogo = 10 min reais
+const MIN_PER_SEC=1.2;          // tempo contínuo: 24 h de jogo = 20 min reais (igual ao Minecraft)
 const cv=document.getElementById('c'),ctx=cv.getContext('2d');
 const $=id=>document.getElementById(id);
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -598,6 +598,12 @@ const PLANTAS={src:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALAAAACwCAYAAA
 function plantasIco(){if(!PLANTAS.prod||typeof ICON==='undefined')return;for(const k in PLANTAS.prod){const[prod,pac]=PLANTAS.prod[k];      // ícone do item, do pacote de sementes e das qualidades
   try{ICON[k]=prod.toDataURL();ICON['sem_'+k]=pac.toDataURL();
     for(const q of QUALS)if(q.s){const cv=document.createElement('canvas');cv.width=22;cv.height=22;const g=cv.getContext('2d');g.drawImage(prod,0,0);g.fillStyle='#1c1c1c';g.fillRect(14,0,8,8);g.fillStyle=q.c;g.fillRect(15,1,6,6);if(q.ico==='★'){g.fillStyle='#fff8c0';g.fillRect(17,2,2,2)}ICON[k+q.s]=cv.toDataURL()}}catch(e){}}}
+// praga: erva daninha = só sai qualidade ruim; inseto = pode perder produto
+function colheP(c,k,n){if(c&&c.praga==='inseto'&&Math.random()<.6)n=Math.max(0,n-1);if(c)c.praga=null;
+  if(!n)return{txt:'🐛 Os insetos comeram tudo',cor:'#c9b48a',gigante:false};
+  if(c&&c.ervaCol){const key=k+'_q1';state.inv[key]=(state.inv[key]||0)+n;return{txt:`+${n} ${ITEMS[key].nome} (erva daninha)`,cor:'#9aa0a8',gigante:false}}
+  return colheQual(k,n)}
+const colhePraga=(c,k,n)=>{if(c&&c.praga==='erva')c.ervaCol=1;const q=colheP(c,k,n);if(c)delete c.ervaCol;return q};
 function colheQual(k,n){let melhor=1;const got={};for(let j=0;j<n;j++){let r=Math.random(),qi=0;for(;qi<QUALS.length-1;qi++){if(r<QUALS[qi].p)break;r-=QUALS[qi].p}const key=k+QUALS[qi].s;state.inv[key]=(state.inv[key]||0)+1;got[key]=(got[key]||0)+1;melhor=Math.max(melhor,qi)}
   return{txt:Object.entries(got).map(([key,v])=>`+${v} ${ITEMS[key].nome}`).join(' · '),cor:melhor===3?'#ffd84a':melhor===2?'#9be38a':'#ffffff',gigante:melhor===3}}
 const FISH={   // onde: rio / lago / ambos · w: peso no sorteio (menor = mais raro)
@@ -628,7 +634,7 @@ const TREASURE={   // tesouros de pescaria: memes brasileiros
   perola:{nome:'Pétalas de Rosa',preco:1200,w:0,desc:'Pétalas que nunca murcham. Só aparecem no fundo do Lago das Sakuras.'},
   joia_sakura:{nome:'Flor de Sakura de Cristal',preco:600,w:0,desc:'Uma flor que nunca murcha. Achada entre as raízes das cerejeiras do lago.'},
 };
-ITEMS.bota={nome:'Bota velha',preco:1};
+ITEMS.bota={nome:'Bota velha',preco:1};ITEMS.veneno={nome:'Veneno (litro)'};
 for(const k in FISH)ITEMS[k]={nome:FISH[k].nome,preco:FISH[k].preco,comida:FISH[k].comida};
 // ---- tamanhos de peixe: do filhote ao monstro do rio (o "normal" é o item de sempre) ----
 const FISH_CM={lambari:12,cara:18,tilapia:30,carpa:45,jundia:40,traira:45,pintado:80,dourado:70,koi:45,koi_ouro:50};      // tamanho normal de cada peixe, em cm
@@ -697,6 +703,45 @@ const TRATORES={   // vel = multiplicador da velocidade a pé; larg = quadrados 
   bh180:{nome:'Valtra BH180',cv:180,vel:1.1,larg:5,preco:113000,cor:'#d9dde2',cor2:'#c4302b',desc:'Forte que só. Planta e colhe numa área de 5×5.'},
   jd6125:{nome:'John Deere 6125J',cv:125,vel:1.3,larg:5,preco:156000,cor:'#2f8a3a',cor2:'#f2c218',desc:'O verdão: rápido e com área de 5×5. O sonho da roça.'},
 };
+/* ---------- implementos do trator (plantadeira, pulverizador, ceifa) e pragas da lavoura ---------- */
+const IMPLEM={plantadeira:{nome:'Plantadeira',ico:'🌱',preco:38000,desc:'Planta a semente em uso numa faixa de 16 canteiros (8 de cada lado do trator).'},
+  pulverizador:{nome:'Pulverizador',ico:'💨',preco:32000,desc:'Passa veneno numa faixa de 16 canteiros: mata erva daninha e insetos e protege por 3 dias. Gasta 1 L de veneno a cada 16 canteiros.'},
+  ceifa:{nome:'Ceifa (plataforma)',ico:'🌾',preco:55000,desc:'Colhe tudo que estiver pronto numa faixa de 16 canteiros (8 de cada lado). Também tira as plantas podres.'}};
+const IMP_LADO=8,VENENO_PRECO=12;
+const impl=()=>state.implem||(state.implem={own:{},eng:null});
+const implEng=()=>{const q=impl();return q.eng&&q.own[q.eng]?q.eng:null};
+function pragaDia(){const day=state.day;let lv=[];try{lv=lavouras()}catch(e){}let podres=0;const novos=[];
+  for(const k in state.crops){const c=state.crops[k];if(!c.praga||c.podre)continue;
+    if(c.praga==='inseto'&&!c.r&&Math.random()<.18){c.podre=1;podres++;continue}      // inseto: algumas plantas apodrecem
+    const i=+k;for(const d of[1,-1,AW,-AW])if(Math.random()<.22){const o=state.crops[i+d];if(o&&!o.praga&&!o.podre&&!(o.prot>=day))novos.push([o,c.praga])}}      // a praga se espalha
+  for(const[o,t]of novos)o.praga=t;
+  for(const L of lv){const pl=L.filter(i=>state.crops[i]&&!state.crops[i].podre);if(pl.length<6||Math.random()>.1)continue;
+    const tipo=Math.random()<.5?'erva':'inseto',c0=pl[Math.random()*pl.length|0],x0=c0%AW,y0=(c0/AW)|0,R=2+Math.random()*3;let n=0;
+    for(const i of pl){const c=state.crops[i];if(c.prot>=day)continue;if(Math.hypot(i%AW-x0,((i/AW)|0)-y0)<=R){c.praga=tipo;n++}}
+    if(n)setTimeout(()=>toast(tipo==='erva'?`🌿 Apareceu erva daninha em ${n} canteiros! Passe o pulverizador com veneno, senão a colheita sai de qualidade ruim.`:`🐛 Praga de insetos em ${n} canteiros! Passe o pulverizador com veneno antes que as plantas apodreçam.`,9000),4500)}
+  if(podres)setTimeout(()=>toast(`🥀 Os insetos apodreceram ${podres} planta${podres>1?'s':''} (não rendem nada).`,7000),6000)}
+function implFaixa(cx,cy,dir){const hor=dir==='left'||dir==='right',out=[];for(let k=-IMP_LADO;k<=IMP_LADO;k++){const x=hor?cx:cx+k,y=hor?cy+k:cy;if(x>=XMIN&&y>=0&&x<MW&&y<MH)out.push([x,y])}return out}
+function implTrabalha(im,cx,cy){const p=state.p;let col=0,pl=0,sp=0;
+  if(im==='pulverizador'&&(state.inv.veneno|0)<=0){if(clock-(implTrabalha.av||0)>5){implTrabalha.av=clock;toast('💨 Sem veneno! Compre veneno na Agro Imbuial (aba do trator).')}return}
+  for(const[x,y]of implFaixa(cx,cy,p.dir)){const i=y*AW-XMIN+x;if(!soilOn(i))continue;const c=state.crops[i];
+    if(im==='ceifa'){if(c&&(c.r||c.podre))col+=harvestAt(i)}
+    else if(im==='plantadeira'){if(!c&&seedOk(state.sel)){state.seeds[state.sel]--;state.crops[i]={c:state.sel,g:0,w:false,r:false};pl++}}
+    else if(c&&!c.podre){c.praga=null;c.prot=state.day+3;sp++;if(Math.random()<.3)partBurst(x+.5,y+.3,2,['#cfe9ff','#e8f6ff','#b8dcf2'],.8,.6,1,.6,2)}}
+  if(sp){state.venAcc=(state.venAcc||0)+sp/16;while(state.venAcc>=1&&state.inv.veneno>0){state.venAcc--;state.inv.veneno--}}
+  if(pl)addNivelXp(pl*XP_PLANTIO);
+  if(col)float(p.x,p.y-1.2,`+${col} colhidos`,'#ffe066');if(pl)float(p.x+.6,p.y-.6,`${pl} plantados`,'#bfe6a0');if(col||pl)beep(440,.05,'square',.03)}
+function drawImplem(p,sx,gy,fl){const im=implEng();if(!im)return;const hor=p.dir==='left'||p.dir==='right'||p.dir==null,cx=Math.floor(p.x),cy=Math.floor(p.y),L=(2*IMP_LADO+1)*T;
+  ctx.save();if(hor){const frente=im==='ceifa',bx=sx+(frente?(fl?-1:1):(fl?1:-1))*T*1.15,top=(cy-IMP_LADO)*T-camy;
+      ctx.fillStyle='#3a3a3a';ctx.fillRect(Math.min(bx,sx),gy-14,Math.abs(bx-sx),4);
+      if(im==='pulverizador'){ctx.fillStyle='#8d939c';ctx.fillRect(bx-3,top,6,L);for(let k=0;k<=2*IMP_LADO;k++){ctx.fillStyle='#2b2b2b';ctx.fillRect(bx-5,top+k*T+T/2-2,10,4);if(p.walk){ctx.fillStyle='rgba(200,230,255,.35)';ctx.beginPath();ctx.ellipse(bx+(fl?6:-6),top+k*T+T/2+6,10,7,0,0,7);ctx.fill()}}ctx.fillStyle='#e8e8e8';ctx.fillRect(sx+(fl?18:-34),gy-58,16,20)}
+      else if(im==='plantadeira'){ctx.fillStyle='#1f5a2a';ctx.fillRect(bx-5,top,10,L);for(let k=0;k<=2*IMP_LADO;k++){ctx.fillStyle='#f2c218';ctx.fillRect(bx-8,top+k*T+8,16,12);ctx.fillStyle='#6b4a2b';ctx.fillRect(bx-3,top+k*T+24,6,10)}}
+      else{ctx.fillStyle='#c4302b';ctx.fillRect(bx-7,top,14,L);ctx.fillStyle='#f2c218';for(let k=0;k<L;k+=12)ctx.fillRect(bx-5,top+((k+Math.floor(clock*60))%L),10,4);ctx.fillStyle='#8d939c';for(let k=0;k<=2*IMP_LADO;k++)ctx.fillRect(bx+(fl?-12:6),top+k*T+T/2-3,6,6)}}
+    else{const up=p.dir==='up',frente=im==='ceifa',by=gy+((frente?up:!up)?-T*.9:T*.45),left=(cx-IMP_LADO)*T-camx;
+      ctx.fillStyle='#3a3a3a';ctx.fillRect(sx-2,Math.min(by,gy-10),4,Math.abs(by-gy+10));
+      if(im==='pulverizador'){ctx.fillStyle='#8d939c';ctx.fillRect(left,by-3,L,6);for(let k=0;k<=2*IMP_LADO;k++){ctx.fillStyle='#2b2b2b';ctx.fillRect(left+k*T+T/2-2,by-5,4,10);if(p.walk){ctx.fillStyle='rgba(200,230,255,.35)';ctx.beginPath();ctx.ellipse(left+k*T+T/2,by+8,8,9,0,0,7);ctx.fill()}}}
+      else if(im==='plantadeira'){ctx.fillStyle='#1f5a2a';ctx.fillRect(left,by-5,L,10);for(let k=0;k<=2*IMP_LADO;k++){ctx.fillStyle='#f2c218';ctx.fillRect(left+k*T+16,by-10,16,12)}}
+      else{ctx.fillStyle='#c4302b';ctx.fillRect(left,by-7,L,14);ctx.fillStyle='#f2c218';for(let k=0;k<L;k+=14)ctx.fillRect(left+((k+Math.floor(clock*60))%L),by-5,5,10)}}
+  ctx.restore()}
 const TANK={moto:8,trator:40},tankOf=(kind,k)=>{const L=kind==='trator'?TRATORES:MOTOS,ord=Object.keys(L).sort((a,b)=>L[a].preco-L[b].preco);return TANK[kind]+Math.max(0,ord.indexOf(k))},      // cada veículo melhor tem +1 L de tanque
  FUEL_USE={moto:.004,trator:.02},GAS_PRICE={comum:6,aditivada:9},AD_BOOST=1.25;      // litros, litros por quadrado andado, moedas por litro; aditivada = +25% de velocidade
 const GAS_LOT=[58,47,5,3],LAVA_LOT=[64,47,4,3],TRATOR_LOT=[69,47,8,3];      // posto, lava-jato ao lado e a concessionária de tratores      // posto e concessionária de tratores: os dois do outro lado da ponte
@@ -1096,8 +1141,8 @@ function finishNature(s1){
 const VSEED=4242;
 const vHash=(i,k)=>hash2(i%AW,(i/AW)|0,VSEED+k*131);
 const tamClasse=u=>u<.3?0:u<.75?1:2;      // 0 pequeno · 1 médio · 2 grande
-function treeVar(i){return{v:Math.floor(vHash(i,1)*10),s:tamClasse(vHash(i,2))}}
-function pineVar(i){return{s:tamClasse(vHash(i,3))}}
+function treeVar(i){if(ARV_OV.has(i))return ARV_OV.get(i);return{v:Math.floor(vHash(i,1)*10),s:tamClasse(vHash(i,2))}}
+function pineVar(i){if(ARV_OV.has(i))return{s:ARV_OV.get(i).s};return{s:tamClasse(vHash(i,3))}}
 function rockVar(i){const x=(i%AW+XMIN),y=(i/AW)|0;let u=vHash(i,5);if(inPedr(x,y)||(x>=QUARRY[0]&&x<=QUARRY[2]&&y>=QUARRY[1]&&y<=QUARRY[3]))u=.25+u*.75;      // na Pedreirinha e na pedreira as pedras são maiores
   return{t:Math.floor(vHash(i,4)*10),s:Math.min(4,Math.floor(u*5)),f:Math.floor(vHash(i,6)*5)}}
 function capimVar(i){return{c:Math.floor(vHash(i,7)*5),s:tamClasse(vHash(i,8))}}
@@ -1264,6 +1309,34 @@ function genSakura(s1){const rn=mulberry32((s1^0x5a4b3c2d)>>>0),I=(x,y)=>y*AW-XM
   // prainha (pontal de grama) entrando no lago pelo sul, bom para pescar
   for(let y=Math.round(cy+ry*.6);y<=Math.round(cy+ry+1);y++)for(const x of[Math.round(cx)-1,Math.round(cx),Math.round(cx)+1]){const i=I(x,y);ground[i]=0;objs[i]=null;SAKURA.delete(i)}}
 const isSakura=i=>SAKURA.has(i);
+/* ---------- mudas de árvore: compra na Loja do Giliard, planta com a tecla L (modo 🌳) e em 10 dias vira árvore ---------- */
+const ARV_OV=new Map();      // casa -> variação da árvore plantada
+const ARV_DIAS=10;
+const MUDAS={f0:['Árvore redonda',80],f1:['Árvore guarda-chuva',80],f2:['Árvore alta',80],f3:['Árvore torta',80],f4:['Árvore galhuda',80],f5:['Árvore chorona',90],f6:['Árvore dupla',90],f7:['Árvore cheia',90],f8:['Árvore nuvem',90],f9:['Cipreste',90],
+  maca:['Macieira',150],arauc:['Araucária',120],sakura:['Cerejeira (sakura)',300]};
+const mudaDesc={maca:'dá maçãs quando bate nela',arauc:'dá pinhões',sakura:'flores cor-de-rosa'};
+function arvImg(t,v,sz){if(t==='arauc')return mkPine(sz,false);if(t==='sakura')return mkSakura(v%4,sz);if(t==='maca')return mkTree(v,sz,true);return mkTree(+t.slice(1),sz,false)}
+function mudaIcon(k){const key='muda_'+k;if(ICON[key])return key;try{const im=arvImg(k,0,1),c=document.createElement('canvas');c.width=c.height=48;const g=c.getContext('2d'),sc=Math.min(44/im.width,46/im.height);g.imageSmoothingEnabled=false;
+  g.drawImage(im,(48-im.width*sc)/2,47-im.height*sc,im.width*sc,im.height*sc);ICON[key]=c.toDataURL()}catch(e){}return key}
+const arvEm=i=>(state.arvs||[]).find(a=>a.i===i);
+function arvOk(x,y){if(x<XMIN+1||y<1||x>=MW-1||y>=MH-1)return false;const i=y*AW-XMIN+x,o=objs[i];if(ground[i]!==0||lotAt[i]||soilOn(i)||(MONTE&&MONTE[i])||(o&&o!=='capim')||arvEm(i))return false;
+  const v=vilaZ(x,y);if(v&&!vilaAberta(v))return false;return true}
+const arvSpot=(x,y)=>arvOk(x,y)&&(!plow||!plow.a||(((x-plow.a[0])%2+2)%2===0&&(((y-plow.a[1])%2+2)%2===0)));      // de 2 em 2 canteiros, para as copas não se embolarem
+function arvAplica(){const L=state&&state.arvs;if(!L)return;for(let k=L.length-1;k>=0;k--){const a=L[k];if(soilOn(a.i)){L.splice(k,1);continue}
+    if(state.day-a.d>=ARV_DIAS&&!a.ok){if(objs[a.i]&&objs[a.i]!=='capim'&&objs[a.i]!=='tree'&&objs[a.i]!=='pine'){L.splice(k,1);continue}a.ok=1}
+    if(a.ok){if(!ARV_OV.has(a.i)){ARV_OV.set(a.i,{v:a.t[0]==='f'?+a.t.slice(1):a.v,s:a.s,apple:a.t==='maca'});for(let j=0;j<8;j++)NAT_I.delete(a.i*8+j)}
+      if(a.t==='sakura')SAKURA.add(a.i);if(objs[a.i]!=='tree'&&objs[a.i]!=='pine'&&!a.tirada)objs[a.i]=a.t==='arauc'?'pine':'tree'}
+    else if(objs[a.i]==='capim')objs[a.i]=null}}
+function drawMuda(a){const p=Math.max(0,Math.min(1,(state.day-a.d+state.min/1440)/ARV_DIAS)),x=(a.i%AW+XMIN)+.5,y=((a.i/AW)|0)+1,sx0=Math.round(x*T-camx),sy0=Math.round(y*T-camy)-3;
+  shadow(sx0,sy0-1,6+p*14,3+p*3);
+  if(p<.12){ctx.fillStyle='#5a3a1e';ctx.fillRect(sx0-7,sy0-3,14,3);ctx.fillStyle='#4f9a3c';ctx.fillRect(sx0-1,sy0-12,2,10);ctx.fillStyle='#6cc24f';ctx.fillRect(sx0-6,sy0-14,5,3);ctx.fillRect(sx0+1,sy0-11,5,3);return}      // brotinho
+  const im=arvImg(a.t,a.v,a.s),sc=(im.sc||S)*(.22+.66*p),w=im.width*sc,h=im.height*sc;ctx.drawImage(im,Math.round(sx0-w/2),Math.round(sy0-h+3),w,h);
+  if(p<.45){ctx.fillStyle='#8a5c38';ctx.fillRect(sx0+8,sy0-18,2,18);ctx.fillStyle='#c9a26b';ctx.fillRect(sx0+5,sy0-17,8,2)}}      // estaca de apoio enquanto é pequena
+function doArvore(){const t=plow.muda,tem=(state.mudas&&state.mudas[t])|0;if(!MUDAS[t]||!tem)return;const[x0,y0,x1,y1]=plowRect(plow.a,plow.b);let n=0;state.arvs=state.arvs||[];
+  for(let y=y0;y<=y1&&n<tem;y++)for(let x=x0;x<=x1&&n<tem;x++)if(arvSpot(x,y)){const i=y*AW-XMIN+x;if(objs[i]==='capim')objs[i]=null;
+    state.arvs.push({i,t,d:state.day,v:Math.random()*10|0,s:Math.random()<.5?1:Math.random()<.5?0:2});n++;partBurst(x+.5,y+.6,5,['#7a5532','#9b6b43','#6cc24f'],1.2,1.6,8,.45,2)}
+  if(!n)return;state.mudas[t]-=n;sx('plantar');setTimeout(()=>sx('plantar'),150);
+  toast(`🌱 ${n} muda${n>1?'s':''} de ${MUDAS[t][0].toLowerCase()} plantada${n>1?'s':''}! Em ${ARV_DIAS} dias vira${n>1?'m':''} árvore.`);endPlow();panelKind=null;closePanel();save()}
 // cerejeira: tronco escuro torto, galhos abertos e copa em nuvens rosadas (4 formatos, 3 tamanhos)
 const SAK_PAL=['#e98fb0','#f6b3c9','#c76b8f','#fde0ea'];
 function mkSakura(v,sz){const key='s'+v+'|'+sz;if(NAT.tree[key])return NAT.tree[key];
@@ -1286,7 +1359,7 @@ function petalasTick(dt){if(!state)return;const p=state.p;if(naSakura(p.x,p.y)&&
   for(const q of petalas){q.t+=dt;q.x+=(q.vx+Math.sin(q.t*2+q.ph)*.4)*dt;q.y+=q.vy*dt}petalas=petalas.filter(q=>q.t<9)}
 function drawPetalas(){for(const q of petalas){const x=q.x*T-camx,y=q.y*T-camy,f=Math.sin(q.t*5+q.ph);ctx.fillStyle=f>0?'#f6b3c9':'#e98fb0';ctx.fillRect(Math.round(x),Math.round(y),f>0?4:3,3)}}
 // ---- acabamento da natureza: bosques e clareiras, árvores espaçadas, pedras em grupinhos, árvores na cidade ----
-const isApple=i=>objs[i]==='tree'&&hash2((i%AW+XMIN),(i/AW)|0,913)<.2;      // 20% das árvores são macieiras
+const isApple=i=>objs[i]==='tree'&&(ARV_OV.has(i)?!!ARV_OV.get(i).apple:hash2((i%AW+XMIN),(i/AW)|0,913)<.2);      // 20% das árvores são macieiras (as plantadas: só as mudas de macieira)
 const APPLE_HIT=.1;      // chance de cair uma maçã a cada golpe numa macieira
 function hash2(x,y,s){let h=Math.imul(x,374761393)^Math.imul(y,668265263)^Math.imul(s,982451653);h=Math.imul(h^(h>>>13),1274126177);return((h^(h>>>16))>>>0)/4294967296}
 function vnoise(x,y,s,g){const fx=x/g,fy=y/g,x0=Math.floor(fx),y0=Math.floor(fy),sm=t=>t*t*(3-2*t),u=sm(fx-x0),v=sm(fy-y0),
@@ -1382,7 +1455,7 @@ function walkable(tx,ty){
   if(g===2)return false;
   if(g===3&&!state.b.ponte)return false;
   if(lotAt[i])return false;
-  const o=objs[i];
+  const o=state.soil[i]?null:objs[i];
   if(o&&o!=='capim'&&o!=='bush'){if((o==='tree'||o==='rock')&&state.depleted[i])return true;return false}
   return true;
 }
@@ -2216,6 +2289,7 @@ function buildSprites(){
   for(const k in FISH){const c=FISH[k].cor;I[k]=(r,e)=>{e(7,8,5,3,c);r(11,5,3,2,c);r(11,9,3,2,c);r(12,7,2,2,c);e(7,9.5,4,1.2,'rgba(255,255,255,.45)');r(4,7,1,1,'#222');e(7,6,3,.8,'rgba(0,0,0,.22)');
     if(k==='pintado'){r(6,7,1,1,'#333');r(8,8,1,1,'#333');r(9,6,1,1,'#333')}}}
   Object.assign(I,{
+    veneno:r=>{r(4,4,8,10,'#2f6b2a');r(5,5,6,8,'#58b04f');r(6,2,4,2,'#d42a2a');r(5,7,6,3,'#f4f4f4');r(7,8,1,1,'#1c1c1c');r(9,8,1,1,'#1c1c1c')},
     bota:r=>{r(5,2,4,9,'#6e4527');r(5,10,8,3,'#6e4527');r(5,13,8,1,'#2a2018');r(6,3,1,6,'#8a5c38');r(10,11,2,1,'#8a5c38');r(5,2,4,1,'#4a2f1a')},
     caramelo:(r,e)=>{r(3,13,10,2,'#8a5c38');e(8,10,3,3,'#e0a23a');e(9,5,3,3,'#e0a23a');r(6,2,2,3,'#c9862a');r(10,2,2,3,'#c9862a');r(11,6,2,2,'#f2c66a');r(12,6,1,1,'#222');r(9,4,1,1,'#222');r(4,10,1,3,'#e0a23a');r(7,4,1,1,'#fff')},
     capivara:(r,e)=>{e(7,9,6,3,'#f5c542');r(10,5,5,4,'#f5c542');r(14,6,1,3,'#c9962a');r(10,4,1,1,'#c9962a');r(12,6,1,1,'#222');r(3,11,2,3,'#c9962a');r(9,11,2,3,'#c9962a');r(4,7,4,1,'#fff3b0')},
@@ -2628,19 +2702,68 @@ function drawSwing(p){if(swingT<=0)return;const sx=p.x*T-camx,sy=(p.y+.28)*T-cam
 /* ---------- Arar terra: escolher as duas pontas ---------- */
 let plow=null,plowHover=null;      // plow={a:[x,y]|null,b:[x,y]|null}
 const plowValid=(x,y)=>{if(x<XMIN||y<0||x>=MW||y>=MH)return false;const i=y*AW-XMIN+x,o=objs[i];
-  return ground[i]===0&&!lotAt[i]&&!soilOn(i)&&(!o||o==='capim')};
+  return ground[i]===0&&!lotAt[i]&&!soilOn(i)&&!(MONTE&&MONTE[i])&&(!o||o==='capim'||arLimpa(i))};
+const arLimpa=i=>{const o=objs[i];return o==='tree'&&!isSakura(i)||o==='pine'||o==='rock'||o==='bush'};      // a equipe tira na hora de arar
+const AR_VENDA=.3;      // o que sai da limpeza é vendido na hora por 30% do valor
+function arDrops(i){const o=objs[i],dep=state.depleted[i];if(!arLimpa(i)||dep&&o!=='pine')return[];
+  if(o==='tree'){const L=[['madeira',4+tamBonus(i,'tree')]];if(isApple(i))L.push(['maca',1]);return L}
+  if(o==='pine')return dep?[['madeira',3]]:[['madeira',3],['pinhao',2+tamBonus(i,'pine')]];
+  if(o==='rock')return[['pedra',3+tamBonus(i,'rock')]];return[['fruta',2+tamBonus(i,'bush')]]}
+const arValor=i=>{let v=0;for(const[k,n]of arDrops(i))v+=(ITEMS[k]?ITEMS[k].preco:0)*n;return Math.round(v*AR_VENDA*100)/100};
 const unplowValid=(x,y)=>x>=XMIN&&y>=0&&x<MW&&y<MH&&soilOn(y*AW-XMIN+x);
-const curValid=(x,y)=>plow&&plow.mode==='tirar'?unplowValid(x,y):plowValid(x,y);      // modo arar ou tirar lavoura
+const curValid=(x,y)=>plow&&plow.mode==='tirar'?unplowValid(x,y):plow&&plow.mode==='arvore'?arvSpot(x,y):plowValid(x,y);      // modo arar ou tirar lavoura
 function plowRect(a,b){return[Math.min(a[0],b[0]),Math.min(a[1],b[1]),Math.max(a[0],b[0]),Math.max(a[1],b[1])]}
 function plowCount(a,b){const[x0,y0,x1,y1]=plowRect(a,b);let n=0,t=0;for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){t++;if(curValid(x,y))n++}return{n,t,w:x1-x0+1,h:y1-y0+1}}
-const PLOW_MODOS=[['arar','⛏️ Arar'],['tirar','🧹 Tirar lavoura'],['galinheiro','🐔 Galinheiro'],['curral','🐄 Curral'],['vender','💰 Vender']];
+const PLOW_MODOS=[['arar','⛏️ Arar'],['tirar','🧹 Tirar lavoura'],['arvore','🌳 Plantar árvore'],['galinheiro','🐔 Galinheiro'],['curral','🐄 Curral'],['vender','💰 Vender']];
 const isObra=m=>m==='galinheiro'||m==='curral';
 function plowBar(){const el=$('plowbar');if(!plow){el.classList.add('hidden');return}el.classList.remove('hidden');
   const m=plow.mode,tir=m==='tirar';el.classList.toggle('tirar',tir||m==='vender');
-  const dica=m==='arar'||tir?`${!plow.a?(isTouch?'Aperte <b>E</b> em cima da <b>primeira ponta</b>':'Clique (ou <kbd>E</kbd>) na <b>primeira ponta</b>'):'Agora a <b>segunda ponta</b>'} · ${tir?'grátis':brl(PLOW_PRICE)+' por canteiro'}`
+  if(m==='arvore'){const M=state.mudas||{},ks=Object.keys(MUDAS).filter(k=>M[k]>0);if(!plow.muda||!M[plow.muda])plow.muda=ks[0]||null;}
+  const dica=m==='arvore'?(!plow.muda?'<span class="no">Você não tem mudas. Compre na <b>Loja do Giliard</b> (aba 🌳 Mudas).</span>':`<span class="arvsel">${Object.keys(MUDAS).filter(k=>(state.mudas||{})[k]>0).map(k=>`<button class="mini ${k===plow.muda?'':'alt'}" data-a="arvmuda" data-v="${k}"><img src="${ICON[mudaIcon(k)]||''}" alt="" style="width:18px;height:18px;vertical-align:middle"> ${MUDAS[k][0]} ×${state.mudas[k]}</button>`).join('')}</span><br>${!plow.a?(isTouch?'Aperte <b>E</b> na <b>primeira ponta</b>':'Clique (ou <kbd>E</kbd>) na <b>primeira ponta</b>'):'Agora a <b>segunda ponta</b>'} · as mudas vão de 2 em 2 canteiros (a mesma ponta duas vezes = 1 muda)`)
+    :m==='arar'||tir?`${!plow.a?(isTouch?'Aperte <b>E</b> em cima da <b>primeira ponta</b>':'Clique (ou <kbd>E</kbd>) na <b>primeira ponta</b>'):'Agora a <b>segunda ponta</b>'} · ${tir?'grátis':brl(PLOW_PRICE)+' por canteiro'}`
     :isObra(m)?(state.nivel.lvl<extraNivel(m)?`<span class="no">🔒 ${BLD[m].nome} extra libera no nível ${extraNivel(m)}</span>`:`${isTouch?'Pare onde fica a <b>porta</b> e aperte <b>E</b>':'Clique onde fica a <b>porta</b> (ou <kbd>E</kbd>)'} · ${brl(extraPreco(m).c)} + ${extraPreco(m).m} madeiras + ${extraPreco(m).p} pedras`)
     :`${isTouch?'Chegue perto e aperte <b>E</b>':'Clique'} num <b>galinheiro ou curral</b> para vender (devolve metade do gasto)`;
   el.innerHTML=`<div class="pb-modes">${PLOW_MODOS.map(([k,n])=>`<button class="mini ${k===m?'':'alt'}" data-a="plowset" data-v="${k}">${n}</button>`).join('')}<button class="mini alt" data-a="plowcancel">✕</button></div><div class="pb-dica">${dica}</div>`}
+/* ---------- equipe de aração: peões com motosserra, picareta e foice limpam, e a enxada ara (tudo rapidinho) ---------- */
+let arEq=null;
+const AR_DUR={tree:.75,pine:.75,rock:.5,bush:.35,enxada:.28};
+function arComeca(fila,venda){const p=state.p;fila.sort((a,b)=>a.y-b.y||((a.y&1)?b.x-a.x:a.x-b.x));      // vai e volta, linha por linha
+  state.arando=(state.arando||[]).concat(fila.map(t=>t.i));const n=Math.max(2,Math.min(8,Math.ceil(fila.length/25)));
+  if(!arEq)arEq={fila:[],peoes:[],tot:0,venda:0};arEq.fila.push(...fila);arEq.tot+=fila.length;arEq.venda+=venda;for(const w of arEq.peoes)if(w.st==='sai')w.st='livre';
+  for(let k=arEq.peoes.length;k<n;k++)arEq.peoes.push({x:p.x+(k%4-1.5)*.6,y:p.y+1+(k>>2)*.5,dir:'down',walk:0,look:[1,3,0,2][k%4],st:'livre',t:0,tk:null})}
+function arFinaliza(i){if(state.arvs)state.arvs=state.arvs.filter(a=>a.i!==i);const k=state.arando?state.arando.indexOf(i):-1;if(k>=0)state.arando.splice(k,1);objs[i]=null;delete hp[i];delete state.depleted[i];delete shake[i];state.soil[i]=1}
+function arTermina(){if(state.arando&&state.arando.length){for(const i of state.arando.slice())arFinaliza(i)}state.arando=[]}      // carregou o jogo no meio da aração: termina na hora
+function arTick(dt){const E=arEq;if(!E)return;const perto=(x,y)=>Math.hypot(x-state.p.x,y-state.p.y)<9;
+  for(const w of E.peoes){
+    if(w.st==='livre'){if(!E.fila.length){w.st='sai';continue}let bi=0,bd=1e9;for(let j=0;j<Math.min(E.fila.length,24);j++){const t=E.fila[j],d=Math.hypot(t.x-.05-w.x,t.y+.62-w.y);if(d<bd){bd=d;bi=j}}
+      w.tk=E.fila.splice(bi,1)[0];w.st='anda';continue}
+    if(w.st==='sai'){w.walk=0;continue}
+    const t=w.tk;
+    if(w.st==='anda'){const tx=t.x-.05,ty=t.y+.62,dx=tx-w.x,dy=ty-w.y,d=Math.hypot(dx,dy);
+      if(d<.05){w.x=tx;w.y=ty;w.walk=0;w.dir='right';if(t.o&&objs[t.i]===t.o){w.st=t.o;w.t=0;w.img=t.o==='tree'||t.o==='pine'?natImg(t.i,t.o,state.depleted[t.i]):null}else{w.st='enxada';w.t=0}continue}
+      const sp=Math.min(d,8*dt);w.x+=dx/d*sp;w.y+=dy/d*sp;w.walk+=dt*12;w.dir=Math.abs(dx)>Math.abs(dy)?(dx<0?'left':'right'):(dy<0?'up':'down');continue}
+    w.t+=dt;const x=t.x+.5,y=t.y+.5,u=w.t/AR_DUR[w.st];
+    if(w.st==='tree'||w.st==='pine'){if(Math.random()<dt*30)partBurst(x-.2,y-.2,1,['#e5c592','#c79f66','#f2dcb0'],1.6,1.4,6,.4,2);      // serragem
+      if(perto(x,y)&&(w.zz=(w.zz||0)-dt)<=0){w.zz=.09;beep(95+Math.random()*30,.09,'sawtooth',.018)}
+      if(u>=1){if(w.img)treeFalls.push({x:t.x,y:t.y,img:w.img,dir:1,t:.35});partBurst(x,y-.3,6,['#3c8f45','#57ad5f','#2f7d3a'],1.2,1,2,.8,2);arSolta(t);w.st='enxada';w.t=0}}
+    else if(w.st==='rock'){if(Math.floor(u*3)!==Math.floor((u-dt/AR_DUR.rock)*3)){partBurst(x,y,4,['#8d939c','#b3b9c2','#6c727b'],2.2,2.4,9,.4,2);partBurst(x,y-.1,3,['#ffe066','#fff3b0'],3,2,6,.2,1);if(perto(x,y))sx('picareta',Math.random()*3|0)}
+      if(u>=1){partBurst(x,y,10,['#8d939c','#b3b9c2','#6c727b','#5b6068'],2.6,3,10,.6,3);if(perto(x,y))sx('pedraQuebra');arSolta(t);w.st='enxada';w.t=0}}
+    else if(w.st==='bush'){if(u>=1){partBurst(x,y-.2,8,['#3c8f45','#57ad5f','#7b3fb5','#b98ae8'],1.8,2.2,7,.5,2);if(perto(x,y))sx('capim',0);arSolta(t);w.st='enxada';w.t=0}}
+    else if(w.st==='enxada'){if(u>=1){arFinaliza(t.i);partBurst(x,y+.1,5,['#7a5532','#9b6b43','#5a3a1e'],1.4,1.8,8,.45,2);if(perto(x,y)&&Math.random()<.35)sx('arar');w.st='livre';w.tk=null}}}
+  if(!E.fila.length&&E.peoes.every(w=>w.st==='sai')){const v=E.venda;arEq=null;syncFunc();if(typeof miniBase!=='undefined')miniBase=null;
+    if(!state.flags.seedGift){state.flags.seedGift=1;const k=Object.keys(CROPS).sort((a,b)=>CROPS[a].sem-CROPS[b].sem)[0];state.seeds[k]=(state.seeds[k]||0)+5;state.sel=k;setTimeout(()=>toast(`Ganhou 5 sementes de ${CROPS[k].nome.toLowerCase()} para começar!`),1500)}
+    toast(`⛏️ Pronto! ${E.tot} canteiro${E.tot===1?'':'s'} arado${E.tot===1?'':'s'}${v?` · limpeza vendida por ${brl(v)}`:''}. Fique em cima da terra e aperte E para plantar.`);sfx.build();save()}}
+function arSolta(t){objs[t.i]=null;delete hp[t.i];delete state.depleted[t.i];if(t.v)float(t.x+.5,t.y-.4,`+${brl(t.v)}`,'#9be38a')}      // o que saiu já foi vendido (30%)
+function drawPeao(w){drawPerson(SPR.npc[w.look],w);if(w.st==='anda'||w.st==='livre'||w.st==='sai')return;
+  const sx=Math.round(w.x*T-camx),sy=Math.round((w.y+.28)*T-camy),u=w.t/AR_DUR[w.st];ctx.save();
+  if(w.st==='tree'||w.st==='pine'){const j=Math.sin(clock*60)*1.2;ctx.translate(sx+12,sy-20+j);      // motosserra: corpo laranja, sabre e corrente girando
+    ctx.fillStyle='#1c1c1c';ctx.fillRect(-1,-5,14,10);ctx.fillStyle='#f27a1a';ctx.fillRect(0,-4,12,8);ctx.fillStyle='#ffb15c';ctx.fillRect(0,-4,12,2);ctx.fillStyle='#3a3a3a';ctx.fillRect(2,-7,7,3);
+    ctx.fillStyle='#9aa0a8';ctx.fillRect(12,-2,18,4);ctx.fillStyle='#e6eaf0';ctx.fillRect(12,-2,18,1);ctx.fillStyle='#2b2b2b';for(let k=0;k<6;k++)ctx.fillRect(13+((k*3+Math.floor(clock*40))%18),k%2?-3:2,2,1)}
+  else if(w.st==='rock'||w.st==='enxada'){const ang=w.st==='rock'?-1.6+ease((u*3)%1)*2.1:-1.4+ease((u*1.6)%1)*1.9;ctx.translate(sx+6,sy-18);ctx.rotate(ang);      // picareta / enxada batendo
+    ctx.fillStyle='#6e4527';ctx.fillRect(-1,-2,4,24);ctx.fillStyle='#8a5c38';ctx.fillRect(0,-2,1,24);
+    if(w.st==='rock'){ctx.fillStyle='#9aa0a8';ctx.fillRect(-9,-4,22,4);ctx.fillStyle='#e6eaf0';ctx.fillRect(-9,-4,22,1)}else{ctx.fillStyle='#8d939c';ctx.fillRect(-1,20,12,6);ctx.fillStyle='#c9cfd6';ctx.fillRect(-1,24,12,2)}}
+  else if(w.st==='bush'){const ang=-1.1+ease((u*2)%1)*2.4;ctx.translate(sx+10,sy-14);ctx.rotate(ang);ctx.drawImage(FOICE_SPR,-6,-30,36,30)}      // foice
+  ctx.restore()}
 function startPlow(mode){if(panelKind)closePanel();plow={a:null,b:null,mode:mode||'arar'};plowBar()}
 function endPlow(){plow=null;plowBar()}
 function plowCorner(x,y,porE){if(!plow)return;x=clamp(x,XMIN,MW-1);y=clamp(y,0,MH-1);
@@ -2649,13 +2772,21 @@ function plowCorner(x,y,porE){if(!plow)return;x=clamp(x,XMIN,MW-1);y=clamp(y,0,M
   if(!plow.a){plow.a=[x,y];beep(660,.05,'square',.04);plowBar();return}
   if(Math.abs(x-plow.a[0])>=PLOW_MAX||Math.abs(y-plow.a[1])>=PLOW_MAX){toast(`Muito grande: no máximo ${PLOW_MAX} canteiros de cada lado.`);sfx.no();return}
   plow.b=[x,y];beep(880,.05,'square',.04);openPlowConfirm()}
-function openPlowConfirm(){if(plow.mode==='tirar'){const c=plowCount(plow.a,plow.b),[x0,y0,x1,y1]=plowRect(plow.a,plow.b);let pl=0;for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)if(state.crops[y*AW-XMIN+x])pl++;
+function openPlowConfirm(){if(plow.mode==='arvore'){const c=plowCount(plow.a,plow.b),t=plow.muda,tem=(state.mudas||{})[t]|0,n=Math.min(c.n,tem);
+    showPanel('arar',`${X}<h2>🌳 Plantar árvores</h2><p>Área: <b>${c.w} × ${c.h}</b> · lugares livres (de 2 em 2): <b>${c.n}</b></p>
+      <p>${t?`<img src="${ICON[mudaIcon(t)]||''}" alt="" style="width:40px;height:40px;vertical-align:middle"> <b>${MUDAS[t][0]}</b> · você tem <b>${tem}</b> muda${tem===1?'':'s'}`:'Sem mudas.'}</p>
+      <p><small>Em <b>${ARV_DIAS} dias</b> cada muda vira uma árvore de verdade: dá para cortar (madeira)${t==='maca'?', colher maçãs':t==='arauc'?', pegar pinhões':''} e ela rebrota igual às outras.</small></p>
+      <div class="row"><button data-a="plowok" ${n?'':'disabled'}>Plantar ${n} muda${n===1?'':'s'}</button><button class="alt" data-a="plowredo">Escolher de novo</button><div class="g"></div><button class="alt" data-a="plowcancel">Cancelar</button></div>`);return}
+  if(plow.mode==='tirar'){const c=plowCount(plow.a,plow.b),[x0,y0,x1,y1]=plowRect(plow.a,plow.b);let pl=0;for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)if(state.crops[y*AW-XMIN+x])pl++;
     showPanel('arar',`${X}<h2>🧹 Tirar lavoura</h2><p>Área escolhida: <b>${c.w} × ${c.h}</b>.</p><p>Canteiros de terra arada aí dentro: <b>${c.n}</b>${pl?` · <b class="no">${pl} com plantação</b> (some junto, sem colher)`:''}</p>
       <p><small>A terra volta a ser grama. É grátis, mas o dinheiro gasto para arar não volta.</small></p>
       <div class="row"><button class="red" data-a="plowok" ${c.n?'':'disabled'}>Tirar ${c.n} canteiro${c.n===1?'':'s'}</button><button class="alt" data-a="plowredo">Escolher de novo</button><div class="g"></div><button class="alt" data-a="plowcancel">Cancelar</button></div>`);return}
   const c=plowCount(plow.a,plow.b),cost=c.n*PLOW_PRICE,ok=c.n>0&&state.coins>=cost;
   showPanel('arar',`${X}<h2>⛏️ Arar terra</h2><p>Área escolhida: <b>${c.w} × ${c.h}</b> (${c.t} quadrados).</p>
-    <p>Canteiros que dá para arar: <b>${c.n}</b>${c.t>c.n?` <small>(${c.t-c.n} ficam de fora: árvore, pedra, água, caminho, construção ou terra já arada)</small>`:''}</p>
+    <p>Canteiros que dá para arar: <b>${c.n}</b>${c.t>c.n?` <small>(${c.t-c.n} ficam de fora: água, caminho, morro, construção ou terra já arada)</small>`:''}</p>
+    ${(()=>{const[x0,y0,x1,y1]=plowRect(plow.a,plow.b);const q={tree:0,pine:0,rock:0,bush:0};let v=0;for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){if(!plowValid(x,y))continue;const i=y*AW-XMIN+x;if(arLimpa(i)){q[objs[i]]++;v+=arValor(i)}}
+      const tx=[['🌳',q.tree,'árvore','árvores'],['🌲',q.pine,'araucária','araucárias'],['🪨',q.rock,'pedra','pedras'],['🌿',q.bush,'arbusto','arbustos']].filter(a=>a[1]).map(a=>`${a[0]} ${a[1]} ${a[1]>1?a[3]:a[2]}`).join(' · ');
+      return tx?`<p>👷 A equipe limpa antes de arar: <b>${tx}</b> (motosserra, picareta e foice).<br><small>A madeira, pedra e frutas que saírem são vendidas na hora por 30% do valor: <b class="ok">+${brl(v)}</b></small></p>`:''})()}
     <div class="row"><div class="g" style="font-size:17px">Preço: <b>${brl(cost)}</b> <small>(${brl(PLOW_PRICE)} por canteiro · você tem ${brl(state.coins)})</small></div></div>
     <div class="row"><button data-a="plowok" ${ok?'':'disabled'}>Arar por ${brl(cost)}</button><button class="alt" data-a="plowredo">Escolher de novo</button><div class="g"></div><button class="red" data-a="plowcancel">Cancelar</button></div>`)}
 function sellAlvos(){const r=[];for(const t of['galinheiro','curral']){if(state.b[t]>0)r.push({t,lot:BLD[t].lot,base:1});for(const e of extrasDe(t))r.push({t,lot:extraLot(e),e})}return r}
@@ -2691,14 +2822,15 @@ function openExtra(e){const t=e.t,c=costOf(t,e.l+1),trav=!c||state.nivel.lvl<bld
     <p>Cabem <b>${capOf(t,e.l)}</b> animais nele. Somando todos os ${BLD[t].nome.toLowerCase()}s: <b>${penCount(t)}/${capTotal(t)}</b>.</p>
     ${c?`<h3>Melhorar para o nível ${e.l+1}</h3><p><small>Capacidade: ${capOf(t,e.l)} → ${capOf(t,e.l+1)}</small></p><div class="row"><div class="g">${costHtml(c)}${trav?` <span class="no">· 🔒 nível ${bldNivel(t,e.l+1)} do personagem</span>`:''}</div><button data-a="extraup" data-v="${e.id}" ${!trav&&canPay(c)?'':'disabled'}>Melhorar</button></div>`:''}
     <div class="row"><button class="alt" data-a="extraanimais" data-v="${t}">${t==='galinheiro'?'🐔':'🐄'} Animais e produção</button><div class="g"></div><button class="red" data-a="extravender" data-v="${e.id}">💰 Vender</button></div>`)}
-function doPlow(){if(plow.mode==='tirar'){const[x0,y0,x1,y1]=plowRect(plow.a,plow.b);let n=0;for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){const i=y*AW-XMIN+x;if(state.soil[i]){delete state.soil[i];delete state.crops[i];n++}}
+function doPlow(){if(plow.mode==='arvore'){doArvore();return}if(plow.mode==='tirar'){const[x0,y0,x1,y1]=plowRect(plow.a,plow.b);let n=0;for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){const i=y*AW-XMIN+x;if(state.soil[i]){delete state.soil[i];delete state.crops[i];n++}}
     sfx.build();toast(`${n} canteiro${n===1?'':'s'} de lavoura tirado${n===1?'':'s'}. Virou grama de novo.`);endPlow();panelKind=null;closePanel();save();return}
   const c=plowCount(plow.a,plow.b),cost=c.n*PLOW_PRICE;if(!c.n||state.coins<cost)return;
-  const[x0,y0,x1,y1]=plowRect(plow.a,plow.b);for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)if(plowValid(x,y))state.soil[y*AW-XMIN+x]=1;sx('arar');setTimeout(()=>sx('arar'),180);
-  state.coins-=cost;sfx.build();addDirt(Math.min(8,1+c.n*.1));
+  const[x0,y0,x1,y1]=plowRect(plow.a,plow.b),fila=[];let venda=0;
+  for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)if(plowValid(x,y)){const i=y*AW-XMIN+x,lp=arLimpa(i),v=lp?arValor(i):0;venda+=v;fila.push({i,x,y,o:lp?objs[i]:null,v})}
+  state.coins=Math.round((state.coins-cost+venda)*100)/100;arComeca(fila,venda);sx('arar');sfx.build();addDirt(Math.min(8,1+c.n*.1));
   if(!state.flags.seedGift){state.flags.seedGift=1;const k=Object.keys(CROPS).filter(c=>true).sort((a,b)=>CROPS[a].sem-CROPS[b].sem)[0];
     state.seeds[k]=(state.seeds[k]||0)+5;state.sel=k;setTimeout(()=>toast(`Ganhou 5 sementes de ${CROPS[k].nome.toLowerCase()} para começar!`),2600)}
-  toast(`${c.n} canteiros arados! Fique em cima da terra e aperte E para plantar.`);endPlow();panelKind=null;closePanel();save()}
+  toast(`👷 A equipe chegou para arar ${c.n} canteiro${c.n===1?'':'s'}${venda?` · a limpeza rendeu +${brl(venda)} (vendido a 30%)`:''}!`);endPlow();panelKind=null;closePanel();save()}
 function drawPlow(){if(!plow)return;
   if(isObra(plow.mode)){const t=plow.mode,[,,w,hh]=BLD[t].lot,q=plowHover||[Math.floor(state.p.x),Math.floor(state.p.y)],x0=q[0]-Math.floor(w/2),y0=q[1]-hh,ok=extraValido(t,x0,y0)&&state.nivel.lvl>=extraNivel(t);
     const img=lotSprite(t,1);ctx.save();ctx.globalAlpha=.55;ctx.drawImage(img,x0*T-camx,y0*T-camy-LT*S,img.width*S,img.height*S);ctx.restore();
@@ -2709,9 +2841,9 @@ function drawPlow(){if(!plow)return;
     for(const al of sellAlvos()){const[x,y,w,hh]=al.lot,sel=hv&&hv.lot===al.lot;ctx.fillStyle=sel?'rgba(230,70,60,.35)':'rgba(255,170,60,.18)';ctx.fillRect(x*T-camx,y*T-camy,w*T,hh*T);ctx.strokeStyle=sel?'#ff5252':'#ffb74d';ctx.lineWidth=3;ctx.strokeRect(x*T-camx,y*T-camy,w*T,hh*T)}return}
   const cur=plow.b||plowHover;
   if(plow.a&&cur){const[x0,y0,x1,y1]=plowRect(plow.a,cur);
-    for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){ctx.fillStyle=curValid(x,y)?(plow.mode==='tirar'?'rgba(255,170,60,.45)':'rgba(120,230,90,.38)'):'rgba(230,70,60,.28)';ctx.fillRect(x*T-camx,y*T-camy,T,T)}
+    for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){if(plow.mode==='arvore'){if(arvSpot(x,y)){ctx.fillStyle='rgba(120,230,90,.45)';ctx.fillRect(x*T-camx+6,y*T-camy+6,T-12,T-12)}continue}ctx.fillStyle=curValid(x,y)?(plow.mode==='tirar'?'rgba(255,170,60,.45)':'rgba(120,230,90,.38)'):'rgba(230,70,60,.28)';ctx.fillRect(x*T-camx,y*T-camy,T,T)}
     ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.strokeRect(x0*T-camx,y0*T-camy,(x1-x0+1)*T,(y1-y0+1)*T);
-    const c=plowCount(plow.a,cur),tx=plow.mode==='tirar'?`${c.w}×${c.h} · tirar ${c.n} canteiros`:`${c.w}×${c.h} · ${c.n} canteiros · ${brl(c.n*PLOW_PRICE)}`;
+    const c=plowCount(plow.a,cur),tx=plow.mode==='arvore'?`${c.w}×${c.h} · ${Math.min(c.n,(state.mudas||{})[plow.muda]|0)} muda${c.n===1?'':'s'}`:plow.mode==='tirar'?`${c.w}×${c.h} · tirar ${c.n} canteiros`:`${c.w}×${c.h} · ${c.n} canteiros · ${brl(c.n*PLOW_PRICE)}`;
     ctx.font='bold 15px Poppins,sans-serif';ctx.textAlign='center';const mx=(x0+x1+1)/2*T-camx,my=y0*T-camy-10,w=ctx.measureText(tx).width+18;
     ctx.fillStyle='rgba(40,28,16,.9)';ctx.fillRect(mx-w/2,my-19,w,26);ctx.fillStyle='#fff';ctx.fillText(tx,mx,my)}
   for(const q of[plow.a,plowHover])if(q){ctx.strokeStyle=q===plow.a?'#ffe066':'#ffffff';ctx.lineWidth=3;ctx.strokeRect(q[0]*T-camx+2,q[1]*T-camy+2,T-4,T-4)}}
@@ -2842,6 +2974,12 @@ function openTractorShop(say){const fast=Math.max(...Object.values(TRATORES).map
         :`<span class="price">${brl(t.preco)}</span><button data-a="tratorbuy" data-v="${k}" ${state.coins>=t.preco?'':'disabled'}>Comprar</button>`}</div></div>`}
   showPanel('tratores',`<div class="s-head t-head"><button class="close" data-a="close">Fechar ✕</button><h1>🚜 Agro Imbuial · Tratores</h1><div class="sub">${say||'Trator novo de fábrica, tanque cheio. Tecla <kbd>T</kbd> sobe e desce.'} · saldo <b>${brl(state.coins)}</b></div></div>
     <div class="s-body" style="display:block"><div class="s-list">${cards}</div>
+    <h3 style="margin:14px 0 6px">🧰 Equipamentos <small>(engate um no trator · faixa de 16 canteiros, 8 de cada lado)</small></h3><div class="s-list">${Object.keys(IMPLEM).map(k=>{const E=IMPLEM[k],q=impl(),own=q.own[k],on=q.eng===k;
+      return`<div class="mcard${on?' sel':''}"><div class="mi" style="font-size:40px;display:flex;align-items:center;justify-content:center">${E.ico}</div><div class="g"><b>${E.nome}</b> <span class="cc" style="background:#3f6b28">16 canteiros</span><br><small>${E.desc}</small></div>
+        <div class="act">${own?(on?'<button class="alt" data-a="implon" data-v="">Desengatar</button><small class="ok">engatado</small>':`<button data-a="implon" data-v="${k}">Engatar</button>`):`<span class="price">${brl(E.preco)}</span><button data-a="implbuy" data-v="${k}" ${state.coins>=E.preco?'':'disabled'}>Comprar</button>`}</div></div>`}).join('')}
+      <div class="mcard"><div class="mi" style="font-size:40px;display:flex;align-items:center;justify-content:center">🧪</div><div class="g"><b>Veneno</b> <span class="cc">${brl(VENENO_PRECO)}/L</span><br><small>Para o pulverizador. Você tem <b>${state.inv.veneno|0} L</b>.</small></div>
+        <div class="act"><button data-a="venbuy" data-v="10" ${state.coins>=VENENO_PRECO*10?'':'disabled'}>+10 L</button><button data-a="venbuy" data-v="50" ${state.coins>=VENENO_PRECO*50?'':'disabled'}>+50 L</button></div></div></div>
+    <p><small>Sem equipamento engatado, o trator colhe e planta em volta dele (área do trator). Com equipamento, ele faz só o serviço do equipamento, numa faixa de 16 canteiros de lado.<br>🐛 <b>Pragas:</b> às vezes aparece <b>erva daninha</b> (a colheita sai só de qualidade ruim) ou <b>insetos</b> (perde produto e algumas plantas apodrecem). Passe o pulverizador com veneno para acabar com elas.</small></p>
     <p><small>Com o trator, passe por cima da terra arada: ele <b>colhe</b> o que estiver pronto e <b>planta</b> a semente em uso (tecla <kbd>Q</kbd> troca) em toda a área em volta. Gasta gasolina: abasteça no posto.</small></p></div>`)}
 // ---- enfeites de Videira: postes, bancos e canteiros (só decoração, não bloqueiam) ----
 const VDECOR=[['poste',23.6,17.9],['poste',31.4,17.9],['poste',36.4,23.0],['poste',12.9,23.0],['poste',6.9,23.0],['poste',0.9,23.0],['poste',18.9,19.6],
@@ -3357,13 +3495,14 @@ function toggleRide(kind){kind=kind||'moto';
   if(!playSound('moto',1,true)){beep(70,.25,'sawtooth',.05);setTimeout(()=>beep(110,.3,'sawtooth',.05),200)}}
 // trator: planta e colhe tudo que estiver na área em volta, conforme anda
 let tractorTile=-1;
-function harvestAt(i,wx,wy){const c=state.crops[i],k=c.c,xb=extraHarvest(state.b.lavoura),n=1+Math.floor(xb)+(Math.random()<xb%1?1:0);{const q=colheQual(k,n);if(wx!=null)float(wx,wy-.5,q.txt,q.cor);if(q.gigante)sx('nivel')}state.flags.harvest=1;addNivelXp(XP_COLHEITA,wx,wy);
+function harvestAt(i,wx,wy){const c=state.crops[i];if(c.podre){delete state.crops[i];if(wx!=null)float(wx,wy-.5,'🥀 podre','#c9b48a');return 0}const k=c.c,xb=extraHarvest(state.b.lavoura),n=1+Math.floor(xb)+(Math.random()<xb%1?1:0);{const q=colhePraga(c,k,n);if(wx!=null)float(wx,wy-.5,q.txt,q.cor);if(q.gigante)sx('nivel')}state.flags.harvest=1;addNivelXp(XP_COLHEITA,wx,wy);
   if(CROPS[k].rebrota){c.g=CROPS[k].dias-CROPS[k].rebrota;c.r=false}else delete state.crops[i];return n}
 function tractorWork(){const p=state.p,cx=Math.floor(p.x),cy=Math.floor(p.y),ti=cy*AW-XMIN+cx;if(ti===tractorTile)return;tractorTile=ti;
   if(MP.role==='guest'){if(MP.host&&MP.myId)mpSend(MP.host,{t:'trator',x:p.x,y:p.y,k:state.trator});return}
+  {const im=implEng();if(im){implTrabalha(im,cx,cy);return}}
   const r=(TRATORES[state.trator].larg-1)/2;let col=0,pl=0;
   for(let y=cy-r;y<=cy+r;y++)for(let x=cx-r;x<=cx+r;x++){if(x<XMIN||y<0||x>=MW||y>=MH)continue;const i=y*AW-XMIN+x;if(!soilOn(i))continue;const c=state.crops[i];
-    if(c&&c.r)col+=harvestAt(i);
+    if(c&&(c.r||c.podre))col+=harvestAt(i);
     if(!state.crops[i]&&seedOk(state.sel)){state.seeds[state.sel]--;state.crops[i]={c:state.sel,g:0,w:false,r:false};pl++}}
   if(pl)addNivelXp(pl*XP_PLANTIO);
   if(col)float(p.x,p.y-1.2,`+${col} colhidos`,'#ffe066');if(pl)float(p.x+.6,p.y-.6,`${pl} plantados`,'#bfe6a0');if(col||pl)beep(440,.05,'square',.03)}
@@ -3715,11 +3854,11 @@ function drawClimaWorld(W,H){const hr=state.min/60,c=state.clima;
 /* ================= MULTIPLAYER: cooperativo no mundo do dono, até 4 jogadores, pela internet com código de sala =================
    Ligação: WebRTC (canal de dados direto entre os aparelhos). Para os aparelhos se acharem usa o servidor público grátis do PeerJS
    só como "telefonista" (sinalização). Quem hospeda manda no mundo; os convidados mandam o que fazem e o dono aplica e espalha. */
-const JOGO_VERSAO='2026-11-26c';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
+const JOGO_VERSAO='2026-11-26g';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
 const MP_MAX=4,MP_PREFIX=SLOT_KEYS[0].replace(/_slot_1$/,'').replace(/_/g,''),MP_SERVER='wss://0.peerjs.com:443/peerjs?key=peerjs';
 const MP_ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']},{urls:'stun:global.stun.twilio.com:3478'}]};
 const MP_LEVE=['p','energy','hunger','vida','forca','sujeira','sel','testoUntil','fomeT','coins','xpUntil','monster','napHoje','doze'];      // muda toda hora: vai junto em cada batida
-const MP_PROG=['inv','seeds','nivel','flags','roupas','visual','estudos','found','motos','moto','tratores','trator','fuel','vsuj','banco','mequip','motoCustom'];      // banco e personalização da moto também são de cada um      // progresso de cada jogador: mochila, peixes, sementes, nível, roupas, veículos…
+const MP_PROG=['inv','seeds','nivel','flags','roupas','visual','estudos','found','motos','moto','tratores','trator','fuel','vsuj','banco','mequip','motoCustom','mudas','implem'];      // banco e personalização da moto também são de cada um      // progresso de cada jogador: mochila, peixes, sementes, nível, roupas, veículos…
 const MP_PESSOAL=[...MP_LEVE,...MP_PROG];      // cada jogador tem o seu; o resto do state é o mundo do dono
 const MP_FORA_DIFF=new Set([...MP_PESSOAL,'saved','min','day','rain','clima','riding','rideKind','jogs','progDono']);
 // o progresso de quem não é o dono fica guardado no próprio mundo, pelo nome (volta igual quando a pessoa entra de novo)
@@ -3842,7 +3981,7 @@ function mpHostSignal(m){const src=m.src;if(!src)return;
   else if(m.type==='CANDIDATE'){const L=MP.pend&&MP.pend[src];if(!L)return;if(L.ice)L.ice.push(m.payload.c);else L.pc.addIceCandidate(m.payload.c).catch(()=>{})}}
 function coinsAdd(d){d=Math.round(d*100)/100;state.coins=Math.round((state.coins+d)*100)/100;if(MP.role==='guest'&&MP.host&&d)mpSend(MP.host,{t:'moedas',d})}
 function mpPlowManda(tipo){if(MP.role!=='guest'||!MP.host||!plow)return false;const al=plow.alvo;
-  mpSend(MP.host,{t:'plow',tipo,a:plow.a,b:plow.b,mode:plow.mode,obra:plow.obra||null,alvo:al?{t:al.t,e:al.e?al.e.id:null}:null});endPlow();panelKind=null;closePanel();return true}
+  mpSend(MP.host,{t:'plow',tipo,a:plow.a,b:plow.b,mode:plow.mode,muda:plow.muda||null,obra:plow.obra||null,alvo:al?{t:al.t,e:al.e?al.e.id:null}:null});endPlow();panelKind=null;closePanel();return true}
 function mpPessoal(g,leve){const o={};for(const k of leve?MP_LEVE:MP_PESSOAL)if(k!=='p')o[k]=g[k];return o}
 function mpMundo(){const o={};for(const k in state)if(!MP_FORA_DIFF.has(k)||k==='min'||k==='day'||k==='rain'||k==='clima')o[k]=state[k];return o}
 function mpHeadUrl(){try{return!skinOn()&&HEADS.player&&HEADS.player.cv&&HEADS.player.cv.toDataURL?HEADS.player.cv.toDataURL():null}catch(e){return null}}
@@ -3879,7 +4018,7 @@ function mpHostMsg(link,m){
   else if(m.t==='soltaled'){mpSolta(g)}
   else if(m.t==='moedas'){const d=+m.d;if(isFinite(d)&&Math.abs(d)<1e8){g.coins=Math.max(0,Math.round((g.coins+d)*100)/100);MP.tT=99}}
   else if(m.t==='plow'){mpComo(g,()=>{const ok=v=>Array.isArray(v)&&v.length===2&&v.every(n=>Number.isInteger(n));
-      if(m.tipo==='plow'&&ok(m.a)&&ok(m.b)&&(m.mode==='arar'||m.mode==='tirar')){plow={a:m.a,b:m.b,mode:m.mode};doPlow()}
+      if(m.tipo==='plow'&&ok(m.a)&&ok(m.b)&&(m.mode==='arar'||m.mode==='tirar'||m.mode==='arvore'&&MUDAS[m.muda])){plow={a:m.a,b:m.b,mode:m.mode,muda:m.muda};doPlow()}
       else if(m.tipo==='extra'&&m.obra&&isObra(m.obra.t)&&Number.isInteger(m.obra.x)&&Number.isInteger(m.obra.y)){plow={a:null,b:null,mode:m.obra.t,obra:{t:m.obra.t,x:m.obra.x,y:m.obra.y}};doExtra()}
       else if(m.tipo==='venda'&&m.alvo){const al=sellAlvos().find(q=>q.t===m.alvo.t&&(m.alvo.e?q.e&&q.e.id===m.alvo.e:!q.e));if(al){plow={a:null,b:null,mode:'vender',alvo:al};doVenda()}}
       plow=null;MP.cap.plow=1})}
@@ -4448,13 +4587,14 @@ function openFunc(){const f=state.func,dir=funcDireitos(),lv=lavouras(),lvl=stat
 // ---- lavrador trabalhando de verdade: fica dentro da lavoura, anda pelos canteiros, vê o que precisa e faz na hora (colher, plantar, regar) ----
 const LAV_TEMPO={c:1.1/1.5,p:1.3/1.5,r:1/1.5}
 function lavPrecisa(i,q){const c=state.crops[i];if(!state.soil[i])return null;
-  if(q.c&&c&&c.r&&!TRATOR_SO.has(c.c))return'c';
+  if(q.c&&c&&(c.r||c.podre)&&!TRATOR_SO.has(c.c))return'c';
   if(q.p&&!c&&lavSemente())return'p';
   if(q.r&&c&&!c.r&&!isWet(c))return'r';return null}
 function lavSemente(){const P=state.func&&state.func.plt;if(P&&P.sem&&P.dep[P.sem]>0)return P.sem;if(MP.role)return null;const ok=k=>!TRATOR_SO.has(k)&&(state.seeds[k]||0)>0;if(state.sel&&ok(state.sel))return state.sel;return Object.keys(CROPS).find(ok)||null}
 function lavFaz(n,i,a){const c=state.crops[i],q=lavFun(n.ref),x=(i%AW+XMIN),y=(i/AW)|0,perto=Math.hypot(n.x-state.p.x,n.y-state.p.y)<7;let xp=0;
   if(a!==lavPrecisa(i,q))return;
-  if(a==='c'){const k=c.c,xb=extraHarvest(state.b.lavoura),qt=1+Math.floor(xb)+(Math.random()<xb%1?1:0);const qq=colheQual(k,qt);xp=XP_FUNC.colher;if(perto){float(x+.5,y-.2,qq.txt,qq.cor==='#ffffff'?'#cdeccb':qq.cor);sx('colher')}
+  if(a==='c'&&c.podre){delete state.crops[i];if(perto)float(x+.5,y-.2,'🥀 podre','#c9b48a');return}
+  if(a==='c'){const k=c.c,xb=extraHarvest(state.b.lavoura),qt=1+Math.floor(xb)+(Math.random()<xb%1?1:0);const qq=colhePraga(c,k,qt);xp=XP_FUNC.colher;if(perto){float(x+.5,y-.2,qq.txt,qq.cor==='#ffffff'?'#cdeccb':qq.cor);sx('colher')}
     if(CROPS[k].rebrota){c.g=CROPS[k].dias-CROPS[k].rebrota;c.r=false}else delete state.crops[i]}
   else if(a==='p'){const k=lavSemente();if(!k)return;const P=state.func.plt;if(P&&P.sem===k&&P.dep[k]>0)P.dep[k]--;else state.seeds[k]--;state.crops[i]={c:k,g:0,w:false,r:false};xp=XP_FUNC.plantar;if(perto)sx('plantar')}
   else if(a==='r'){c.w=true;xp=XP_FUNC.regar;n.agua=Math.max(0,(n.agua|0)-1);if(perto)sx('regar')}
@@ -4558,7 +4698,7 @@ function iaReiniciar(){LAV_RES.clear();funcNpcs=[];syncFunc();for(const n of fun
   penAnim=[];syncPens();
   wild=wild.filter(a=>a.led||a.lassoBy||(isFinite(a.x)&&isFinite(a.y)&&canStand(a.x,a.y,.3)));for(const a of wild){a.vx=a.vy=0;a.timer=Math.random();a.flee=0;a.trava=0}spawnWild();
   toast('🔄 Funcionários e bichos reiniciados: cada um voltou para o seu lugar.');sfx.coin()}
-function funcTick(dt){if((POCO.t-=dt)<=0){POCO.t=6;pocosUpdate();zonaLote()}if((funcSyncT-=dt)<=0){funcSyncT=8;syncFunc()}const on=funcOnDuty();if(!on){for(const n of funcNpcs){if(n.t!=='lav'||n.fora||!n.extra)continue;      // hora extra: termina o que tem e vai embora
+function funcTick(dt){if((POCO.t-=dt)<=0){POCO.t=6;pocosUpdate();zonaLote();arvAplica()}if((funcSyncT-=dt)<=0){funcSyncT=8;syncFunc()}const on=funcOnDuty();if(!on){for(const n of funcNpcs){if(n.t!=='lav'||n.fora||!n.extra)continue;      // hora extra: termina o que tem e vai embora
     if((n.chk=(n.chk||0)-dt)<=0){n.chk=1;if(!lavServico(n)){n.fora=true;n.job=null;n.tx=null;n.vaiPoco=null;continue}}funcVigia(n,dt);lavTick(n,dt)}return}
   for(const n of funcNpcs){if(n.t==='lav'){n.extra=true;n.fora=false}if(n.t==='lav'||n.t==='plt'){funcVigia(n,dt);if(n.t==='lav')lavTick(n,dt);else pltTick(n,dt);continue}
   if(n.wait>0){n.wait-=dt;n.walk=0;continue}
@@ -4604,8 +4744,8 @@ function morning(){          // 6h: começa um novo dia
   respawnRocks();      // dormindo, a meia-noite passa durante o sono
   state.forca.hoje=0;
   // lavoura: o que estava molhado cresce um dia
-  for(const i in state.crops){const c=state.crops[i];if(isWet(c)&&!c.r){c.g++;if(c.g>=CROPS[c.c].dias)c.r=true}c.w=false}
-  state.day++;bancoRendeTodos();ensureBolsa();if((state.day-1)%BOLSA_DIAS===0)bolsaDia();      // a bolsa troca os preços a cada 7 dias
+  for(const i in state.crops){const c=state.crops[i];if(isWet(c)&&!c.r&&!c.podre){c.g++;if(c.g>=CROPS[c.c].dias)c.r=true}c.w=false}
+  state.day++;try{pragaDia()}catch(e){console.error(e)}{const antes=(state.arvs||[]).filter(a=>!a.ok).length;arvAplica();const dep=(state.arvs||[]).filter(a=>!a.ok).length;if(antes>dep)setTimeout(()=>toast(`🌳 ${antes-dep} muda${antes-dep>1?'s viraram árvores':' virou árvore'}!`),3500)}bancoRendeTodos();ensureBolsa();if((state.day-1)%BOLSA_DIAS===0)bolsaDia();      // a bolsa troca os preços a cada 7 dias
   state.rain=Math.random()<RAIN_DAY;rollClima();
   for(const k in state.depleted)if(state.depleted[k]<=state.day)delete state.depleted[k];
   wild=wild.filter(a=>a.led||canStand(a.x,a.y,.3)&&!inVila(a.x,a.y));spawnWild();
@@ -5040,7 +5180,7 @@ function updateFish(dt,moved){      // pesca simples: espera a boia afundar e ap
   fish.t-=dt;
   if(fish.st==='wait'&&fish.t<=0){fish.st='bite';fish.t=1.1;sx('belisca')}
   else if(fish.st==='bite'&&fish.t<=0){fish=null;sx('escapou');toast('O peixe escapou... puxe com E assim que aparecer o "!".')}}
-function soilAction(i){if(!soilOn(i))return null;const c=state.crops[i];return!c?'plant':c.r?'harvest':!isWet(c)?'water':null}
+function soilAction(i){if(!soilOn(i))return null;const c=state.crops[i];return!c?'plant':c.r||c.podre?'harvest':!isWet(c)?'water':null}
 function plantAt(i,k){if(!seedOk(k)||state.crops[i])return false;state.seeds[k]--;state.sel=k;state.crops[i]={c:k,g:0,w:false,r:false};sx('plantar');const x=(i%AW+XMIN),y=(i/AW)|0;addNivelXp(XP_PLANTIO,x+.5,y+.2);return true}
 function cycleSeed(){const ks=Object.keys(CROPS).filter(seedOk);if(!ks.length){toast('Você não tem sementes. Compre na Loja do Giliard.');return}
   state.sel=ks[(ks.indexOf(state.sel)+1)%ks.length];toast(`Semente em uso: ${CROPS[state.sel].nome} (${state.seeds[state.sel]})`)}
@@ -5144,8 +5284,8 @@ function interact(){idleT=0;
     addDirt(t.act==='plant'?.6:t.act==='water'?.3:.5);
     if(t.act==='plant'){if(seedOk(state.sel))plantAt(t.i,state.sel);else openSeeds(t.i)}
     else if(t.act==='water'){if(!useEnergy(.5))return;c.w=true;sx('regar');addNivelXp(XP_REGA,t.x+.5,t.y-.1)}
-    else{const k=c.c;if(TRATOR_SO.has(k)){if(clock-tratorAvisoT>4){tratorAvisoT=clock;toast(`🚜 ${CROPS[k].nome} só pode ser colhido com trator. Passe por cima com o trator.`)}sfx.no();return}
-      const xb=extraHarvest(state.b.lavoura),n=1+Math.floor(xb)+(Math.random()<xb%1?1:0);{const q=colheQual(k,n);float(t.x+.5,t.y,q.txt,q.cor);if(q.gigante)toast(`⭐ Que sorte! Saiu ${ITEMS[k+'_q4'].nome}!`)}state.flags.harvest=1;addNivelXp(XP_COLHEITA,t.x+.5,t.y-.3);sx('colher');
+    else{const k=c.c;if(c.podre){delete state.crops[t.i];float(t.x+.5,t.y,'🥀 Planta podre: não rendeu nada','#c9b48a');sx('capim',0);return}if(TRATOR_SO.has(k)){if(clock-tratorAvisoT>4){tratorAvisoT=clock;toast(`🚜 ${CROPS[k].nome} só pode ser colhido com trator. Passe por cima com o trator.`)}sfx.no();return}
+      const xb=extraHarvest(state.b.lavoura),n=1+Math.floor(xb)+(Math.random()<xb%1?1:0);{const q=colhePraga(c,k,n);float(t.x+.5,t.y,q.txt,q.cor);if(q.gigante)toast(`⭐ Que sorte! Saiu ${ITEMS[k+'_q4'].nome}!`)}state.flags.harvest=1;addNivelXp(XP_COLHEITA,t.x+.5,t.y-.3);sx('colher');
       if(CROPS[k].rebrota){c.g=CROPS[k].dias-CROPS[k].rebrota;c.r=false}else delete state.crops[t.i]}
     return}
   if(LOJA_NIVEL[t.k]&&!lojaOk(t.k)){lojaTrava(t.k);return}
@@ -5311,6 +5451,7 @@ let lojaCart={};      // chave -> quantidade · 'sem:milho', 'racao', 'pao', 'ax
 function cartInfo(k){const l=state.b.mercado;
   if(k.startsWith('sem:')){const c=CROPS[k.slice(4)];return c&&{nome:'Semente de '+c.nome.toLowerCase(),icon:'sem_'+k.slice(4),pr:c.sem,uni:0}}
   if(k==='racao')return{nome:'Ração',icon:'racao',pr:racaoPrice(l)};if(k==='pao')return{nome:'Pão',icon:'pao',pr:PAO_PRICE};
+  if(k.startsWith('muda:')){const m=MUDAS[k.slice(5)];return m&&{nome:'Muda de '+m[0].toLowerCase(),icon:mudaIcon(k.slice(5)),pr:m[1],uni:0}}
   if(k==='axe')return{nome:'Machado',icon:'machado',pr:AXE_PRICE,uni:1};if(k==='pick')return{nome:'Picareta',icon:'picareta',pr:PICK_PRICE,uni:1};return null}
 function cartTotal(){let t=0;for(const k in lojaCart){const i=cartInfo(k);if(i)t+=i.pr*lojaCart[k]}return t}
 function cartHtml(){const ks=Object.keys(lojaCart).filter(k=>lojaCart[k]>0&&cartInfo(k));
@@ -5332,13 +5473,16 @@ function openLoja(tab){if(tab){lojaTab=tab;lojaSay=''}const l=state.b.mercado,d=
   else if(t==='comida'){const rp=racaoPrice(l);body=`<div class="lgrid">`+
       card('racao','Ração','alimenta 1 animal por 12 h<br>(ou faça com 2 capins na mochila)',rp,state.inv.racao,qb('buy','racao',1,rp)+qb('buy','racao',5,rp)+qb('buy','racao',10,rp)+qd('racao'),'🐔 animais',noCart('racao'))+
       card('pao','Pão','mata a fome: <b>+45</b>',PAO_PRICE,state.inv.pao,qb('buy','pao',1,PAO_PRICE)+qb('buy','pao',3,PAO_PRICE)+qd('pao'),'🍞 quentinho',noCart('pao'))+'</div>'}
+  else if(t==='mudas'){const M=state.mudas||{};body=`<p class="lnote">🌳 Mudas de todas as árvores do vale · plante com a tecla <kbd>L</kbd> → <b>🌳 Plantar árvore</b> · em <b>${ARV_DIAS} dias</b> vira árvore</p><div class="lgrid">`;
+    for(const k in MUDAS){const[nm,pr]=MUDAS[k];body+=card(mudaIcon(k),'Muda: '+nm,`vira árvore em ${ARV_DIAS} dias${mudaDesc[k]?'<br>'+mudaDesc[k]:'<br>dá madeira'}`,pr,M[k]|0,qb('buy','muda:'+k,1,pr)+qb('buy','muda:'+k,5,pr)+qd('muda:'+k),k==='sakura'?'🌸 rara':k==='maca'?'🍎 frutífera':k==='arauc'?'🌲 pinhão':'',noCart('muda:'+k))}
+    body+='</div>'}
   else if(t==='ferramentas'){body=`<div class="lgrid">`+card('machado','Machado',`corta árvores mais rápido conforme a força<br>precisa de <b>Força ${AXE_MIN}</b> (você: ${state.forca.lvl})`,AXE_PRICE,null,
       state.flags.axe?'<span class="ok">✔ comprado</span>':lojaCart.axe?'<span class="ok">🛒 no carrinho</span>':`<button class="mini" data-a="lojaadd" data-v="axe|1">🛒 Pôr no carrinho</button>`,'🪓')+
       card('picareta','Picareta','quebra pedras (o machado não quebra)<br>mais força = menos golpes',PICK_PRICE,null,state.flags.pick?'<span class="ok">✔ comprada</span>':lojaCart.pick?'<span class="ok">🛒 no carrinho</span>':`<button class="mini" data-a="lojaadd" data-v="pick|1">🛒 Pôr no carrinho</button>`,'⛏️')+'</div>'}
   else body=upgradeHtml('mercado')+`<p class="lnote">Cada nível da Loja aumenta o preço que o Mateus paga nos seus produtos${bonus>1?` (hoje: <b class="ok">+${Math.round((bonus-1)*100)}%</b>)`:''}.</p>`;
-  const tabs=[['sementes','🌱 Sementes'],['comida','🍞 Comida e ração'],['ferramentas','🛠️ Ferramentas'],['melhorias','⬆️ Melhorar a Loja']].map(([id,nm])=>`<button class="itab${t===id?' on':''}" data-a="lojatab" data-v="${id}">${nm}</button>`).join('');
+  const tabs=[['sementes','🌱 Sementes'],['mudas','🌳 Mudas'],['comida','🍞 Comida e ração'],['ferramentas','🛠️ Ferramentas'],['melhorias','⬆️ Melhorar a Loja']].map(([id,nm])=>`<button class="itab${t===id?' on':''}" data-a="lojatab" data-v="${id}">${nm}</button>`).join('');
   showPanel('bld:mercado',`<div class="v-head l-head"><button class="close" data-a="close">Fechar ✕</button><img src="${PORTRAIT.giliard}" alt="">
-      <div style="flex:1"><h1>🏪 Loja do Giliard</h1><div class="sub">sementes, ração, pão e ferramentas · nível ${l}${bonus>1?` · o Mateus paga +${Math.round((bonus-1)*100)}%`:''}</div>
+      <div style="flex:1"><h1>🏪 Loja do Giliard</h1><div class="sub">sementes, mudas, ração, pão e ferramentas · nível ${l}${bonus>1?` · o Mateus paga +${Math.round((bonus-1)*100)}%`:''}</div>
       <div class="bubble dark">${lojaSay}</div></div>
       <div class="lsaldo"><small>seu saldo</small><b>${brl(state.coins)}</b></div>${cartHtml()}</div>
     <div class="itabs">${tabs}</div><div class="v-body lojab">${body}<p class="lnote">Para <b>vender</b>, procure o <b>Mateus</b> ao lado da sua casa.</p></div>`)}
@@ -5717,6 +5861,7 @@ const ACT={
     let n=0;for(const k in lojaCart){const q=lojaCart[k];if(!q)continue;n+=q;
       if(k.startsWith('sem:')){const c=k.slice(4);state.seeds[c]=(state.seeds[c]||0)+q;if(!seedOk(state.sel))state.sel=c}
       else if(k==='racao'||k==='pao')state.inv[k]=(state.inv[k]||0)+q;
+      else if(k.startsWith('muda:')){state.mudas=state.mudas||{};const m=k.slice(5);state.mudas[m]=(state.mudas[m]||0)+q}
       else if(k==='axe')state.flags.axe=1;else if(k==='pick')state.flags.pick=1}
     state.coins-=tot;const tinhaAxe=lojaCart.axe;lojaCart={};sfx.coin();sfx.get();
     lojaSay=['Valeu! Volta sempre.','Negócio fechado!','Tá na mão! Bom plantio.','Precisando, é só chamar.'][Math.random()*4|0];
@@ -5808,6 +5953,7 @@ const ACT={
   plowstart(){startPlow()},
   plowok(){if(mpPlowManda('plow'))return;doPlow()},
   plowmode(){if(!plow)return;plow={a:null,b:null,mode:plow.mode==='tirar'?'arar':'tirar'};plowBar()},
+  arvmuda(v){if(plow&&MUDAS[v]){plow.muda=v;plowBar()}},
   plowset(v){if(!plow)startPlow(v);else{plow={a:null,b:null,mode:v};plowBar()}},
   extraok(){if(mpPlowManda('extra'))return;doExtra()},vendaok(){if(mpPlowManda('venda'))return;doVenda()},
   extraup(v){const e=(state.extras||[]).find(q=>q.id===v);if(!e)return;const c=costOf(e.t,e.l+1);if(!c||!canPay(c)||state.nivel.lvl<bldNivel(e.t,e.l+1))return;
@@ -5826,6 +5972,9 @@ const ACT={
     openTractorShop(`Negócio fechado! O ${t.nome} é seu, de tanque cheio. Aperte T para subir.`)},
   tratoruse(k){if(!state.tratores[k])return;if(state.riding&&state.rideKind==='trator')state.riding=false;state.trator=k;openTractorShop()},
   tratorride(){toggleRide('trator');openTractorShop()},
+  implbuy(k){const E=IMPLEM[k],q=impl();if(!E||q.own[k]||state.coins<E.preco)return;state.coins-=E.preco;q.own[k]=1;q.eng=k;sfx.coin();save();openTractorShop(`${E.ico} ${E.nome} comprada e já engatada no trator!`)},
+  implon(k){const q=impl();if(k&&!q.own[k])return;q.eng=k||null;beep(330,.08,'square',.04);save();openTractorShop(k?`${IMPLEM[k].ico} ${IMPLEM[k].nome} engatada.`:'Equipamento desengatado: o trator volta a colher e plantar em volta dele.')},
+  venbuy(v){const n=+v|0,c=n*VENENO_PRECO;if(!n||state.coins<c)return;state.coins-=c;state.inv.veneno=(state.inv.veneno|0)+n;sfx.coin();save();openTractorShop(`🧪 +${n} L de veneno.`)},
   selq(v){const[k,d]=v.split(':'),n=state.inv[k]||0;sellSel[k]=d==='all'?n:clamp((sellSel[k]||0)+(+d),0,n);if(!sellSel[k])delete sellSel[k];sellDone=0;openSell(true)},
   selall(){for(const k in ITEMS)if(ITEMS[k].preco&&state.inv[k]>0)sellSel[k]=state.inv[k];sellDone=0;openSell(true)},
   selnone(){sellSel={};sellDone=0;openSell(true)},
@@ -6094,7 +6243,7 @@ function drawRider(p,head){
     {const bump=p.walk&&Math.floor(clock*18)%2?1:0;drawCamisaNum(sx,gy-(rs.hd?14:18)-(p.dir==='up'?6:0)-bump-CAMISA_DY,p.dir)}
     if(cap){const bump=p.walk&&Math.floor(clock*18)%2?1:0;drawCapacete(q.cap,q.capCor,sx,gy-(rs.hd?14:18)-(p.dir==='up'?6:0)-bump-CAP_DY,p.dir)}return}
   const tr=state.rideKind==='trator',m=tr?SPR.trator[state.trator]:motoPlayer(state.moto).S,sx=Math.round(p.x*T-camx),gy=Math.round((p.y+.28)*T-camy),bump=p.walk&&Math.floor(clock*18)%2?1:0,fl=p.face<0;
-  shadow(sx,gy-2,tr?44:36,tr?8:6);blit(m,sx,gy-bump,fl);{const o=dirtOver(m,dirtStage(vehDirt()));if(o)blit(o,sx,gy-bump,fl)}
+  if(tr)drawImplem(p,sx,gy,fl);shadow(sx,gy-2,tr?44:36,tr?8:6);blit(m,sx,gy-bump,fl);{const o=dirtOver(m,dirtStage(vehDirt()));if(o)blit(o,sx,gy-bump,fl)}
   if(!tr){if(p.walk)spinA=clock*(p.vel||14);const w=vw(m)*S,top=gy-bump-vh(m)*S+(m.pad||0)*S;for(const wx of[6.5,22.5])wheelSpin(fl?sx+w/2-wx*S:sx-w/2+wx*S,top+13.5*S,fl?-spinA:spinA)}
   if(p.walk&&Math.floor(clock*10)%3===0){ctx.fillStyle='rgba(185,160,120,.55)';const bx=sx+(fl?1:-1)*40;ctx.beginPath();ctx.arc(bx,gy-6,6+Math.random()*4,0,7);ctx.fill()}   // poeira
   const rx=p.x+(tr?(fl?.25:-.25):(fl?.06:-.06));
@@ -7301,7 +7450,11 @@ function render(){
     const cr=state.crops[i];if(cr){const cd=CROPS[cr.c],f=cr.g/cd.dias,art=PLANTAS.arte[cr.c];
       if(art){const im=art[cr.r?4:cr.g===0?0:f<1/3?1:f<2/3?2:3],k=2.3;ctx.drawImage(im,Math.round(x*T-camx+T/2-11*k),Math.round((y+1)*T-camy-22*k-2),22*k,22*k)}      // arte nova: 5 fases
       else ctx.drawImage(SPR.crop[cr.c][cr.r?3:cr.g===0?0:f<.5?1:2],x*T-camx,y*T-camy-10,T,T);
-      if(cr.r&&Math.floor(clock*2)%2){ctx.fillStyle='#fff';ctx.fillRect(x*T-camx+T-10,y*T-camy+2,4,4)}}
+      if(cr.r&&!cr.podre&&Math.floor(clock*2)%2){ctx.fillStyle='#fff';ctx.fillRect(x*T-camx+T-10,y*T-camy+2,4,4)}
+      if(cr.podre||cr.praga){const px=x*T-camx,py=y*T-camy;
+        if(cr.podre){ctx.fillStyle='rgba(74,46,22,.62)';ctx.fillRect(px+8,py+6,T-16,T-10);ctx.fillStyle='#3a2414';for(const[a,b]of[[12,14],[26,10],[18,26],[32,24]])ctx.fillRect(px+a,py+b,4,4);ctx.fillStyle='#7d8a3a';ctx.fillRect(px+30,py+30,3,3)}      // planta podre
+        else if(cr.praga==='erva'){ctx.fillStyle='#3f7d22';for(const[a,b,h]of[[4,T-6,12],[9,T-4,9],[T-8,T-6,13],[T-13,T-3,8],[T/2-2,T-2,10]]){ctx.fillRect(px+a,py+b-h,2,h);ctx.fillRect(px+a-2,py+b-h+3,2,4);ctx.fillRect(px+a+2,py+b-h+5,2,3)}ctx.fillStyle='#b8d838';ctx.fillRect(px+5,py+T-17,2,2);ctx.fillRect(px+T-7,py+T-18,2,2)}      // erva daninha
+        else{ctx.fillStyle='#1c1c1c';for(let k=0;k<5;k++){const a=clock*(1.5+k*.3)+k*1.7+x,b=k*2.1+y;ctx.fillRect(px+T/2+Math.cos(a)*(10+k*2)-1,py+T/2+Math.sin(a*1.3+b)*(8+k)-1,3,2)}ctx.fillStyle='#8fd14a';ctx.fillRect(px+T/2+Math.cos(clock*2)*12,py+T/2+4,2,2)}}}      // insetos andando
     const o=soilOn(i)?null:objs[i];if(o){const dep=state.depleted[i];
       if(o==='capim'){if(!dep){const im=natImg(i,'capim');ctx.drawImage(im,x*T-camx,(y+1)*T-camy-im.height*S,im.width*S,im.height*S)}}
       else if(!(o==='rock'&&dep))list.push({k:0,y:y+1,x,ty:y,i,o,dep,img:o==='tree'?(dep?SPR.raizes:natImg(i,'tree')):o==='pine'?pineImg(i,dep):natImg(i,o,dep)})}}
@@ -7314,7 +7467,7 @@ function render(){
   for(const s of VSIGNS)if(s.y>y0-3&&s.y<y1+4)list.push({k:13,y:s.y,s});
   pushVilaFences.tg={};pushVilaFences(list,x0-1,x1+1,y0-1,y1+2);
   for(const v of VILAS){const f=vilaFonte(v);if(f[1]<y1+4&&f[1]+f[3]>y0-3)list.push({k:33,y:f[1]+f[3]-.01,f})}
-  for(const n of funcNpcs)if(funcVisivel(n))list.push({k:32,y:n.y+.28,n});
+  for(const n of funcNpcs)if(funcVisivel(n))list.push({k:32,y:n.y+.28,n});if(arEq)for(const w of arEq.peoes)if(w.st!=='sai')list.push({k:91,y:w.y+.28,w});if(state.arvs)for(const a of state.arvs)if(!a.ok){const x=a.i%AW+XMIN,y=(a.i/AW)|0;if(Math.abs(x*T-camx-cv.width/2)<cv.width/2+200&&Math.abs(y*T-camy-cv.height/2)<cv.height/2+250)list.push({k:92,y:y+.99,a})}
   for(const q of POCO.lista)list.push({k:54,y:q.y+.98,q});
   for(const d of VDECOR)list.push({k:26,y:d[2],d});
   list.push({k:29,y:BAR_LOT[1]+BAR_LOT[3]-.01});if(expOn('xande'))list.push({k:30,y:XANDE_POS[1]+.28});
@@ -7356,6 +7509,8 @@ function render(){
     else if(d.k===37){const e=d.e,img=lotSprite(e.t,e.l),a=1;ctx.save();if(a<1){ctx.globalAlpha=.35+.65*a}ctx.drawImage(img,e.x*T-camx,e.y*T-camy-LT*S+Math.round((1-a)*20),img.width*S,img.height*S);ctx.restore();drawShine(img,extraLot(e))}
     else if(d.k===33){const img=lotSprite('praca',3);ctx.drawImage(img,d.f[0]*T-camx,d.f[1]*T-camy-LT*S,img.width*S,img.height*S)}
     else if(d.k===32)drawFuncNpc(d.n);
+    else if(d.k===91)drawPeao(d.w);
+    else if(d.k===92)drawMuda(d.a);
     else if(d.k===2)drawAnimal(d.a,d.a.led?d.a.moving:(d.a.vx||d.a.vy||d.a.flee>0||(lasso&&lasso.a===d.a)));
     else if(d.k===3)drawAnimal(d.a,d.a.vx||d.a.vy);
     else if(d.k===4){if(d.n.hid)continue;if(d.n.beb&&d.n.dir==='up')drawNPCBebida(d.n);drawPerson(SPR.npc[d.n.look],Object.assign({},d.n,{lift:d.n.hop||0}));if(d.n.beb&&d.n.dir!=='up')drawNPCBebida(d.n);drawNPCExtras(d.n)}
@@ -7505,7 +7660,7 @@ function frame0(ts){
   const dt=Math.min(.05,(ts-last)/1000||0);last=ts;const mpVivo=mpSemPausa();if(!paused||mpVivo||panelKind==='academia'||!state)clock+=dt;      // pausado: o cenário congela também (água, nuvens, árvores, folhas)
   if(state){updateBell(dt);morteTick(dt);      // o sino toca mesmo com uma janela aberta (o jogo fica pausado, o sino não)
     mpTick(dt);
-    if(!paused||mpVivo){if(busRide){busTick(dt);try{cenarioTick(dt)}catch(e){}}else{update(dt);vidaTick(dt)}drunkTick(dt);if(MP.role!=='guest')nivelTick(dt);funcTick(dt);saveT+=dt;if(saveT>30){saveT=0;save()}}
+    if(!paused||mpVivo){if(busRide){busTick(dt);try{cenarioTick(dt)}catch(e){}}else{update(dt);vidaTick(dt)}drunkTick(dt);if(MP.role!=='guest')nivelTick(dt);funcTick(dt);arTick(dt);saveT+=dt;if(saveT>30){saveT=0;save()}}
     hudT+=dt;if(hudT>.2){hudT=0;if(!paused||mpVivo)updateHUD()}
     if(paused&&!mpVivo&&panelKind!=='academia'){if(!pausaPintada){render();pausaPintada=true}}else{pausaPintada=false;render()}      // pausado: a tela fica parada, não precisa redesenhar
     if(panelKind==='academia'){if(liftT>0)liftT-=dt;drawGym()}}
@@ -7513,7 +7668,7 @@ function frame0(ts){
 }
 function startGame(s){miniBase=null;const mm=$('minimap');if(mm&&mm.classList)mm.classList.remove('hidden');state=s;if(typeof canStand==='function'&&!canStand(s.p.x,s.p.y,.28)){s.p.x=HOME[0];s.p.y=HOME[1]}if(s.clima===undefined)s.clima=null;flash=0;bolt=null;applyOutfit();wfx=[];leaves=[];windLines=[];gust=null;fox=null;foxT=90;birds=[];birdT=6;idleT=0;if(mapSeeds!==(s.seed1||SEED1)+':'+(s.seed2||SEED2))genMap(s.seed1,s.seed2);wild=[];penAnim=[];npcs=[];floats=[];hp={};shake={};lasso=null;led=null;fish=null;thieves=[];pfx=null;donkey=null;grau=null;planThieves();
   if(!canStand(state.p.x,state.p.y,.28)){state.p.x=HOME[0];state.p.y=HOME[1]}
-  applyExtras();spawnWild();if(state.toefdWild)spawnToefd(true);syncPens();syncNPCs();funcNpcs=[];syncFunc();panelKind=null;closePanel();updateHUD();
+  applyExtras();arEq=null;arTermina();for(const k in state.soil)objs[k]=null;ARV_OV.clear();arvAplica();spawnWild();if(state.toefdWild)spawnToefd(true);syncPens();syncNPCs();funcNpcs=[];syncFunc();panelKind=null;closePanel();updateHUD();
   if(state.day===1&&state.min<370)toast(`Bem-vindo a ${state.nome||'Imbuial Valley'}! Você está só de cueca: compre roupas com o Luan na Pitol Calçados, em Videira.`)}
 const isTouch=('ontouchstart' in window)||navigator.maxTouchPoints>0;
 function key(k,type){dispatchEvent(new KeyboardEvent(type||'keydown',{key:k,bubbles:true}))}
