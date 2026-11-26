@@ -313,6 +313,22 @@
   #touch .top{position:absolute;right:10px;top:calc(var(--top,132px) + 62px);display:flex;flex-direction:row;gap:6px;pointer-events:auto}
   #touch .top .tb{width:42px;height:42px;font-size:18px}
   body.touch #help{display:none}
+/* celular: tudo menor para sobrar tela para o jogo */
+body.touch #hud{transform:scale(.7);transform-origin:0 0}
+body.touch #obj,body.touch #minimap{transform:scale(.7);transform-origin:100% 0}
+body.touch #testo{transform:scale(.75);transform-origin:0 0}
+body.touch #toast>*{font-size:10px!important;padding:3px 7px!important;line-height:1.2}
+body.touch #toast img,body.touch #toast .ti{width:16px!important;height:16px!important;font-size:12px!important}
+body.touch #touch .tb{width:38px;height:38px;font-size:16px;border-width:2px}
+body.touch #touch .top .tb{width:32px;height:32px;font-size:14px}
+body.touch #touch .tb.big{width:58px;height:58px;font-size:22px}
+body.touch #touch .tb.red{width:44px;height:44px;font-size:18px}
+body.touch #touch .btns .red{right:96px;bottom:14px}
+body.touch #touch .btns .big{right:14px;bottom:14px}
+body.touch #touch .ctx{bottom:80px;right:10px;gap:6px}
+body.touch #touch .pad{width:100px;height:100px;left:14px;bottom:14px}
+body.touch #touch .knob{left:28px;top:28px;width:40px;height:40px}
+body.touch #inv{font-size:10px;padding:2px 8px}
   body.panelopen #touch{display:none}
   body.touch #inv{top:auto;bottom:8px;font-size:12px;padding:3px 10px;max-width:46vw;overflow:hidden}
   body.touch #inv .ic{width:18px;height:18px}
@@ -701,15 +717,17 @@ const TRATORES={   // vel = multiplicador da velocidade a pé; larg = quadrados 
   mf265:{nome:'Massey Ferguson 265',cv:65,vel:.95,larg:3,preco:70250,cor:'#c4302b',cor2:'#e8e8e8',desc:'O vermelhinho clássico da roça. Planta e colhe numa faixa de 3×3.'},
   tl75:{nome:'New Holland TL75',cv:75,vel:1.15,larg:3,preco:96500,cor:'#1f5fb0',cor2:'#e8e8e8',desc:'Azulão ágil, mais rápido entre os canteiros. Área de 3×3.'},
   bh180:{nome:'Valtra BH180',cv:180,vel:1.1,larg:5,preco:113000,cor:'#d9dde2',cor2:'#c4302b',desc:'Forte que só. Planta e colhe numa área de 5×5.'},
+  colheitadeira:{nome:'Colheitadeira',cv:340,vel:1.05,larg:3,preco:55000,tank:60,colh:1,cor:'#2f8a3a',cor2:'#f2c218',desc:'Colheitadeira com plataforma na frente: colhe numa faixa de 8 canteiros.'},
   jd6125:{nome:'John Deere 6125J',cv:125,vel:1.3,larg:5,preco:156000,cor:'#2f8a3a',cor2:'#f2c218',desc:'O verdão: rápido e com área de 5×5. O sonho da roça.'},
 };
 /* ---------- implementos do trator (plantadeira, pulverizador, ceifa) e pragas da lavoura ---------- */
 const IMPLEM={plantadeira:{nome:'Plantadeira',ico:'🌱',preco:38000,desc:'Planta a semente em uso numa faixa de 8 canteiros (4 de cada lado do trator).'},
   pulverizador:{nome:'Pulverizador',ico:'💨',preco:32000,desc:'Passa veneno numa faixa de 8 canteiros: mata erva daninha e insetos e protege por 3 dias. Gasta 1 L de veneno a cada 8 canteiros.'},
-  ceifa:{nome:'Colheitadeira (ceifa)',ico:'🌾',preco:55000,desc:'Vira uma colheitadeira com plataforma na frente. Colhe tudo que estiver pronto numa faixa de 8 canteiros (4 de cada lado). Também tira as plantas podres.'}};
+  ceifa:{escondido:1,nome:'Colheitadeira (ceifa)',ico:'🌾',preco:55000,desc:'Vira uma colheitadeira com plataforma na frente. Colhe tudo que estiver pronto numa faixa de 8 canteiros (4 de cada lado). Também tira as plantas podres.'}};
 const IMP_LADO=4,VENENO_PRECO=12;
 const impl=()=>state.implem||(state.implem={own:{},eng:null});
-const implEng=()=>{const q=impl();return q.eng&&q.own[q.eng]?q.eng:null};
+const colhOn=()=>state.trator==='colheitadeira';
+const implEng=()=>{if(colhOn())return null;const q=impl();return q.eng&&q.eng!=='ceifa'&&q.own[q.eng]?q.eng:null};
 function pragaDia(){const day=state.day;let lv=[];try{lv=lavouras()}catch(e){}let podres=0;const novos=[];
   for(const k in state.crops){const c=state.crops[k];if(!c.praga||c.podre)continue;
     if(c.praga==='inseto'&&!c.r&&Math.random()<.18){c.podre=1;podres++;continue}      // inseto: algumas plantas apodrecem
@@ -730,21 +748,37 @@ function implTrabalha(im,cx,cy){const p=state.p;let col=0,pl=0,sp=0;
   if(sp){state.venAcc=(state.venAcc||0)+sp/8;while(state.venAcc>=1&&state.inv.veneno>0){state.venAcc--;state.inv.veneno--}}
   if(pl)addNivelXp(pl*XP_PLANTIO);
   if(col)float(p.x,p.y-1.2,`+${col} colhidos`,'#ffe066');if(pl)float(p.x+.6,p.y-.6,`${pl} plantados`,'#bfe6a0');if(col||pl)beep(440,.05,'square',.03)}
-function drawImplem(p,sx,gy,fl){const im=implEng();if(!im)return;const hor=p.dir==='left'||p.dir==='right'||p.dir==null,cx=Math.floor(p.x),cy=Math.floor(p.y),L=2*IMP_LADO*T;
-  ctx.save();if(hor){const frente=im==='ceifa',bx=sx+(frente?(fl?-1:1)*T*1.45:(fl?1:-1)*T*1.15),top=(cy-IMP_LADO)*T-camy;
+// barra desenhada "deitada": x ao longo da barra (0..L), y negativo = lado do trator
+function barraPlantadeira(L){const c=L/2;
+  ctx.fillStyle='#2b2b2b';ctx.fillRect(c-3,-46,6,42);      // cabeçalho até o trator
+  ctx.fillStyle='#2f7a24';ctx.fillRect(0,-7,L,8);ctx.fillStyle='#4fae3a';ctx.fillRect(0,-7,L,2);ctx.fillStyle='#1f5a1a';ctx.fillRect(0,0,L,1);      // barra porta-ferramentas verde
+  for(let x=2;x<L-6;x+=12){ctx.fillStyle='#3f9a2e';ctx.fillRect(x+2,1,3,12);ctx.fillRect(x+6,3,2,9);ctx.fillStyle='#1c1c1c';ctx.fillRect(x,11,8,6);ctx.fillStyle='#555';ctx.fillRect(x+2,13,4,2);ctx.fillStyle='#b3b9c2';ctx.fillRect(x+7,8,2,7)}      // linhas: braços, rodinhas e discos
+  ctx.fillStyle='#2f7a24';ctx.fillRect(c-34,-12,68,6);      // plataforma do meio
+  for(const dx of[-31,1]){ctx.fillStyle='#c4581a';ctx.fillRect(c+dx,-34,30,22);ctx.fillStyle='#f27a1a';ctx.fillRect(c+dx+1,-33,28,20);ctx.fillStyle='#ffa040';ctx.fillRect(c+dx+1,-33,28,4);ctx.fillStyle='#2f8a3a';ctx.fillRect(c+dx+6,-24,18,5);ctx.fillStyle='#e8e8e8';ctx.fillRect(c+dx+8,-23,14,1)}      // caixas de semente laranjas
+  ctx.fillStyle='#3f9a2e';ctx.fillRect(c-36,-14,3,10);ctx.fillRect(c+33,-14,3,10)}
+function barraPulverizador(L,walk){const c=L/2;
+  ctx.fillStyle='#2b2b2b';ctx.fillRect(c-3,-50,6,46);
+  ctx.fillStyle='#2f8a3a';ctx.fillRect(c-20,-16,40,12);ctx.fillStyle='#4fae55';ctx.fillRect(c-20,-16,40,2);      // chassi verde
+  ctx.fillStyle='#c9b21a';ctx.fillRect(c-17,-44,34,30);ctx.fillStyle='#f2e04a';ctx.fillRect(c-16,-43,32,28);ctx.fillStyle='#fff6a0';ctx.fillRect(c-13,-41,6,22);ctx.fillStyle='#1c1c1c';ctx.fillRect(c-3,-47,6,4);      // tanque amarelo
+  ctx.fillStyle='#1c1c1c';ctx.fillRect(0,-3,L,6);ctx.fillStyle='#3a3a3a';ctx.fillRect(0,-3,L,1);      // barra preta
+  for(let x=6,k=0;x<L-8;x+=10,k++){ctx.fillStyle='#1c1c1c';ctx.fillRect(x,3,4,6);ctx.fillStyle=k%2?'#9b5fd5':'#e050b0';ctx.fillRect(x,9,4,2);      // bicos com as pontas rosa e roxa
+    if(walk){ctx.fillStyle='rgba(210,235,255,.28)';ctx.beginPath();ctx.ellipse(x+2,16+((clock*20+k*3)%6),5,6,0,0,7);ctx.fill()}}
+  for(const x of[-12,L]){ctx.fillStyle='#c99a0e';ctx.fillRect(x,-7,13,14);ctx.fillStyle='#f2c218';ctx.fillRect(x+1,-6,11,12);ctx.fillStyle='#1c1c1c';ctx.fillRect(x+4,-3,1,6);ctx.fillRect(x+5,-1,2,1);ctx.fillRect(x+7,-3,1,2);ctx.fillRect(x+7,1,1,2)}}      // ponteiras amarelas
+function drawImplem(p,sx,gy,fl){const im=colhOn()?'ceifa':implEng();if(!im)return;const hor=p.dir==='left'||p.dir==='right'||p.dir==null,cx=Math.floor(p.x),cy=Math.floor(p.y),L=2*IMP_LADO*T;
+  ctx.save();
+  if(im!=='ceifa'){      // plantadeira e pulverizador: atrás do trator
+    if(hor){const bx=sx+(fl?1:-1)*T*2.1,top=(p.y-IMP_LADO)*T-camy;ctx.translate(Math.round(bx),Math.round(top));ctx.rotate(Math.PI/2);if(fl)ctx.scale(1,-1)}
+    else{const up=p.dir==='up',by=gy+(!up?-T*1.9:T*1.05),left=(p.x-IMP_LADO)*T-camx;ctx.translate(Math.round(left),Math.round(by));if(!up)ctx.scale(1,-1)}
+    if(im==='plantadeira')barraPlantadeira(L);else barraPulverizador(L,p.walk);ctx.restore();return}
+  if(hor){const bx=sx+(fl?-1:1)*T*1.45,top=(cy-IMP_LADO)*T-camy,d=fl?-1:1;
       ctx.fillStyle='#3a3a3a';ctx.fillRect(Math.min(bx,sx),gy-14,Math.abs(bx-sx),4);
-      if(im==='pulverizador'){ctx.fillStyle='#8d939c';ctx.fillRect(bx-3,top,6,L);for(let k=0;k<2*IMP_LADO;k++){ctx.fillStyle='#2b2b2b';ctx.fillRect(bx-5,top+k*T+T/2-2,10,4);if(p.walk){ctx.fillStyle='rgba(200,230,255,.35)';ctx.beginPath();ctx.ellipse(bx+(fl?6:-6),top+k*T+T/2+6,10,7,0,0,7);ctx.fill()}}ctx.fillStyle='#e8e8e8';ctx.fillRect(sx+(fl?18:-34),gy-58,16,20)}
-      else if(im==='plantadeira'){ctx.fillStyle='#1f5a2a';ctx.fillRect(bx-5,top,10,L);for(let k=0;k<2*IMP_LADO;k++){ctx.fillStyle='#f2c218';ctx.fillRect(bx-8,top+k*T+8,16,12);ctx.fillStyle='#6b4a2b';ctx.fillRect(bx-3,top+k*T+24,6,10)}}
-      else{const d=fl?-1:1;ctx.fillStyle='#1f6a2a';ctx.fillRect(bx-16,top-4,32,L+8);ctx.fillStyle='#2f8a3a';ctx.fillRect(bx-14,top,28,L);ctx.fillStyle='#4fae55';ctx.fillRect(bx-14,top,4,L);ctx.fillStyle='#8d939c';ctx.fillRect(bx+d*15-2,top,4,L);for(let k=0;k<L;k+=8)ctx.fillRect(bx+d*18-1,top+k,3,4);      // plataforma verde e a barra de corte
+      ctx.fillStyle='#1f6a2a';ctx.fillRect(bx-16,top-4,32,L+8);ctx.fillStyle='#2f8a3a';ctx.fillRect(bx-14,top,28,L);ctx.fillStyle='#4fae55';ctx.fillRect(bx-14,top,4,L);ctx.fillStyle='#8d939c';ctx.fillRect(bx+d*15-2,top,4,L);for(let k=0;k<L;k+=8)ctx.fillRect(bx+d*18-1,top+k,3,4);      // plataforma verde e a barra de corte
       const a=clock*6;ctx.fillStyle='#f2c218';for(let j=0;j<4;j++){const o=Math.sin(a+j*1.57)*7;ctx.fillRect(bx+o-2,top+2,3,L-4)}ctx.fillStyle='#1c1c1c';ctx.fillRect(bx-1,top,2,L);      // molinete girando
-      ctx.fillStyle='#f2c218';ctx.fillRect(bx-16,top-8,32,6);ctx.fillRect(bx-16,top+L+2,32,6)}}
-    else{const up=p.dir==='up',frente=im==='ceifa',by=frente?(up?gy-88:gy+8):gy+(!up?-T*.9:T*.45),left=(cx-IMP_LADO)*T-camx;
-      ctx.fillStyle='#3a3a3a';ctx.fillRect(sx-2,Math.min(by,gy-10),4,Math.abs(by-gy+10));
-      if(im==='pulverizador'){ctx.fillStyle='#8d939c';ctx.fillRect(left,by-3,L,6);for(let k=0;k<2*IMP_LADO;k++){ctx.fillStyle='#2b2b2b';ctx.fillRect(left+k*T+T/2-2,by-5,4,10);if(p.walk){ctx.fillStyle='rgba(200,230,255,.35)';ctx.beginPath();ctx.ellipse(left+k*T+T/2,by+8,8,9,0,0,7);ctx.fill()}}}
-      else if(im==='plantadeira'){ctx.fillStyle='#1f5a2a';ctx.fillRect(left,by-5,L,10);for(let k=0;k<2*IMP_LADO;k++){ctx.fillStyle='#f2c218';ctx.fillRect(left+k*T+16,by-10,16,12)}}
-      else{ctx.fillStyle='#1f6a2a';ctx.fillRect(left-4,by-18,L+8,32);ctx.fillStyle='#2f8a3a';ctx.fillRect(left,by-16,L,28);ctx.fillStyle='#4fae55';ctx.fillRect(left,by-16,L,4);ctx.fillStyle='#8d939c';ctx.fillRect(left,by+10,L,3);const a=clock*6;ctx.fillStyle='#f2c218';for(let j=0;j<4;j++){const o=Math.sin(a+j*1.57)*6;ctx.fillRect(left+2,by+o-2,L-4,3)}ctx.fillStyle='#1c1c1c';ctx.fillRect(left,by-1,L,2);ctx.fillStyle='#f2c218';ctx.fillRect(left-8,by-18,6,32);ctx.fillRect(left+L+2,by-18,6,32)}}
+      ctx.fillStyle='#f2c218';ctx.fillRect(bx-16,top-8,32,6);ctx.fillRect(bx-16,top+L+2,32,6)}
+  else{const up=p.dir==='up',by=up?gy-88:gy+8,left=(cx-IMP_LADO)*T-camx;
+      ctx.fillStyle='#1f6a2a';ctx.fillRect(left-4,by-18,L+8,32);ctx.fillStyle='#2f8a3a';ctx.fillRect(left,by-16,L,28);ctx.fillStyle='#4fae55';ctx.fillRect(left,by-16,L,4);ctx.fillStyle='#8d939c';ctx.fillRect(left,by+10,L,3);const a=clock*6;ctx.fillStyle='#f2c218';for(let j=0;j<4;j++){const o=Math.sin(a+j*1.57)*6;ctx.fillRect(left+2,by+o-2,L-4,3)}ctx.fillStyle='#1c1c1c';ctx.fillRect(left,by-1,L,2);ctx.fillStyle='#f2c218';ctx.fillRect(left-8,by-18,6,32);ctx.fillRect(left+L+2,by-18,6,32)}
   ctx.restore()}
-const TANK={moto:8,trator:40},tankOf=(kind,k)=>{const L=kind==='trator'?TRATORES:MOTOS,ord=Object.keys(L).sort((a,b)=>L[a].preco-L[b].preco);return TANK[kind]+Math.max(0,ord.indexOf(k))},      // cada veículo melhor tem +1 L de tanque
+const TANK={moto:8,trator:40},tankOf=(kind,k)=>{const L=kind==='trator'?TRATORES:MOTOS;if(L[k]&&L[k].tank)return L[k].tank;const ord=Object.keys(L).filter(q=>!L[q].tank).sort((a,b)=>L[a].preco-L[b].preco);return TANK[kind]+Math.max(0,ord.indexOf(k))},      // cada veículo melhor tem +1 L de tanque
  FUEL_USE={moto:.004,trator:.02},GAS_PRICE={comum:6,aditivada:9},AD_BOOST=1.25;      // litros, litros por quadrado andado, moedas por litro; aditivada = +25% de velocidade
 const GAS_LOT=[58,47,5,3],LAVA_LOT=[64,47,4,3],TRATOR_LOT=[69,47,8,3];      // posto, lava-jato ao lado e a concessionária de tratores      // posto e concessionária de tratores: os dois do outro lado da ponte
 const PITOL_LOT=[27,42,4,3],LUAN_POS=[31.5,44.5];      // Pitol Calçados, no centro de Videira (onde era a casa antiga); Luan fica na porta
@@ -1434,7 +1468,7 @@ function migrateMap(s){      // saves do mapa antigo (72 de largura): converte p
 function readSlot(n){try{return JSON.parse(localStorage.getItem(SLOT_KEYS[n]))}catch(e){return null}}
 function load(n){if(n==null)n=curSlot==null?0:curSlot;try{const s=readSlot(n);if(s&&s.v===1){const d=newState();
   if(!s.nivel)s.nivel={lvl:Math.max(1,s.forca&&s.forca.lvl||1),xp:0};      // saves antigos: começa no nível da força, para não perder os pontos de estudo já usados
-  for(const k in d.inv)if(s.inv[k]==null)s.inv[k]=0;for(const k in d.b)if(s.b[k]==null)s.b[k]=d.b[k];s.crops=s.crops||{};s.seeds=s.seeds||{};s.found=s.found||{};s.motos=s.motos||{};s.tratores=s.tratores||{};s.fuel=s.fuel||{};s.rideKind=s.rideKind||'moto';if(s.trator&&!TRATORES[s.trator])s.trator=null;s.forca=s.forca||{lvl:1,xp:0,hoje:0};s.estudos=Object.assign({floresta:0,geo:0,zoo:0,pesca:0},s.estudos||{});for(const k in s.estudos)s.estudos[k]=Math.min(s.estudos[k],STUDY_MAX);s.napHoje=s.napHoje||0;if(s.moto&&!MOTOS[s.moto])s.moto=null;s.riding=!!(s.riding&&s.moto);s.p.face=s.p.face||1;s.rain=!!s.rain;if(!s.roupas)s.roupas={owned:{palha:1,cam_vermelha:1,jeans:1,botina:1},eq:{hat:'palha',shirt:'cam_vermelha',pants:'jeans',shoes:'botina'}};      // saves antigos: fica com a roupa de antes
+  for(const k in d.inv)if(s.inv[k]==null)s.inv[k]=0;for(const k in d.b)if(s.b[k]==null)s.b[k]=d.b[k];s.crops=s.crops||{};s.seeds=s.seeds||{};s.found=s.found||{};s.motos=s.motos||{};s.tratores=s.tratores||{};s.fuel=s.fuel||{};s.rideKind=s.rideKind||'moto';if(s.implem&&s.implem.own&&s.implem.own.ceifa){s.tratores.colheitadeira=1;if(s.implem.eng==='ceifa'){s.trator='colheitadeira';s.implem.eng=null}delete s.implem.own.ceifa}if(s.trator&&!TRATORES[s.trator])s.trator=null;s.forca=s.forca||{lvl:1,xp:0,hoje:0};s.estudos=Object.assign({floresta:0,geo:0,zoo:0,pesca:0},s.estudos||{});for(const k in s.estudos)s.estudos[k]=Math.min(s.estudos[k],STUDY_MAX);s.napHoje=s.napHoje||0;if(s.moto&&!MOTOS[s.moto])s.moto=null;s.riding=!!(s.riding&&s.moto);s.p.face=s.p.face||1;s.rain=!!s.rain;if(!s.roupas)s.roupas={owned:{palha:1,cam_vermelha:1,jeans:1,botina:1},eq:{hat:'palha',shirt:'cam_vermelha',pants:'jeans',shoes:'botina'}};      // saves antigos: fica com a roupa de antes
   s.roupas.owned=s.roupas.owned||{};if(!s.roupas.v){const ow=Object.keys(s.roupas.owned).sort().join();if(ow==='botina,cam_vermelha,jeans,palha'||!ow){s.roupas.owned={};s.roupas.eq={}}s.roupas.v=2}      // fica de cueca até comprar a primeira peça
   for(const a of s.animals||[]){if(a.cor==null)a.cor=pickCor(a.sp);if(ANIM_VARS[a.sp]&&!ANIM_VARS[a.sp][a.cor])a.cor=0}s.func=s.func||{trat:[],lav:0};s.extras=s.extras||[];s.sujeira=s.sujeira||0;s.vsuj=s.vsuj||{};s.mequip=s.mequip||{own:{esc_padrao:1},cap:null,capCor:'#d42a2a',camisa:false,calca:false};s.motoCustom=s.motoCustom||{};s.visual=s.visual||{};s.roupas.eq=Object.assign({hat:null,shirt:null,pants:null,shoes:null,oculos:null},s.roupas.eq||{});for(const k in s.roupas.eq){const c=s.roupas.eq[k];if(c&&!(CLOTHES[c]&&CLOTHES[c].tipo===k))s.roupas.eq[k]=null}
   migrateMap(s);return s}}catch(e){}return null}
@@ -2298,7 +2332,7 @@ function buildSprites(){
   SPR.var={};for(const sp in ANIM_VARS)SPR.var[sp]=ANIM_VARS[sp].map(v=>recolor(SPR[sp],v));
   SPR.seller=npcSet(NPC_LOOKS.alison);SPR.mateus=mateusSet();SPR.mateusGreet=hdFrames(lookNpc(NPC_LOOKS.mateus,'mateus'),'down',['acena0','acena1']);SPR.greet={};for(const k in GREET_DRAW)SPR.greet[k]=npcGreet(NPC_LOOKS[k],k==='alison'?'side':'down',k);SPR.giliard=npcSet(NPC_LOOKS.giliard);SPR.maikelen=npcSet(NPC_LOOKS.maikelen);SPR.xande=npcSet(NPC_LOOKS.xande);SPR.xandeFr=xandeFrames();SPR.gabriel=npcSet(NPC_LOOKS.gabriel);SPR.gabrielBarb=hdSet(Object.assign(lookNpc(NPC_LOOKS.gabriel,'gabriel'),{top:'#f4f4f4',sleeve:'longa',glasses:null,avental:'#2a1c14',gravata:'#8a1a24',pants:'#2a2a30',shoes:{col:'#1c1c1c',style:'tenis'}}));SPR.thiago=npcSet(NPC_LOOKS.thiago);SPR.everton=altoSet(hdSet(Object.assign(lookNpc(NPC_LOOKS.everton,'everton'),{gravata:'#c9a227',sleeve:'longa'})),1.14);SPR.luan=npcSet(NPC_LOOKS.luan);SPR.junior=npcSet(NPC_LOOKS.junior);
   SPR.moto={};SPR.motoF={};SPR.motoT={};for(const k in MOTOS){SPR.moto[k]=motoSpriteHD(MOTOS[k]);SPR.motoF[k]=motoVistaHD(MOTOS[k],0);SPR.motoT[k]=motoVistaHD(MOTOS[k],1)}
-  SPR.trator={};SPR.tratorV={};for(const k in TRATORES){SPR.trator[k]=tratorSpriteHD(TRATORES[k]);SPR.tratorV[k]=tratorVistas(TRATORES[k])}
+  SPR.trator={};SPR.tratorV={};for(const k in TRATORES){if(TRATORES[k].colh){SPR.trator[k]=colheitadeiraSpr().L;continue}SPR.trator[k]=tratorSpriteHD(TRATORES[k]);SPR.tratorV[k]=tratorVistas(TRATORES[k])}
   SPR.thief=personSet({hat:'#26262e',shirt:'#3a3a46',pants:'#1f1f27',skin:'#d9b08c'});
   SPR.npc=[{hat:'#8fb5e8',shirt:'#f5d76e',pants:'#6b4a33',skin:'#e8b88a'},{hat:'#c98a3d',shirt:'#7fb04f',pants:'#444a5a',skin:'#c99570'},
     {hat:'#e88fb5',shirt:'#9b6fd5',pants:'#3b5a3b',skin:'#f2c79c'},{hat:'#eeeeee',shirt:'#3d9aa6',pants:'#5a3a1e',skin:'#a87550'}].map(personSet);
@@ -3007,16 +3041,16 @@ function lavaSprite(){if(lavaCv)return lavaCv;const W=LAVA_LOT[2]*16,H=LAVA_LOT[
     r(0,H-5,W,3,'#8aa0b0');r(0,H-3,W,1,'#5a7080');for(let x=4;x<W;x+=6)r(x,H-5,3,1,'#b8d8ec')      // canaleta de água
   })}
 /* ---------- Concessionária de tratores ---------- */
-function openTractorShop(say){const fast=Math.max(...Object.values(TRATORES).map(t=>t.vel));
-  let cards='';for(const k in TRATORES){const t=TRATORES[k],own=state.tratores[k],sel=state.trator===k;
+function openTractorShop(say){const fast=Math.max(...Object.values(TRATORES).filter(t=>!t.colh).map(t=>t.vel));
+  let cards='';for(const k in TRATORES){const t=TRATORES[k],own=state.tratores[k],sel=state.trator===k;if(t.colh)continue;
     cards+=`<div class="mcard${sel?' sel':''}"><img class="mi" src="${vehIcon('trator',k)}" alt=""><div class="g"><b>${t.nome}</b> <span class="cc">${t.cv} cv</span> <span class="cc" style="background:#3f6b28">${t.larg}×${t.larg}</span><br><small>${t.desc}</small>
       <div class="vel"><i style="width:${Math.max(8,(t.vel-.8)/(fast-.8)*100)}%"></i></div><small>Velocidade ×${t.vel.toFixed(2).replace('.',',')} · planta e colhe ${t.larg*t.larg} canteiros por vez</small></div>
       <div class="act">${own?(sel?(state.riding&&state.rideKind==='trator'?'<button class="alt" data-a="tratorride">Descer</button>':'<button data-a="tratorride">Subir</button>')+'<small class="ok">em uso</small>':`<button class="alt" data-a="tratoruse" data-v="${k}">Usar este</button>`)
         :`<span class="price">${brl(t.preco)}</span><button data-a="tratorbuy" data-v="${k}" ${state.coins>=t.preco?'':'disabled'}>Comprar</button>`}</div></div>`}
-  {const E=IMPLEM.ceifa,q=impl(),own=q.own.ceifa,on=q.eng==='ceifa';let ic='';try{const im=colheitadeiraSpr().L,c=document.createElement('canvas');c.width=im.width;c.height=im.height;c.getContext('2d').drawImage(im,0,0);ic=c.toDataURL()}catch(e){}
+  {const E=TRATORES.colheitadeira,own=state.tratores.colheitadeira,on=state.trator==='colheitadeira';let ic='';try{const im=colheitadeiraSpr().L,c=document.createElement('canvas');c.width=im.width;c.height=im.height;c.getContext('2d').drawImage(im,0,0);ic=c.toDataURL()}catch(e){}
     cards+=`<div class="mcard${on?' sel':''}"><img class="mi" src="${ic}" alt=""><div class="g"><b>Colheitadeira</b> <span class="cc">ceifa</span> <span class="cc" style="background:#3f6b28">8 canteiros</span><br><small>Vira o seu trator numa colheitadeira com plataforma na frente. Colhe tudo que estiver pronto numa faixa de 8 canteiros (4 de cada lado) e tira as plantas podres.</small>
-      <small>Precisa de um trator para rodar (usa o motor e a gasolina dele).</small></div>
-      <div class="act">${own?(on?'<button class="alt" data-a="implon" data-v="">Voltar pro trator</button><small class="ok">em uso</small>':`<button data-a="implon" data-v="ceifa">Usar esta</button>`):`<span class="price">${brl(E.preco)}</span><button data-a="implbuy" data-v="ceifa" ${state.coins>=E.preco?'':'disabled'}>Comprar</button>`}</div></div>`}
+      <small>Tem tanque próprio de 60 L: abasteça e lave no posto do Thiago, igual aos tratores.</small></div>
+      <div class="act">${own?(on?(state.riding&&state.rideKind==='trator'?'<button class="alt" data-a="tratorride">Descer</button>':'<button data-a="tratorride">Subir</button>')+'<small class="ok">em uso</small>':`<button class="alt" data-a="tratoruse" data-v="colheitadeira">Usar esta</button>`):`<span class="price">${brl(E.preco)}</span><button data-a="tratorbuy" data-v="colheitadeira" ${state.coins>=E.preco?'':'disabled'}>Comprar</button>`}</div></div>`}
   showPanel('tratores',`<div class="s-head t-head"><button class="close" data-a="close">Fechar ✕</button><h1>🚜 Agro Imbuial · Tratores</h1><div class="sub">${say||'Trator novo de fábrica, tanque cheio. Tecla <kbd>T</kbd> sobe e desce.'} · saldo <b>${brl(state.coins)}</b></div></div>
     <div class="s-body" style="display:block"><div class="s-list">${cards}</div>
     <h3 style="margin:14px 0 6px">🧰 Equipamentos <small>(engate no trator · faixa de 8 canteiros, 4 de cada lado)</small></h3><div class="s-list">${Object.keys(IMPLEM).filter(k=>k!=='ceifa').map(k=>{const E=IMPLEM[k],q=impl(),own=q.own[k],on=q.eng===k;
@@ -3544,7 +3578,7 @@ function harvestAt(i,wx,wy){const c=state.crops[i];if(c.podre){delete state.crop
   if(CROPS[k].rebrota){c.g=CROPS[k].dias-CROPS[k].rebrota;c.r=false}else delete state.crops[i];return n}
 function tractorWork(){const p=state.p,cx=Math.floor(p.x),cy=Math.floor(p.y),ti=cy*AW-XMIN+cx;if(ti===tractorTile)return;tractorTile=ti;
   if(MP.role==='guest'){if(MP.host&&MP.myId)mpSend(MP.host,{t:'trator',x:p.x,y:p.y,k:state.trator});return}
-  {const im=implEng();if(im){implTrabalha(im,cx,cy);return}}
+  {const im=colhOn()?'ceifa':implEng();if(im){implTrabalha(im,cx,cy);return}}
   const r=(TRATORES[state.trator].larg-1)/2;let col=0,pl=0;
   for(let y=cy-r;y<=cy+r;y++)for(let x=cx-r;x<=cx+r;x++){if(x<XMIN||y<0||x>=MW||y>=MH)continue;const i=y*AW-XMIN+x;if(!soilOn(i))continue;const c=state.crops[i];
     if(c&&(c.r||c.podre))col+=harvestAt(i);
@@ -3899,7 +3933,7 @@ function drawClimaWorld(W,H){const hr=state.min/60,c=state.clima;
 /* ================= MULTIPLAYER: cooperativo no mundo do dono, até 4 jogadores, pela internet com código de sala =================
    Ligação: WebRTC (canal de dados direto entre os aparelhos). Para os aparelhos se acharem usa o servidor público grátis do PeerJS
    só como "telefonista" (sinalização). Quem hospeda manda no mundo; os convidados mandam o que fazem e o dono aplica e espalha. */
-const JOGO_VERSAO='2026-11-26k';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
+const JOGO_VERSAO='2026-11-26m';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
 const MP_MAX=4,MP_PREFIX=SLOT_KEYS[0].replace(/_slot_1$/,'').replace(/_/g,''),MP_SERVER='wss://0.peerjs.com:443/peerjs?key=peerjs';
 const MP_ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']},{urls:'stun:global.stun.twilio.com:3478'}]};
 const MP_LEVE=['p','energy','hunger','vida','forca','sujeira','sel','testoUntil','fomeT','coins','xpUntil','monster','napHoje','doze'];      // muda toda hora: vai junto em cada batida
@@ -6026,11 +6060,11 @@ const ACT={
   lavar(v){const[kind,k]=v.split(':');lavarVeiculo(kind,k)},
   abastecer(v){const[kind,k,type]=v.split(':');fillTank(kind,k,type)},
   tratorbuy(k){const t=TRATORES[k];if(state.tratores[k]||state.coins<t.preco)return;state.coins-=t.preco;state.tratores[k]=1;state.trator=k;fuelOf('trator',k);revSound();save();
-    openTractorShop(`Negócio fechado! O ${t.nome} é seu, de tanque cheio. Aperte T para subir.`)},
+    openTractorShop(`Negócio fechado! ${t.colh?'A colheitadeira':'O '+t.nome} é seu, de tanque cheio. Aperte T para subir.`)},
   tratoruse(k){if(!state.tratores[k])return;if(state.riding&&state.rideKind==='trator')state.riding=false;state.trator=k;openTractorShop()},
   tratorride(){toggleRide('trator');openTractorShop()},
-  implbuy(k){const E=IMPLEM[k],q=impl();if(!E||q.own[k]||state.coins<E.preco)return;state.coins-=E.preco;q.own[k]=1;q.eng=k;sfx.coin();save();openTractorShop(k==='ceifa'?'🌾 Colheitadeira comprada e já em uso! Aperte T para subir.':`${E.ico} ${E.nome} comprada e já engatada no trator!`)},
-  implon(k){const q=impl();if(k&&!q.own[k])return;q.eng=k||null;beep(330,.08,'square',.04);save();openTractorShop(k==='ceifa'?'🌾 Agora você está usando a colheitadeira.':k?`${IMPLEM[k].ico} ${IMPLEM[k].nome} engatada.`:'De volta ao trator: ele colhe e planta em volta dele.')},
+  implbuy(k){if(k==='ceifa'){ACT.tratorbuy('colheitadeira');return}const E=IMPLEM[k],q=impl();if(!E||q.own[k]||state.coins<E.preco)return;state.coins-=E.preco;q.own[k]=1;q.eng=k;sfx.coin();save();openTractorShop(k==='ceifa'?'🌾 Colheitadeira comprada e já em uso! Aperte T para subir.':`${E.ico} ${E.nome} comprada e já engatada no trator!`)},
+  implon(k){if(k==='ceifa'){ACT.tratoruse('colheitadeira');return}const q=impl();if(k&&!q.own[k])return;q.eng=k||null;beep(330,.08,'square',.04);save();openTractorShop(k==='ceifa'?'🌾 Agora você está usando a colheitadeira.':k?`${IMPLEM[k].ico} ${IMPLEM[k].nome} engatada.`:'De volta ao trator: ele colhe e planta em volta dele.')},
   venbuy(v){const n=+v|0,c=n*VENENO_PRECO;if(!n||state.coins<c)return;state.coins-=c;state.inv.veneno=(state.inv.veneno|0)+n;sfx.coin();save();openTractorShop(`🧪 +${n} L de veneno.`)},
   selq(v){const[k,d]=v.split(':'),n=state.inv[k]||0;sellSel[k]=d==='all'?n:clamp((sellSel[k]||0)+(+d),0,n);if(!sellSel[k])delete sellSel[k];sellDone=0;openSell(true)},
   selall(){for(const k in ITEMS)if(ITEMS[k].preco&&state.inv[k]>0)sellSel[k]=state.inv[k];sellDone=0;openSell(true)},
@@ -6183,7 +6217,7 @@ function miniLugar(x,y){try{if(inPedr(x,y))return'⛏ Pedreirinha';if(naSakura(x
   if(x<0)return'🌲 Interior';return'🌾 Imbuial'}catch(e){return'Videira · Imbuial'}}
 function placeToast(){const t=$('toast'),h=$('hud');if(!t||!h||!t.style||!h.getBoundingClientRect)return;const r=h.getBoundingClientRect();if(!r.width)return;let b=r.bottom;      // mensagens logo abaixo do painel do dia
   const te=$('testo');if(te&&te.classList&&!te.classList.contains('hidden')&&te.getBoundingClientRect){b=Math.max(b,te.getBoundingClientRect().bottom)}
-  t.style.left=Math.round(r.left)+'px';t.style.top=Math.round(b+6)+'px';t.style.width=Math.round(r.width)+'px'}
+  t.style.left=Math.round(r.left)+'px';t.style.top=Math.round(b+6)+'px';t.style.width=Math.round(isTouch?Math.max(r.width,210):r.width)+'px'}
 function placeMini(){const o=$('obj'),m=$('minimap');if(!o||!m||!m.style||!o.getBoundingClientRect)return;const r=o.getBoundingClientRect();      // embaixo do objetivo, no canto direito
   m.style.top=Math.round(r.bottom+6)+'px';m.style.right='12px';m.style.left='auto';
   const tp=document.querySelector&&document.querySelector('#touch .top');if(tp&&tp.style&&m.getBoundingClientRect){const mr=m.getBoundingClientRect();tp.style.top=Math.round(r.bottom+6)+'px';tp.style.right=Math.round(mr.width+20)+'px'}}
@@ -6292,12 +6326,13 @@ function motoVertical(m,k,sx,gy,dir,mov,head,set,lift){      // moto de frente (
   {const o=dirtOver(img,dirtStage(vehDirt()));if(o)blit(o,sx,gy-bump)}
   const L=Math.round(sx-img.width*u/2),Tp=gy-bump-img.height*u+(img.pad||0)*S,x0=L+(tras?10:11)*u,ww=(tras?6:4)*u,ph=((spinA||0)*2)%3;      // cravos do pneu correndo
   ctx.fillStyle='#454545';for(let y=19+ph;y<31;y+=3)ctx.fillRect(Math.round(x0),Math.round(Tp+(y+1)*u),Math.round(ww),Math.round(u))}
-function drawTratorV(p,head){const sx=Math.round(p.x*T-camx),gy=Math.round((p.y+.28)*T-camy),bump=p.walk&&Math.floor(clock*18)%2?1:0,fl=p.face<0,vert=p.dir==='up'||p.dir==='down',cf=implEng()==='ceifa';
+function drawTratorV(p,head){const sx=Math.round(p.x*T-camx),gy=Math.round((p.y+.28)*T-camy),bump=p.walk&&Math.floor(clock*18)%2?1:0,fl=p.face<0,vert=p.dir==='up'||p.dir==='down',cf=colhOn();
   if(!vert&&!cf)return false;
   const poeira=y=>{if(p.walk&&Math.floor(clock*10)%3===0){ctx.fillStyle='rgba(185,160,120,.55)';ctx.beginPath();ctx.arc(sx+(Math.random()-.5)*40,y,6+Math.random()*5,0,7);ctx.fill()}};
   if(cf){const C=colheitadeiraSpr();drawImplem(p,sx,gy,fl);
-    if(!vert){shadow(sx,gy-2,62,10);blit(C.L,sx,gy-bump,fl);poeira(gy-8);return true}
-    shadow(sx,gy-2,50,9);blit(p.dir==='up'?C.T:C.F,sx,gy-bump,false);poeira(p.dir==='up'?gy+4:gy-60);return true}
+    const sujo=im=>{const o=dirtOver(im,dirtStage(vehDirt()));if(o)blit(o,sx,gy-bump,im===C.L&&fl)};
+    if(!vert){shadow(sx,gy-2,62,10);blit(C.L,sx,gy-bump,fl);sujo(C.L);poeira(gy-8);return true}
+    {const im=p.dir==='up'?C.T:C.F;shadow(sx,gy-2,50,9);blit(im,sx,gy-bump,false);sujo(im);poeira(p.dir==='up'?gy+4:gy-60);return true}}
   const V=SPR.tratorV&&SPR.tratorV[state.trator];if(!V)return false;const up=p.dir==='up';
   drawImplem(p,sx,gy,fl);shadow(sx,gy-2,40,9);poeira(up?gy+4:gy-50);
   blit(up?V.T0:V.F0,sx,gy-bump,false);
@@ -7745,7 +7780,7 @@ function frame0(ts){
 }
 function startGame(s){miniBase=null;const mm=$('minimap');if(mm&&mm.classList)mm.classList.remove('hidden');state=s;if(typeof canStand==='function'&&!canStand(s.p.x,s.p.y,.28)){s.p.x=HOME[0];s.p.y=HOME[1]}if(s.clima===undefined)s.clima=null;flash=0;bolt=null;applyOutfit();wfx=[];leaves=[];windLines=[];gust=null;fox=null;foxT=90;birds=[];birdT=6;idleT=0;if(mapSeeds!==(s.seed1||SEED1)+':'+(s.seed2||SEED2))genMap(s.seed1,s.seed2);wild=[];penAnim=[];npcs=[];floats=[];hp={};shake={};lasso=null;led=null;fish=null;thieves=[];pfx=null;donkey=null;grau=null;planThieves();
   if(!canStand(state.p.x,state.p.y,.28)){state.p.x=HOME[0];state.p.y=HOME[1]}
-  applyExtras();arEq=null;arTermina();for(const k in state.soil)objs[k]=null;ARV_OV.clear();arvAplica();spawnWild();if(state.toefdWild)spawnToefd(true);syncPens();syncNPCs();funcNpcs=[];syncFunc();panelKind=null;closePanel();updateHUD();
+  {const q=state.implem;state.tratores=state.tratores||{};if(q&&q.own&&q.own.ceifa){state.tratores.colheitadeira=1;if(q.eng==='ceifa'){state.trator='colheitadeira';q.eng=null}delete q.own.ceifa}}applyExtras();arEq=null;arTermina();for(const k in state.soil)objs[k]=null;ARV_OV.clear();arvAplica();spawnWild();if(state.toefdWild)spawnToefd(true);syncPens();syncNPCs();funcNpcs=[];syncFunc();panelKind=null;closePanel();updateHUD();
   if(state.day===1&&state.min<370)toast(`Bem-vindo a ${state.nome||'Imbuial Valley'}! Você está só de cueca: compre roupas com o Luan na Pitol Calçados, em Videira.`)}
 const isTouch=('ontouchstart' in window)||navigator.maxTouchPoints>0;
 function key(k,type){dispatchEvent(new KeyboardEvent(type||'keydown',{key:k,bubbles:true}))}
