@@ -544,7 +544,7 @@ body.touch #inv{font-size:10px;padding:2px 8px}
 <div id="plowbar" class="box hidden"></div>
 <div id="touch" class="hidden"><div class="pad" data-h="pad"><div class="knob"></div></div>
   <div class="top"><div class="tb" data-k="escape" data-h="menu">☰</div><div class="tb" data-k="i" data-h="mochila">🎒</div><div class="tb gone" data-k="n" data-h="mapa">🗺️</div><div class="tb gone" data-k="m" data-h="som">🔊</div></div>
-  <div class="btns"><div class="ctx"><div class="tb" data-k="r" data-h="moto">🏍️</div><div class="tb" data-k="t" data-h="trator">🚜</div><div class="tb gone" data-k="x" data-h="soltar">🪢</div><div class="tb" data-k="q" data-h="semente">🌱</div><div class="tb" data-k="l" data-h="arar">⛏️</div></div>
+  <div class="btns"><div class="ctx"><div class="tb" data-k="r" data-h="moto">🏍️</div><div class="tb" data-k="t" data-h="trator">🚜</div><div class="tb gone" data-k="x" data-h="soltar">🪢</div><div class="tb gone" data-k="g" data-h="implon">⏻</div><div class="tb gone" data-k="j" data-h="implcx">🧺</div><div class="tb" data-k="q" data-h="semente">🌱</div><div class="tb" data-k="l" data-h="arar">⛏️</div></div>
     <div class="tb red" data-k=" " data-h="empurrao">👊</div><div class="tb big" data-k="e" data-h="acao">E</div></div></div>
 <script>
 'use strict';
@@ -724,8 +724,34 @@ const TRATORES={   // vel = multiplicador da velocidade a pé; larg = quadrados 
 const IMPLEM={plantadeira:{nome:'Plantadeira',ico:'🌱',preco:38000,desc:'Planta a semente em uso numa faixa de 8 canteiros (4 de cada lado do trator).'},
   pulverizador:{nome:'Pulverizador',ico:'💨',preco:32000,desc:'Passa veneno numa faixa de 8 canteiros: mata erva daninha e insetos e protege por 3 dias. Gasta 1 L de veneno a cada 8 canteiros.'},
   ceifa:{escondido:1,nome:'Colheitadeira (ceifa)',ico:'🌾',preco:55000,desc:'Vira uma colheitadeira com plataforma na frente. Colhe tudo que estiver pronto numa faixa de 8 canteiros (4 de cada lado). Também tira as plantas podres.'}};
+const IMP_CAP={plantadeira:500,pulverizador:200};      // caixa de sementes e tanque de veneno
 const IMP_LADO=4,VENENO_PRECO=12;
 const impl=()=>state.implem||(state.implem={own:{},eng:null});
+const implTq=im=>{const q=impl();q.tq=q.tq||{};return q.tq[im]||(q.tq[im]=im==='plantadeira'?{k:null,n:0}:{n:0})};
+const implOn=()=>impl().on!==false;
+function implToggle(){const im=implEng();if(!im){toast('Engate a plantadeira ou o pulverizador no trator primeiro (Agro Imbuial).');return}const q=impl();q.on=!implOn();beep(q.on?660:330,.08,'square',.04);
+  toast(`${IMPLEM[im].ico} ${IMPLEM[im].nome} ${q.on?'LIGADA':'DESLIGADA'}${q.on?'':' (passa por cima sem fazer nada)'}`);updateHUD()}
+function openImplPanel(){const im=implEng();if(!im){toast('Nenhum equipamento engatado no trator. Compre e engate na Agro Imbuial.');return}
+  const E=IMPLEM[im],tq=implTq(im),cap=IMP_CAP[im],pc=tq.n/cap*100,on=implOn();
+  let h=`${X}<h2>${E.ico} ${E.nome}</h2>
+    <div class="row"><div class="g"><b>${on?'🟢 Ligada':'⚫ Desligada'}</b> <small>· tecla <kbd>G</kbd> liga e desliga</small></div><button class="${on?'alt':''}" data-a="impltoggle">${on?'Desligar':'Ligar'}</button></div>
+    <div class="row"><div class="g"><small>${im==='plantadeira'?(tq.k?`Semente na caixa: <b>${CROPS[tq.k].nome}</b>`:'Caixa vazia'):'Veneno no tanque'}</small>
+      <div class="vel" style="max-width:none;height:14px"><i style="width:${pc}%;background:${im==='plantadeira'?'linear-gradient(90deg,#f27a1a,#ffb15c)':'linear-gradient(90deg,#c9b21a,#f2e04a)'}"></i></div>
+      <small><b>${tq.n}</b> / ${cap} ${im==='plantadeira'?'sementes':'L'}</small></div>${tq.n?`<button class="alt" data-a="impldesc">Descarregar</button>`:''}</div>`;
+  if(im==='plantadeira'){const ks=Object.keys(CROPS).filter(k=>(state.seeds[k]||0)>0||tq.k===k);
+    h+=`<h3>🌱 Escolha a semente e jogue na caixa</h3>`+(ks.length?ks.map(k=>{const m=state.seeds[k]|0,sel=tq.k===k,falta=cap-(sel?tq.n:0);
+      return`<div class="row pltrow${sel?' on':''}"><span>${ic('sem_'+k)}</span><div class="g"><b>${CROPS[k].nome}</b> <small>· na mochila: ${m}</small>${TRATOR_SO.has(k)?' <small>🚜</small>':''}</div>
+        <button class="mini" data-a="implcarr" data-v="${k}:10" ${m?'':'disabled'}>+10</button><button class="mini" data-a="implcarr" data-v="${k}:50" ${m?'':'disabled'}>+50</button><button class="mini" data-a="implcarr" data-v="${k}:all" ${m&&falta>0?'':'disabled'}>Encher</button></div>`}).join('')
+      :'<p class="no"><small>Você não tem sementes na mochila. Compre na Loja do Giliard.</small></p>')+`<p><small>Trocando de semente, o que estava na caixa volta para a mochila.</small></p>`}
+  else{const m=state.inv.veneno|0;h+=`<h3>🧪 Encher o tanque</h3><div class="row"><span style="font-size:22px">🧪</span><div class="g">Veneno na mochila: <b>${m} L</b> <small>(compre na Agro Imbuial)</small></div>
+      <button class="mini" data-a="implcarr" data-v="veneno:10" ${m?'':'disabled'}>+10 L</button><button class="mini" data-a="implcarr" data-v="veneno:50" ${m?'':'disabled'}>+50 L</button><button class="mini" data-a="implcarr" data-v="veneno:all" ${m&&tq.n<cap?'':'disabled'}>Encher</button></div>`}
+  h+=`<p><small>Tecla <kbd>J</kbd> abre esta tela (no celular, o botão 🧺). A barra no painel do dia mostra quanto ainda tem.</small></p>`;
+  showPanel('implem',h)}
+function implCarrega(v){const im=implEng();if(!im)return;const[k,q]=String(v).split(':'),tq=implTq(im),cap=IMP_CAP[im];
+  if(im==='plantadeira'){if(!CROPS[k])return;if(tq.k&&tq.k!==k&&tq.n){state.seeds[tq.k]=(state.seeds[tq.k]||0)+tq.n;tq.n=0}tq.k=k;const tem=state.seeds[k]|0,n=Math.min(tem,cap-tq.n,q==='all'?1e9:+q||0);if(n<=0)return;state.seeds[k]-=n;tq.n+=n;sx('plantar')}
+  else{if(k!=='veneno')return;const tem=state.inv.veneno|0,n=Math.min(tem,cap-tq.n,q==='all'?1e9:+q||0);if(n<=0)return;state.inv.veneno-=n;tq.n+=n;beep(520,.06,'sine',.04)}
+  save();openImplPanel()}
+function implDescarrega(){const im=implEng();if(!im)return;const tq=implTq(im);if(!tq.n)return;if(im==='plantadeira'){if(tq.k)state.seeds[tq.k]=(state.seeds[tq.k]||0)+tq.n}else state.inv.veneno=(state.inv.veneno|0)+tq.n;tq.n=0;save();openImplPanel()}
 const colhOn=()=>state.trator==='colheitadeira';
 const implEng=()=>{if(colhOn())return null;const q=impl();return q.eng&&q.eng!=='ceifa'&&q.own[q.eng]?q.eng:null};
 function pragaDia(){const day=state.day;let lv=[];try{lv=lavouras()}catch(e){}let podres=0;const novos=[];
@@ -739,13 +765,14 @@ function pragaDia(){const day=state.day;let lv=[];try{lv=lavouras()}catch(e){}le
     if(n)setTimeout(()=>toast(tipo==='erva'?`🌿 Apareceu erva daninha em ${n} canteiros! Passe o pulverizador com veneno, senão a colheita sai de qualidade ruim.`:`🐛 Praga de insetos em ${n} canteiros! Passe o pulverizador com veneno antes que as plantas apodreçam.`,9000),4500)}
   if(podres)setTimeout(()=>toast(`🥀 Os insetos apodreceram ${podres} planta${podres>1?'s':''} (não rendem nada).`,7000),6000)}
 function implFaixa(cx,cy,dir){const hor=dir==='left'||dir==='right',out=[];for(let k=-IMP_LADO;k<IMP_LADO;k++){const x=hor?cx:cx+k,y=hor?cy+k:cy;if(x>=XMIN&&y>=0&&x<MW&&y<MH)out.push([x,y])}return out}
-function implTrabalha(im,cx,cy){const p=state.p;let col=0,pl=0,sp=0;
-  if(im==='pulverizador'&&(state.inv.veneno|0)<=0){if(clock-(implTrabalha.av||0)>5){implTrabalha.av=clock;toast('💨 Sem veneno! Compre veneno na Agro Imbuial (aba do trator).')}return}
+function implTrabalha(im,cx,cy){const p=state.p;let col=0,pl=0,sp=0;const tq=im==='ceifa'?null:implTq(im);
+  if(tq&&!implOn())return;
+  if(tq&&tq.n<=0){if(clock-(implTrabalha.av||0)>5){implTrabalha.av=clock;toast(im==='pulverizador'?'💨 Tanque do pulverizador vazio! Aperte J para encher com o veneno da mochila.':'🌱 Caixa da plantadeira vazia! Aperte J para escolher a semente e jogar na caixa.')}return}
   for(const[x,y]of implFaixa(cx,cy,p.dir)){const i=y*AW-XMIN+x;if(!soilOn(i))continue;const c=state.crops[i];
     if(im==='ceifa'){if(c&&(c.r||c.podre))col+=harvestAt(i)}
-    else if(im==='plantadeira'){if(!c&&seedOk(state.sel)){state.seeds[state.sel]--;state.crops[i]={c:state.sel,g:0,w:false,r:false};pl++}}
-    else if(c&&!c.podre){c.praga=null;c.prot=state.day+3;sp++;if(Math.random()<.3)partBurst(x+.5,y+.3,2,['#cfe9ff','#e8f6ff','#b8dcf2'],.8,.6,1,.6,2)}}
-  if(sp){state.venAcc=(state.venAcc||0)+sp/8;while(state.venAcc>=1&&state.inv.veneno>0){state.venAcc--;state.inv.veneno--}}
+    else if(im==='plantadeira'){if(!c&&tq.n>0&&CROPS[tq.k]){tq.n--;state.crops[i]={c:tq.k,g:0,w:false,r:false};pl++}}
+    else if(c&&!c.podre&&tq.n>0){c.praga=null;c.prot=state.day+3;sp++;if(Math.random()<.3)partBurst(x+.5,y+.3,2,['#cfe9ff','#e8f6ff','#b8dcf2'],.8,.6,1,.6,2)}}
+  if(sp){state.venAcc=(state.venAcc||0)+sp/8;while(state.venAcc>=1&&tq.n>0){state.venAcc--;tq.n--}}
   if(pl)addNivelXp(pl*XP_PLANTIO);
   if(col)float(p.x,p.y-1.2,`+${col} colhidos`,'#ffe066');if(pl)float(p.x+.6,p.y-.6,`${pl} plantados`,'#bfe6a0');if(col||pl)beep(440,.05,'square',.03)}
 // barra desenhada "deitada": x ao longo da barra (0..L), y negativo = lado do trator
@@ -3933,7 +3960,7 @@ function drawClimaWorld(W,H){const hr=state.min/60,c=state.clima;
 /* ================= MULTIPLAYER: cooperativo no mundo do dono, até 4 jogadores, pela internet com código de sala =================
    Ligação: WebRTC (canal de dados direto entre os aparelhos). Para os aparelhos se acharem usa o servidor público grátis do PeerJS
    só como "telefonista" (sinalização). Quem hospeda manda no mundo; os convidados mandam o que fazem e o dono aplica e espalha. */
-const JOGO_VERSAO='2026-11-26m';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
+const JOGO_VERSAO='2026-11-26n';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
 const MP_MAX=4,MP_PREFIX=SLOT_KEYS[0].replace(/_slot_1$/,'').replace(/_/g,''),MP_SERVER='wss://0.peerjs.com:443/peerjs?key=peerjs';
 const MP_ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']},{urls:'stun:global.stun.twilio.com:3478'}]};
 const MP_LEVE=['p','energy','hunger','vida','forca','sujeira','sel','testoUntil','fomeT','coins','xpUntil','monster','napHoje','doze'];      // muda toda hora: vai junto em cada batida
@@ -6016,6 +6043,7 @@ const ACT={
   feed(id){for(const a of state.animals)if(SPECIES[a.sp].pen===id&&a.fed<720&&state.inv.racao>0){state.inv.racao--;a.fed+=1440;state.flags.fed=1}sfx.get();openBld(id)},
   collect(id){const st=state.stock[id];let ex=0;for(const k in st){const x=studyRoll('zoo',st[k]);state.inv[k]+=st[k]+x;ex+=x;st[k]=0}if(ex)toast(`Zootecnia: +${ex} produto${ex>1?'s':''} extra!`);state.flags.collected=1;sfx.coin();openBld(id)},
   eat(k){if(state.inv[k]>0){state.inv[k]--;const c=ITEMS[k].comida;if(ITEMS[k].alcool){if(typeof MP!=='undefined'&&MP.cap)MP.cap.bebado=20;else bebadoT=20;toast('🥴 Eita... a cabeça tá girando!')}state.hunger=Math.min(100,state.hunger+c);state.energy=Math.min(maxEnergy(),state.energy+Math.round(c/3));sfx.get()}openInv()},
+  impltoggle(){implToggle();if(panelKind==='implem')openImplPanel()},implpainel(){openImplPanel()},implcarr(v){implCarrega(v)},impldesc(){implDescarrega()},
   bebemonster(){bebeMonster();openInv()},
   craftrod(){if(!state.flags.rod&&state.inv.madeira>=8){state.inv.madeira-=8;state.flags.rod=1;sfx.build();toast('Vara de pescar pronta! Fique de frente para o rio ou o lago e aperte E.')}openInv()},
   invtab(v){openInv(v)},
@@ -6225,6 +6253,7 @@ function updateTouchVis(){const T_=$('touch');if(!T_||!T_.querySelector||hudEdit
   g('moto',Object.keys(state.motos||{}).length>0||state.riding&&state.rideKind==='moto');
   g('trator',Object.keys(state.tratores||{}).length>0||state.riding&&state.rideKind==='trator');
   g('semente',Object.values(state.seeds||{}).some(n=>n>0));
+  {const im=state.riding&&state.rideKind==='trator'&&implEng();g('implon',!!im);g('implcx',!!im)}
   g('arar',!state.riding);g('soltar',!!led||MP.role==='guest'&&!!(MP.me&&MP.me.led))}
 const f1=v=>v.toFixed(1).replace('.',',');
 function setH(el,h){if(el&&el._h!==h){el._h=h;el.innerHTML=h}}
@@ -6240,6 +6269,8 @@ function updateHUD(){updateTouchVis();placeMini();placeToast();
       <div class="h-row"><span class="h-ic">⚡</span><div class="hb"><i style="width:${en}%;background:linear-gradient(90deg,#f2b13a,#ffe066)"></i></div><small>${Math.round(state.energy)}/${me}</small></div>
       <div class="h-row h-vida${(state.vida??100)<100&&state.hunger<=0?' pisca':''}"><span class="h-ic">${heartSvg(state.vida??100)}</span><div class="hb"><i style="width:${state.vida??100}%;background:linear-gradient(90deg,#a3161b,#ff4d4d)"></i></div><small>${Math.ceil(state.vida??100)}%</small></div>
       <div class="h-row${hu<=25?' h-vida pisca':''}"><span class="h-ic">🍗</span><div class="hb"><i style="width:${hu}%;background:${hu<=25?'linear-gradient(90deg,#c4302b,#f0705a)':'linear-gradient(90deg,#4f9a2f,#9be06a)'}"></i></div><small style="${hu<=25?'color:#e0392b;font-weight:800':''}">${Math.round(hu)}</small></div>
+      ${(()=>{const im=state.riding&&state.rideKind==='trator'?implEng():null;if(!im)return'';const tq=implTq(im),on=implOn(),pc=tq.n/IMP_CAP[im]*100;
+        return`<div class="h-row" title="${IMPLEM[im].nome}: G liga/desliga · J enche"><span class="h-ic">${im==='plantadeira'?'🌱':'💨'}</span><div class="hb"><i style="width:${pc}%;background:${!on?'#9a9a9a':im==='plantadeira'?'linear-gradient(90deg,#f27a1a,#ffb15c)':'linear-gradient(90deg,#c9b21a,#f2e04a)'}"></i></div><small>${on?tq.n:'OFF'}</small></div>`})()}
       <div class="h-chips">${chips.join('')}</div>`)}
   {const tl=testoLeft(),el=$('testo');if(tl>0){el.classList.remove('hidden');setH(el,`<b>💪 Testosterona</b> ${Math.floor(tl/60)}h ${String(Math.floor(tl%60)).padStart(2,'0')}min · <b>${testoX()} força</b><div class="bar" style="margin:3px 0 0"><i style="width:${Math.min(100,tl/(126*60)*100)}%;background:#c4302b"></i></div>`);
     const hu=$('hud');if(hu.offsetHeight)el.style.top=(hu.offsetTop+hu.offsetHeight+6)+'px'}else el.classList.add('hidden')}
@@ -7886,6 +7917,8 @@ addEventListener('keydown',ev=>{
   if(k==='x'){if(!ev.repeat)soltarLed();return}
   if(k==='r'){if(!ev.repeat)toggleRide('moto');return}
   if(k==='t'){if(!ev.repeat)toggleRide('trator');return}
+   if(k==='g'){if(!ev.repeat){if(MP.role==='guest'&&MP.host)mpSend(MP.host,{t:'act',a:'impltoggle'});else implToggle()}return}
+   if(k==='j'){if(!ev.repeat)ACT.mpopen('implpainel');return}
   if(k==='l'){if(!ev.repeat){if(plow)endPlow();else startPlow()}return}
   keys[k]=true;
 });
