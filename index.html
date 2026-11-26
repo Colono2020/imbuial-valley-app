@@ -1506,7 +1506,7 @@ const year=()=>Math.floor((state.day-1)/(SEASON_LEN*4))+1;
 const season=()=>0;      // sem estações do ano: o mundo fica sempre verde e florido (o clima continua mudando)
 const soilOn=i=>!!state.soil[i];
 const PLOW_PRICE=5,PLOW_MAX=40;      // preço por canteiro arado; lado máximo do retângulo
-const isWet=c=>c.w||state.rain||state.b.lavoura>=3;
+const isWet=c=>c.w||state.rain||state.b.lavoura>=3||TRATOR_SO.has(c.c);      // grão (trigo, milho, feijão) é de sequeiro: só a máquina, não precisa regar
 const seedOk=k=>k&&CROPS[k]&&state.seeds[k]>0;
 
 /* ---------- Colisão ---------- */
@@ -3960,7 +3960,7 @@ function drawClimaWorld(W,H){const hr=state.min/60,c=state.clima;
 /* ================= MULTIPLAYER: cooperativo no mundo do dono, até 4 jogadores, pela internet com código de sala =================
    Ligação: WebRTC (canal de dados direto entre os aparelhos). Para os aparelhos se acharem usa o servidor público grátis do PeerJS
    só como "telefonista" (sinalização). Quem hospeda manda no mundo; os convidados mandam o que fazem e o dono aplica e espalha. */
-const JOGO_VERSAO='2026-11-26n';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
+const JOGO_VERSAO='2026-11-26o';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
 const MP_MAX=4,MP_PREFIX=SLOT_KEYS[0].replace(/_slot_1$/,'').replace(/_/g,''),MP_SERVER='wss://0.peerjs.com:443/peerjs?key=peerjs';
 const MP_ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']},{urls:'stun:global.stun.twilio.com:3478'}]};
 const MP_LEVE=['p','energy','hunger','vida','forca','sujeira','sel','testoUntil','fomeT','coins','xpUntil','monster','napHoje','doze'];      // muda toda hora: vai junto em cada batida
@@ -4638,7 +4638,7 @@ const FUNC={
   plt:{nome:'Plantador',ico:'🌱',nivel:1,taxa:300,sal:0,look:2,
     desc:'Só planta, e é simples: escolha a semente e deposite sementes da sua mochila no saco dele. Ele anda pelas suas lavouras (das 7h às 18h) e planta em todo canteiro vazio até o saco acabar. Não tem salário: paga só a contratação. Dá para contratar quantos quiser; cada um a mais fica mais caro.'},
   lav:{nome:'Lavrador',ico:'👨‍🌾',nivel:9,taxa:350,sal:65,look:3,
-    desc:'Até 67 lavradores (cada contrato custa R$ 10 a mais que o anterior). Trabalham 1,5× mais rápido e se dividem entre as suas lavouras (pedaços de terra arada) das 7h às 18h; se ainda tiver serviço às 18h, só vão embora quando terminarem. Combinam entre si: cada um pega um canteiro diferente, ninguém faz o serviço do colega. Andam andando pelos canteiros e fazendo o serviço na hora em que precisa. Você escolhe o que cada um faz: colher o que estiver pronto, plantar com as sementes que você tiver e regar. Quanto mais funções, maior o salário. Trigo, milho e feijão continuam só com trator.'},
+    desc:'Até 67 lavradores (cada contrato custa R$ 10 a mais que o anterior). Trabalham 1,5× mais rápido e se dividem entre as suas lavouras (pedaços de terra arada) das 7h às 18h; se ainda tiver serviço às 18h, só vão embora quando terminarem. Combinam entre si: cada um pega um canteiro diferente, ninguém faz o serviço do colega. Andam andando pelos canteiros e fazendo o serviço na hora em que precisa. Você escolhe o que cada um faz: colher o que estiver pronto, plantar com as sementes que você tiver e regar. Recebe uma diária de R$ 10 e mais um tanto por canteiro que trabalhar (colher R$ 1, plantar R$ 1,50, regar R$ 0,50). Trigo, milho e feijão continuam só com trator.'},
 };
 const funcDireitos=()=>1+['assoc1','assoc2','assoc3'].filter(id=>state.b[id]>0).length;      // 1 da fazenda + 1 por Associação das vilas
 const pltF=()=>state.func.plt||(state.func.plt={n:0,sem:null,dep:{}});      // plantadores: quantos, que semente plantar e o saco de sementes deles
@@ -4646,12 +4646,13 @@ const funcN=t=>t==='trat'?state.func.trat.length:t==='plt'?pltF().n:state.func.l
 const SEG_NIVEL=50,SEG_PRECO=30000,SEG_SEGURA=30;      // segurança do tratador: libera no nível 50 ou comprando por R$ 30.000; segura o ladrão por 30 s
 const segAtiva=pen=>!!(state.func&&state.func.seg&&state.func.seg[pen]&&state.func.trat.includes(pen));
 const LAV_MAX=67;      // até 67 lavradores; vários na mesma lavoura, combinando quem faz o quê
-const funcCap=t=>t==='lav'?LAV_MAX:t==='plt'?99:funcDireitos();
+const funcCap=t=>t==='lav'?LAV_MAX:t==='plt'?99:2;      // tratador: um no galinheiro e um no curral
 const funcPreco=t=>t==='lav'?FUNC.lav.taxa+10*funcN('lav'):Math.round(FUNC[t].taxa*Math.pow(t==='lav'?1.22:t==='plt'?1.3:1.8,funcN(t))/10)*10;      // plantador: R$ 300, depois 390, 510, 660…      // cada contratado a mais deixa o próximo mais caro
 const LAV_FUN={c:{nome:'Colher',ico:'🧺',sal:15},p:{nome:'Plantar',ico:'🌱',sal:30},r:{nome:'Regar',ico:'💧',sal:20}};
 function lavFun(n){const f=state.func;f.lavF=f.lavF||[];while(f.lavF.length<f.lav)f.lavF.push({c:1,p:1,r:1});return f.lavF[n]||{c:1,p:1,r:1}}      // o que o lavrador n faz (padrão: tudo)
-const lavSal=n=>{const q=lavFun(n);let v=0;for(const k in LAV_FUN)if(q[k])v+=LAV_FUN[k].sal;return v};
-const funcSalario=()=>{let v=state.func.trat.length*FUNC.trat.sal;for(let n=0;n<state.func.lav;n++)v+=lavSal(n);return v};
+const LAV_DIARIA=10,LAV_POR={c:1,p:1.5,r:.5};      // diária fixa + um tanto por canteiro trabalhado (lavoura grande com gente sai caro; com máquina, só a gasolina)
+const lavSal=n=>LAV_DIARIA;
+const funcSalario=()=>{let v=state.func.trat.length*FUNC.trat.sal+state.func.lav*LAV_DIARIA+(state.func.conta||0);return Math.round(v*100)/100};
 function lavouras(){      // pedaços de terra arada ligados entre si (cada um é uma lavoura), do maior para o menor
   const seen=new Set(),out=[];
   for(const k in state.soil){const s=+k;if(seen.has(s))continue;const comp=[],q=[s];seen.add(s);
@@ -4664,20 +4665,20 @@ function funcResumo(id){const f=state.func;
 function funcDia(){const f=state.func;if(!f||(!f.trat.length&&!f.lav))return;
   const sal=funcSalario();
   if(state.coins<sal){f.pago=-1;toast(`👷 Faltou dinheiro para pagar os funcionários (${brl(sal)}). Hoje eles não vão trabalhar.`,9000);return}
-  state.coins-=sal;f.pago=state.day;const msg=[];
+  state.coins-=sal;f.pago=state.day;const servico=f.conta||0;f.conta=0;const msg=[];
   for(const pen of f.trat){if(!state.b[pen])continue;let fed=0,falta=0,col=0;
     for(const a of state.animals)if(SPECIES[a.sp].pen===pen&&a.fed<1440){if(state.inv.racao>0){state.inv.racao--;a.fed+=1440;fed++}else falta++}
     const st=state.stock[pen];for(const k in st){state.inv[k]+=st[k];col+=st[k];st[k]=0}
     msg.push(`${BLD[pen].nome}: ${fed} alimentado${fed===1?'':'s'}${col?`, ${col} produto${col===1?'':'s'}`:''}${falta?` · <b>faltou ração para ${falta}</b>`:''}`)}
-  if(f.lav)msg.push(`${f.lav} lavrador${f.lav>1?'es':''} na lavoura: vão colher, plantar e regar ao longo do dia (das 7h às 18h, ou até terminar o serviço)`);
+  if(f.lav)msg.push(`${f.lav} lavrador${f.lav>1?'es':''}: diária ${brl(f.lav*LAV_DIARIA)}${servico?` + serviço de ontem ${brl(servico)}`:''}`);
   toast(`👷 Funcionários trabalharam (−${brl(sal)}): ${msg.join(' · ')}`,9000)}
 function openFunc(){const f=state.func,dir=funcDireitos(),lv=lavouras(),lvl=state.nivel.lvl;
-  let h=`${X}<h2>👷 Funcionários</h2><div class="row"><div class="g"><small>Algum funcionário ou bicho travou, sumiu ou ficou parado?</small></div><button class="alt" data-a="iareset">🔄 Reiniciar funcionários e bichos</button></div><p><small>O salário sai todo dia às 6h. O tratador cuida dos bichos de manhã; o lavrador fica dentro da lavoura das 7h às 18h (e se ainda tiver serviço, só vai embora quando terminar), andando pelos canteiros e colhendo, plantando e regando na hora em que precisa. Direitos de contratação: <b>${dir}</b> de cada tipo (1 da fazenda + 1 por Associação construída nas vilas do sul). Cada contratado a mais deixa o próximo mais caro.</small></p>`;
-  const sec=t=>{const F=FUNC[t],trav=lvl<F.nivel,cheio=funcN(t)>=dir;
-    return`<h3>${F.ico} ${F.nome}s <small>(${funcN(t)}/${dir}) · salário ${t==='lav'?'por função: colher R$ 15, plantar R$ 30, regar R$ 20 por dia':brl(F.sal)+'/dia cada'} · próximo contrato ${brl(funcPreco(t))}</small></h3><p><small>${F.desc}</small></p>`+(trav?`<p class="no"><small>🔒 Libera no nível ${F.nivel} do personagem (você está no ${lvl}).</small></p>`:'')+
-      (cheio&&!trav?`<p class="no"><small>Sem direitos sobrando: construa a Associação de uma vila do sul para contratar mais.</small></p>`:'')};
+  let h=`${X}<h2>👷 Funcionários</h2><div class="row"><div class="g"><small>Algum funcionário ou bicho travou, sumiu ou ficou parado?</small></div><button class="alt" data-a="iareset">🔄 Reiniciar funcionários e bichos</button></div><p><small>O salário sai todo dia às 6h. O tratador cuida dos bichos de manhã; o lavrador fica dentro da lavoura das 7h às 18h (e se ainda tiver serviço, só vai embora quando terminar), andando pelos canteiros e colhendo, plantando e regando na hora em que precisa. Tratador: um no galinheiro e um no curral. Lavrador: até 67, pago pela diária mais cada canteiro que ele trabalhar. Lavoura de grão (trigo, milho e feijão) é só com máquina.</small></p>`;
+  const sec=t=>{const F=FUNC[t],trav=lvl<F.nivel,cheio=funcN(t)>=funcCap(t);
+    return`<h3>${F.ico} ${F.nome}s <small>(${funcN(t)}/${funcCap(t)}) · salário ${t==='lav'?`diária ${brl(LAV_DIARIA)} + por canteiro: colher ${brl(LAV_POR.c)}, plantar ${brl(LAV_POR.p)}, regar ${brl(LAV_POR.r)}`:brl(F.sal)+'/dia cada'} · próximo contrato ${brl(funcPreco(t))}</small></h3><p><small>${F.desc}</small></p>`+(trav?`<p class="no"><small>🔒 Libera no nível ${F.nivel} do personagem (você está no ${lvl}).</small></p>`:'')+
+      (cheio&&!trav?`<p class="no"><small>${t==='lav'?`Limite de ${LAV_MAX} lavradores atingido.`:'Já tem um tratador em cada cercado.'}</small></p>`:'')};
   // tratadores: um por cercado
-  {const t='trat',F=FUNC[t],trav=lvl<F.nivel,cheio=funcN(t)>=dir,pr=funcPreco(t);h+=sec(t);
+  {const t='trat',F=FUNC[t],trav=lvl<F.nivel,cheio=funcN(t)>=funcCap(t),pr=funcPreco(t);h+=sec(t);
     for(const pen of['galinheiro','curral']){const tem=f.trat.includes(pen);
       h+=`<div class="row"><span style="font-size:24px">${pen==='galinheiro'?'🐔':'🐄'}</span><div class="g">${BLD[pen].nome}${state.b[pen]?'':' <small class="no">(ainda não construído)</small>'} — ${tem?'<span class="ok">tratador trabalhando</span>':'sem tratador'}</div>
         ${tem?`<button class="alt" data-a="funcoff" data-v="trat:${pen}">Demitir</button>`:`<button data-a="funcon" data-v="trat:${pen}" ${!trav&&!cheio&&state.b[pen]&&state.coins>=pr?'':'disabled'}>Contratar · ${brl(pr)}</button>`}</div>`;
@@ -4685,8 +4686,9 @@ function openFunc(){const f=state.func,dir=funcDireitos(),lv=lavouras(),lvl=stat
        h+=`<div class="row segrow"><span style="font-size:22px">🛡️</span><div class="g"><b>Segurança do ${BLD[pen].nome.toLowerCase()}</b> ${sg?(tem?'<span class="ok">ativa</span>':'<small class="no">comprada · contrate o tratador para ela funcionar</small>'):''}
          <br><small>O tratador também vigia: quando o ladrão chega, ele segura o ladrão por ${SEG_SEGURA} s (não derrota, só atrasa). Se você não chegar a tempo, o ladrão leva o bicho.</small></div>
          ${sg?'':livre?`<button data-a="funcseg" data-v="${pen}">Liberar · nível ${SEG_NIVEL} ✓</button>`:`<button data-a="funcseg" data-v="${pen}" ${state.coins>=SEG_PRECO?'':'disabled'} title="Ou chegue ao nível ${SEG_NIVEL} para liberar de graça">Comprar · ${brl(SEG_PRECO)}<br><small>ou nível ${SEG_NIVEL}</small></button>`}</div>`}}}
-  // plantadores: menu simples (semente + saco de sementes)
-  {const t='plt',F=FUNC[t],P=pltF(),pr=funcPreco(t),ks=Object.keys(CROPS).filter(k=>!TRATOR_SO.has(k)&&((state.seeds[k]||0)>0||(P.dep[k]||0)>0||P.sem===k));
+  // plantadores: saíram do jogo (os lavradores plantam); fica só o saco de sementes dos lavradores
+  if(state.func.lav)h+=sacoHTML();
+  if(0){const t='plt',F=FUNC[t],P=pltF(),pr=funcPreco(t),ks=Object.keys(CROPS).filter(k=>!TRATOR_SO.has(k)&&((state.seeds[k]||0)>0||(P.dep[k]||0)>0||P.sem===k));
     h+=`<h3>${F.ico} Plantadores <small>(${P.n}) · sem salário · próximo contrato ${brl(pr)}</small></h3><p><small>${F.desc}</small></p>
       <div class="row"><span style="font-size:24px">🌱</span><div class="g">${P.n?`<b>${P.n}</b> plantador${P.n>1?'es':''} trabalhando`:'Nenhum plantador ainda'}${lv.length?'':' <small class="no">(are terra com L primeiro)</small>'}</div>
         ${P.n?'<button class="alt" data-a="funcoff" data-v="plt">Demitir 1</button>':''}<button data-a="funcon" data-v="plt" ${lv.length&&state.coins>=pr?'':'disabled'}>Contratar · ${brl(pr)}</button></div>`;
@@ -4696,10 +4698,10 @@ function openFunc(){const f=state.func,dir=funcDireitos(),lv=lavouras(),lvl=stat
     if(!lv.length)h+='<p><small>Você ainda não tem lavoura. Are terra com a tecla <kbd>L</kbd>.</small></p>';
     else{h+=`<p><small>Lavouras: ${lv.map((c,i)=>`<b>${i+1}</b> (${c.length} canteiros, ${lavNaRoca(i)} lavrador${lavNaRoca(i)===1?'':'es'})`).join(' · ')}</small></p>`;
       for(let n=0;n<f.lav;n++){const q=lavFun(n),r=lavRoca(n);
-        h+=`<div class="row"><span style="font-size:24px">👨‍🌾</span><div class="g">Lavrador ${n+1} <small>· lavoura ${r+1} · ${brl(lavSal(n))}/dia</small></div>${n===f.lav-1?`<button class="alt" data-a="funcoff" data-v="lav">Demitir</button>`:''}</div>
-          <div class="lavfun">${Object.entries(LAV_FUN).map(([k,F])=>`<button class="${q[k]?'on':'alt'} mini" data-a="lavfun" data-v="${n}:${k}">${q[k]?'✅':'⬜'} ${F.ico} ${F.nome} <small>${brl(F.sal)}</small></button>`).join('')}${!q.c&&!q.p&&!q.r?'<small class="no">Sem nenhuma função ele não trabalha (e não recebe).</small>':''}</div>`}
+        h+=`<div class="row"><span style="font-size:24px">👨‍🌾</span><div class="g">Lavrador ${n+1} <small>· lavoura ${r+1} · diária ${brl(LAV_DIARIA)} + serviço</small></div>${n===f.lav-1?`<button class="alt" data-a="funcoff" data-v="lav">Demitir</button>`:''}</div>
+          <div class="lavfun">${Object.entries(LAV_FUN).map(([k,F])=>`<button class="${q[k]?'on':'alt'} mini" data-a="lavfun" data-v="${n}:${k}">${q[k]?'✅':'⬜'} ${F.ico} ${F.nome} <small>${brl(LAV_POR[k])}/canteiro</small></button>`).join('')}${!q.c&&!q.p&&!q.r?'<small class="no">Sem nenhuma função ele não trabalha (e não recebe).</small>':''}</div>`}
       h+=`<div class="row"><span style="font-size:24px">➕</span><div class="g">${f.lav}/${LAV_MAX} lavradores</div><button data-a="funcon" data-v="lav" ${!trav&&!cheio&&state.coins>=pr?'':'disabled'}>Contratar · ${brl(pr)}</button></div>`}}
-  h+=`<h3>Total</h3><p>Salários: <b>${brl(funcSalario())} por dia</b> · você tem ${brl(state.coins)}.</p>`;
+  h+=`<h3>Total</h3><p>Próximo pagamento (6h): <b>${brl(funcSalario())}</b>${state.func.conta?` <small>(inclui ${brl(state.func.conta)} de serviço feito hoje)</small>`:''} · você tem ${brl(state.coins)}.</p>`;
   showPanel('func',h)}
 // ---- lavrador trabalhando de verdade: fica dentro da lavoura, anda pelos canteiros, vê o que precisa e faz na hora (colher, plantar, regar) ----
 const LAV_TEMPO={c:1.1/1.5,p:1.3/1.5,r:1/1.5}
@@ -4715,7 +4717,7 @@ function lavFaz(n,i,a){const c=state.crops[i],q=lavFun(n.ref),x=(i%AW+XMIN),y=(i
     if(CROPS[k].rebrota){c.g=CROPS[k].dias-CROPS[k].rebrota;c.r=false}else delete state.crops[i]}
   else if(a==='p'){const k=lavSemente();if(!k)return;const P=state.func.plt;if(P&&P.sem===k&&P.dep[k]>0)P.dep[k]--;else state.seeds[k]--;state.crops[i]={c:k,g:0,w:false,r:false};xp=XP_FUNC.plantar;if(perto)sx('plantar')}
   else if(a==='r'){c.w=true;xp=XP_FUNC.regar;n.agua=Math.max(0,(n.agua|0)-1);if(perto)sx('regar')}
-  if(xp>0)addNivelXp(xp);n.feitos=(n.feitos||0)+1}
+  if(xp>0)addNivelXp(xp);n.feitos=(n.feitos||0)+1;state.func.conta=Math.round(((state.func.conta||0)+(LAV_POR[a]||0))*100)/100}
 function lavTick(n,dt){
   if(n.st==='faz'){n.tw-=dt;n.walk=0;if(n.tw<=0){if(MP.role!=='guest')lavFaz(n,n.job,n.act);if(LAV_RES.get(n.job)===n)LAV_RES.delete(n.job);n.st='olha';n.wait=.35;n.act=null;n.job=null}return}
   if(n.st==='poco'){n.tw-=dt;n.walk=0;n.dir='left';if(n.tw<=0){n.agua=POCO_CARGA;n.vaiPoco=null;n.st='olha';n.wait=.25;if(Math.hypot(n.x-state.p.x,n.y-state.p.y)<7)sx('regar')}return}
@@ -4773,11 +4775,13 @@ function syncFunc(){const f=state&&state.func;if(!f){funcNpcs=[];return}const ou
   const lv=lavouras();for(let n=0;n<f.lav&&lv.length;n++){const ro=lavRoca(n);let x0=MW,y0=MH,x1=0,y1=0;for(const i of lv[ro]){const x=(i%AW+XMIN),y=(i/AW)|0;x0=Math.min(x0,x);y0=Math.min(y0,y);x1=Math.max(x1,x);y1=Math.max(y1,y)}
     const old=funcNpcs.find(m=>m.t==='lav'&&m.ref===n),i0=lv[ro][Math.floor((n*7919)%lv[ro].length)];const nn=Object.assign(old||{t:'lav',ref:n,x:(i0%AW+XMIN)+.5,y:((i0/AW)|0)+.5,dir:'down',walk:0,tx:null,ty:null,wait:.5,st:'olha'},{area:[x0+.5,y0+.5,x1+.5,y1+.5],tiles:lv[ro]});
       if(!nn.vaiPoco&&nn.st!=='poco'&&!lavPerto(nn)){nn.x=(i0%AW+XMIN)+.5;nn.y=((i0/AW)|0)+.5;nn.tx=null;nn.job=null;nn.st='olha';nn.vaiPoco=null}out.push(nn)}
-  {const P=pltF(),todos=lv.flat();if(todos.length)for(let n=0;n<P.n;n++){const old=funcNpcs.find(m=>m.t==='plt'&&m.ref===n),i0=todos[(n*4129+7)%todos.length];
+  {const P=pltF(),todos=lv.flat();if(todos.length&&0)for(let n=0;n<P.n;n++){const old=funcNpcs.find(m=>m.t==='plt'&&m.ref===n),i0=todos[(n*4129+7)%todos.length];
     const nn=Object.assign(old||{t:'plt',ref:n,x:(i0%AW+XMIN)+.5,y:((i0/AW)|0)+.5,dir:'down',walk:0,tx:null,ty:null,wait:.5+n*.3,st:'olha'},{tiles:todos});out.push(nn)}}
   funcNpcs=out}
+function plantadoresFora(){const P=state.func&&state.func.plt;if(!P||!P.n)return;P.n=0;      // plantadores saíram do jogo: dispensa e avisa (o saco de sementes continua, agora para os lavradores)
+  setTimeout(()=>toast('🌱 Os plantadores foram dispensados: agora quem planta são os lavradores (marque “Plantar”). O saco de sementes continua valendo para eles.',9000),3000)}
 function sacoHTML(){const P=pltF(),ks=Object.keys(CROPS).filter(k=>!TRATOR_SO.has(k)&&((state.seeds[k]||0)>0||(P.dep[k]||0)>0||P.sem===k));      // saco de sementes que os lavradores e plantadores usam
-  return`<div class="pltbox"><p><small>🌱 <b>Saco de sementes dos funcionários</b> — 1) escolha a semente que eles plantam · 2) deposite sementes da sua mochila</small></p>`+
+  return`<div class="pltbox"><p><small>🌱 <b>Saco de sementes dos lavradores</b> — 1) escolha a semente que eles plantam · 2) deposite sementes da sua mochila (se o saco acabar, eles usam a da mochila)</small></p>`+
     (ks.length?ks.map(k=>{const C=CROPS[k],on=P.sem===k,d=P.dep[k]||0,m=state.seeds[k]||0;return`<div class="row pltrow${on?' on':''}"><button class="mini ${on?'':'alt'}" data-a="pltsem" data-v="${k}">${on?'✅':'⬜'} ${ic('sem_'+k)} ${C.nome}</button>
       <div class="g"><small>no saco: <b>${d}</b> · na mochila: ${m}</small></div>
       <button class="mini" data-a="pltdep" data-v="${k}:10" ${m?'':'disabled'}>+10</button><button class="mini" data-a="pltdep" data-v="${k}:all" ${m?'':'disabled'}>+ tudo</button>${d?`<button class="mini alt" data-a="pltret" data-v="${k}">Retirar</button>`:''}</div>`}).join('')
@@ -4862,7 +4866,7 @@ function morning(){          // 6h: começa um novo dia
   state.forca.hoje=0;
   // lavoura: o que estava molhado cresce um dia
   for(const i in state.crops){const c=state.crops[i];if(isWet(c)&&!c.r&&!c.podre){c.g++;if(c.g>=CROPS[c.c].dias)c.r=true}c.w=false}
-  state.day++;try{pragaDia()}catch(e){console.error(e)}{const antes=(state.arvs||[]).filter(a=>!a.ok).length;arvAplica();const dep=(state.arvs||[]).filter(a=>!a.ok).length;if(antes>dep)setTimeout(()=>toast(`🌳 ${antes-dep} muda${antes-dep>1?'s viraram árvores':' virou árvore'}!`),3500)}bancoRendeTodos();ensureBolsa();if((state.day-1)%BOLSA_DIAS===0)bolsaDia();      // a bolsa troca os preços a cada 7 dias
+  state.day++;try{pragaDia()}catch(e){console.error(e)}try{coopDia()}catch(e){}{const antes=(state.arvs||[]).filter(a=>!a.ok).length;arvAplica();const dep=(state.arvs||[]).filter(a=>!a.ok).length;if(antes>dep)setTimeout(()=>toast(`🌳 ${antes-dep} muda${antes-dep>1?'s viraram árvores':' virou árvore'}!`),3500)}bancoRendeTodos();ensureBolsa();if((state.day-1)%BOLSA_DIAS===0)bolsaDia();      // a bolsa troca os preços a cada 7 dias
   state.rain=Math.random()<RAIN_DAY;rollClima();
   for(const k in state.depleted)if(state.depleted[k]<=state.day)delete state.depleted[k];
   wild=wild.filter(a=>a.led||canStand(a.x,a.y,.3)&&!inVila(a.x,a.y));spawnWild();
@@ -5488,8 +5492,30 @@ function upgradeHtml(id){const l=state.b[id],d=BLD[id];if(l>=d.max)return'<h3>Me
   const c=costOf(id,l+1);return`<h3>${l===0?'Construir':'Melhorar para o nível '+(l+1)}</h3><p><small>${nextPerk(id,l+1)}</small></p><div class="row"><div class="g">${costHtml(c)}</div>
   ${nivelOk(id,l+1)?`<button data-a="upgrade" data-v="${id}" ${canPay(c)?'':'disabled'}>${l===0?'Construir':'Melhorar'}</button>`:`<button disabled>🔒 Nível ${bldNivel(id,l+1)}</button>`}</div>
   ${nivelOk(id,l+1)?'':`<p class="no"><small>⭐ Precisa do nível ${bldNivel(id,l+1)} do personagem (você está no ${state.nivel.lvl}). Jogue e colha para subir de nível.</small></p>`}`}
+/* ---------- contratos da cooperativa (na sua casa): pedidos grandes com prazo, pagam bem acima do mercado ---------- */
+const COOP_MAX=3;
+function coopEstado(){const C=state.coop||(state.coop={of:[],at:[],dia:-99,feitos:0});return C}
+function coopGera(){const C=coopEstado();if(state.day-C.dia<3&&C.of.length)return;C.dia=state.day;C.of=[];
+  const graos=[...TRATOR_SO].filter(k=>CROPS[k]),horta=Object.keys(CROPS).filter(k=>!TRATOR_SO.has(k)&&seedNivelOk(k));
+  for(let i=0;i<3;i++){const gr=Math.random()<.65&&graos.length,k=gr?graos[Math.random()*graos.length|0]:horta[Math.random()*horta.length|0];if(!k)continue;
+    const q=gr?(10+Math.floor(Math.random()*31))*10:(3+Math.floor(Math.random()*10))*10,mult=(gr?1.7:1.5)+Math.random()*.5,prazo=5+Math.floor(Math.random()*6);
+    C.of.push({id:'c'+state.day+'_'+i+'_'+(Math.random()*1e4|0),k,q,dias:prazo,v:Math.round(CROPS[k].preco*q*mult)})}}
+const coopTem=k=>['_q1','','_q3','_q4'].reduce((a,s)=>a+(state.inv[k+s]|0),0);
+function coopDia(){const C=state.coop;if(!C)return;for(const c of C.at.slice())if(state.day>c.ate){C.at.splice(C.at.indexOf(c),1);const multa=Math.round(c.v*.1);state.coins=Math.max(0,Math.round((state.coins-multa)*100)/100);
+    setTimeout(()=>toast(`❗ Contrato da cooperativa vencido (${c.q} ${CROPS[c.k].nome.toLowerCase()}): multa de ${brl(multa)}.`,8000),5000)}}
+function coopHTML(){coopGera();const C=coopEstado();
+  const linha=(c,ativo)=>{const tem=coopTem(c.k),ok=tem>=c.q,F=TRATOR_SO.has(c.k);
+    return`<div class="row"><span>${ic(c.k)}</span><div class="g"><b>${c.q} ${CROPS[c.k].nome.toLowerCase()}</b> ${F?'<small>🚜 grão</small>':'<small>🥬 horta</small>'} · paga <b class="ok">${brl(c.v)}</b><br>
+      <small>${ativo?`entrega até o dia <b>${c.ate}</b> (faltam ${Math.max(0,c.ate-state.day)} dia${c.ate-state.day===1?'':'s'}) · você tem <b class="${ok?'ok':'no'}">${tem}/${c.q}</b> · atrasou: multa de 10%`:`prazo de ${c.dias} dias depois de aceitar · ~${brl(c.v/c.q)} cada (o Mateus paga ${brl(CROPS[c.k].preco)})`}</small></div>
+      ${ativo?`<button data-a="coopent" data-v="${c.id}" ${ok?'':'disabled'}>Entregar</button>`:`<button class="alt" data-a="coopok" data-v="${c.id}" ${C.at.length>=COOP_MAX?'disabled':''}>Aceitar</button>`}</div>`};
+  return`<h3>📜 Contratos da cooperativa</h3><p><small>Pedidos grandes com prazo que pagam bem acima do Mateus. Grão em quantidade só dá conta quem tem plantadeira e colheitadeira. Até ${COOP_MAX} contratos ao mesmo tempo; pedidos novos a cada 3 dias. Contratos cumpridos: <b>${C.feitos}</b>.</small></p>`+
+    (C.at.length?`<p><b>Em andamento</b></p>`+C.at.map(c=>linha(c,1)).join(''):'')+`<p><b>Pedidos disponíveis</b></p>`+(C.of.length?C.of.map(c=>linha(c,0)).join(''):'<p><small>Nenhum pedido agora. Volte em alguns dias.</small></p>')}
+function coopAceita(id){const C=coopEstado(),c=C.of.find(o=>o.id===id);if(!c||C.at.length>=COOP_MAX)return;C.of.splice(C.of.indexOf(c),1);c.ate=state.day+c.dias;C.at.push(c);sfx.coin();toast(`📜 Contrato aceito: ${c.q} ${CROPS[c.k].nome.toLowerCase()} até o dia ${c.ate}.`,6000);save();openBld('casa')}
+function coopEntrega(id){const C=coopEstado(),c=C.at.find(o=>o.id===id);if(!c||coopTem(c.k)<c.q)return;let f=c.q;for(const s of['_q1','','_q3','_q4']){const k=c.k+s,n=Math.min(f,state.inv[k]|0);state.inv[k]-=n;f-=n;if(!f)break}
+  C.at.splice(C.at.indexOf(c),1);C.feitos++;state.coins=Math.round((state.coins+c.v)*100)/100;addNivelXp(Math.min(400,Math.round(c.q/2)));sx('nivel');sfx.coin();toast(`🤝 Contrato entregue! A cooperativa pagou ${brl(c.v)}.`,7000);save();openBld('casa')}
 function openBld(id){if(id==='mercado'&&state.b.mercado>0){openLoja();return}
   const d=BLD[id],l=state.b[id];let h=`${X}<h2>${d.nome} ${l?`<small>nível ${l}</small>`:''}</h2><p>${d.desc}</p>`;
+  if(id==='casa')h+=coopHTML();
   if(id==='casa')h+=`<h3>Banheiro</h3><div class="row"><span style="font-size:26px">🚿</span><div class="g">Chuveiro · sujeira <b class="${state.sujeira>=50?'no':'ok'}">${Math.round(state.sujeira)}%</b><div class="bar" style="margin:3px 0 0;max-width:220px"><i style="width:${state.sujeira}%;background:#7a5533"></i></div><small>Trabalhar na lavoura suja. Banho de 20 min deixa limpinho e dá +5 de energia.</small></div><button data-a="banho" ${state.sujeira>=1?'':'disabled'}>Tomar banho</button></div>`;
   if(id==='casa')h+=`<h3>Guarda-roupa</h3><div class="row"><img src="${outfitPreview(state.roupas.eq,2)}" alt="" style="height:40px;image-rendering:pixelated"><div class="g">Troque de roupa com o que você já comprou na Pitol Calçados.</div><button class="alt" data-a="guarda">Abrir</button></div>`;
   if(id==='casa')h+=`<h3>Descanso</h3><div class="row"><div class="g">Energia máxima: <b>${maxEnergy()}</b><br><small>${isNight()?(thieves.length?'<span class="no">Há um ladrão por perto — não dá para dormir!</span>':'É noite: dormir pula para as 6h.'):'Só dá para dormir à noite (a partir das 18h).'}</small></div>
@@ -5997,7 +6023,7 @@ const ACT={
   funcon(v){const[t,pen]=v.split(':'),F=FUNC[t],pr=funcPreco(t);if(state.nivel.lvl<F.nivel||funcN(t)>=funcCap(t)||state.coins<pr)return;
     if(t==='plt'){if(!lavouras().length)return toast('Are um pedaço de terra (tecla L) antes de contratar um plantador.');state.coins-=pr;pltF().n++;syncFunc();sfx.coin();toast(`🌱 Plantador contratado! Escolha a semente e deposite sementes no saco dele.`);save();openFunc();return}
     if(t==='trat'){if(!state.b[pen]||state.func.trat.includes(pen))return;state.func.trat.push(pen)}else{if(!lavouras().length)return toast('Are um pedaço de terra (tecla L) antes de contratar um lavrador.');state.func.lav++}
-    state.coins-=pr;if(t==='lav'&&state.func.pago!==-1)state.func.pago=state.day;syncFunc();sfx.coin();toast(`${F.ico} ${F.nome} contratado! ${t==='lav'?'Ele já vai para a lavoura hoje (das 7h às 18h)':'Ele começa amanhã às 6h'} (salário ${brl(t==='lav'?lavSal(state.func.lav-1):F.sal)}/dia).`);save();openFunc()},
+    state.coins-=pr;if(t==='lav'&&state.func.pago!==-1)state.func.pago=state.day;syncFunc();sfx.coin();toast(`${F.ico} ${F.nome} contratado! ${t==='lav'?'Ele já vai para a lavoura hoje (das 7h às 18h)':'Ele começa amanhã às 6h'} (${t==='lav'?`diária ${brl(LAV_DIARIA)} + ${brl(LAV_POR.c)} a ${brl(LAV_POR.p)} por canteiro`:`salário ${brl(F.sal)}/dia`}).`);save();openFunc()},
   lavfun(v){const[n,k]=String(v).split(':'),q=lavFun(+n);if(!LAV_FUN[k]||+n>=state.func.lav)return;q[k]=q[k]?0:1;save();openFunc()},
   pltsem(k){if(!CROPS[k]||TRATOR_SO.has(k))return;pltF().sem=k;save();panelKind==='saco'?openSaco():openFunc()},
   pltdep(v){const[k,q]=String(v).split(':'),f=pltF();if(!CROPS[k]||TRATOR_SO.has(k))return;const tem=state.seeds[k]||0,n=q==='all'?tem:Math.min(tem,+q||0);if(n<=0)return;
@@ -6044,6 +6070,7 @@ const ACT={
   collect(id){const st=state.stock[id];let ex=0;for(const k in st){const x=studyRoll('zoo',st[k]);state.inv[k]+=st[k]+x;ex+=x;st[k]=0}if(ex)toast(`Zootecnia: +${ex} produto${ex>1?'s':''} extra!`);state.flags.collected=1;sfx.coin();openBld(id)},
   eat(k){if(state.inv[k]>0){state.inv[k]--;const c=ITEMS[k].comida;if(ITEMS[k].alcool){if(typeof MP!=='undefined'&&MP.cap)MP.cap.bebado=20;else bebadoT=20;toast('🥴 Eita... a cabeça tá girando!')}state.hunger=Math.min(100,state.hunger+c);state.energy=Math.min(maxEnergy(),state.energy+Math.round(c/3));sfx.get()}openInv()},
   impltoggle(){implToggle();if(panelKind==='implem')openImplPanel()},implpainel(){openImplPanel()},implcarr(v){implCarrega(v)},impldesc(){implDescarrega()},
+  coopok(v){coopAceita(v)},coopent(v){coopEntrega(v)},
   bebemonster(){bebeMonster();openInv()},
   craftrod(){if(!state.flags.rod&&state.inv.madeira>=8){state.inv.madeira-=8;state.flags.rod=1;sfx.build();toast('Vara de pescar pronta! Fique de frente para o rio ou o lago e aperte E.')}openInv()},
   invtab(v){openInv(v)},
@@ -7811,7 +7838,7 @@ function frame0(ts){
 }
 function startGame(s){miniBase=null;const mm=$('minimap');if(mm&&mm.classList)mm.classList.remove('hidden');state=s;if(typeof canStand==='function'&&!canStand(s.p.x,s.p.y,.28)){s.p.x=HOME[0];s.p.y=HOME[1]}if(s.clima===undefined)s.clima=null;flash=0;bolt=null;applyOutfit();wfx=[];leaves=[];windLines=[];gust=null;fox=null;foxT=90;birds=[];birdT=6;idleT=0;if(mapSeeds!==(s.seed1||SEED1)+':'+(s.seed2||SEED2))genMap(s.seed1,s.seed2);wild=[];penAnim=[];npcs=[];floats=[];hp={};shake={};lasso=null;led=null;fish=null;thieves=[];pfx=null;donkey=null;grau=null;planThieves();
   if(!canStand(state.p.x,state.p.y,.28)){state.p.x=HOME[0];state.p.y=HOME[1]}
-  {const q=state.implem;state.tratores=state.tratores||{};if(q&&q.own&&q.own.ceifa){state.tratores.colheitadeira=1;if(q.eng==='ceifa'){state.trator='colheitadeira';q.eng=null}delete q.own.ceifa}}applyExtras();arEq=null;arTermina();for(const k in state.soil)objs[k]=null;ARV_OV.clear();arvAplica();spawnWild();if(state.toefdWild)spawnToefd(true);syncPens();syncNPCs();funcNpcs=[];syncFunc();panelKind=null;closePanel();updateHUD();
+  {const q=state.implem;state.tratores=state.tratores||{};if(q&&q.own&&q.own.ceifa){state.tratores.colheitadeira=1;if(q.eng==='ceifa'){state.trator='colheitadeira';q.eng=null}delete q.own.ceifa}}plantadoresFora();applyExtras();arEq=null;arTermina();for(const k in state.soil)objs[k]=null;ARV_OV.clear();arvAplica();spawnWild();if(state.toefdWild)spawnToefd(true);syncPens();syncNPCs();funcNpcs=[];syncFunc();panelKind=null;closePanel();updateHUD();
   if(state.day===1&&state.min<370)toast(`Bem-vindo a ${state.nome||'Imbuial Valley'}! Você está só de cueca: compre roupas com o Luan na Pitol Calçados, em Videira.`)}
 const isTouch=('ontouchstart' in window)||navigator.maxTouchPoints>0;
 function key(k,type){dispatchEvent(new KeyboardEvent(type||'keydown',{key:k,bubbles:true}))}
