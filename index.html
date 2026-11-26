@@ -634,7 +634,7 @@ const TREASURE={   // tesouros de pescaria: memes brasileiros
   perola:{nome:'Pétalas de Rosa',preco:1200,w:0,desc:'Pétalas que nunca murcham. Só aparecem no fundo do Lago das Sakuras.'},
   joia_sakura:{nome:'Flor de Sakura de Cristal',preco:600,w:0,desc:'Uma flor que nunca murcha. Achada entre as raízes das cerejeiras do lago.'},
 };
-ITEMS.bota={nome:'Bota velha',preco:1};ITEMS.veneno={nome:'Veneno (litro)'};
+ITEMS.bota={nome:'Bota velha',preco:1};ITEMS.veneno={nome:'Veneno (litro)'};ITEMS.monster={nome:'Energético Monster',bebe:1};
 for(const k in FISH)ITEMS[k]={nome:FISH[k].nome,preco:FISH[k].preco,comida:FISH[k].comida};
 // ---- tamanhos de peixe: do filhote ao monstro do rio (o "normal" é o item de sempre) ----
 const FISH_CM={lambari:12,cara:18,tilapia:30,carpa:45,jundia:40,traira:45,pintado:80,dourado:70,koi:45,koi_ouro:50};      // tamanho normal de cada peixe, em cm
@@ -2329,6 +2329,7 @@ function buildSprites(){
   for(const k in FISH){const c=FISH[k].cor;I[k]=(r,e)=>{e(7,8,5,3,c);r(11,5,3,2,c);r(11,9,3,2,c);r(12,7,2,2,c);e(7,9.5,4,1.2,'rgba(255,255,255,.45)');r(4,7,1,1,'#222');e(7,6,3,.8,'rgba(0,0,0,.22)');
     if(k==='pintado'){r(6,7,1,1,'#333');r(8,8,1,1,'#333');r(9,6,1,1,'#333')}}}
   Object.assign(I,{
+    monster:r=>{r(5,1,6,14,'#1c1c1c');r(5,1,6,1,'#9aa0a8');r(5,14,6,1,'#9aa0a8');r(6,3,4,9,'#141414');r(6,4,1,7,'#4fdc4a');r(8,4,1,7,'#4fdc4a');r(7,5,1,6,'#4fdc4a');r(9,3,1,2,'#3a3a3a')},
     veneno:r=>{r(4,4,8,10,'#2f6b2a');r(5,5,6,8,'#58b04f');r(6,2,4,2,'#d42a2a');r(5,7,6,3,'#f4f4f4');r(7,8,1,1,'#1c1c1c');r(9,8,1,1,'#1c1c1c')},
     bota:r=>{r(5,2,4,9,'#6e4527');r(5,10,8,3,'#6e4527');r(5,13,8,1,'#2a2018');r(6,3,1,6,'#8a5c38');r(10,11,2,1,'#8a5c38');r(5,2,4,1,'#4a2f1a')},
     caramelo:(r,e)=>{r(3,13,10,2,'#8a5c38');e(8,10,3,3,'#e0a23a');e(9,5,3,3,'#e0a23a');r(6,2,2,3,'#c9862a');r(10,2,2,3,'#c9862a');r(11,6,2,2,'#f2c66a');r(12,6,1,1,'#222');r(9,4,1,1,'#222');r(4,10,1,3,'#e0a23a');r(7,4,1,1,'#fff')},
@@ -3012,9 +3013,13 @@ function openTractorShop(say){const fast=Math.max(...Object.values(TRATORES).map
       <div class="vel"><i style="width:${Math.max(8,(t.vel-.8)/(fast-.8)*100)}%"></i></div><small>Velocidade ×${t.vel.toFixed(2).replace('.',',')} · planta e colhe ${t.larg*t.larg} canteiros por vez</small></div>
       <div class="act">${own?(sel?(state.riding&&state.rideKind==='trator'?'<button class="alt" data-a="tratorride">Descer</button>':'<button data-a="tratorride">Subir</button>')+'<small class="ok">em uso</small>':`<button class="alt" data-a="tratoruse" data-v="${k}">Usar este</button>`)
         :`<span class="price">${brl(t.preco)}</span><button data-a="tratorbuy" data-v="${k}" ${state.coins>=t.preco?'':'disabled'}>Comprar</button>`}</div></div>`}
+  {const E=IMPLEM.ceifa,q=impl(),own=q.own.ceifa,on=q.eng==='ceifa';let ic='';try{const im=colheitadeiraSpr().L,c=document.createElement('canvas');c.width=im.width;c.height=im.height;c.getContext('2d').drawImage(im,0,0);ic=c.toDataURL()}catch(e){}
+    cards+=`<div class="mcard${on?' sel':''}"><img class="mi" src="${ic}" alt=""><div class="g"><b>Colheitadeira</b> <span class="cc">ceifa</span> <span class="cc" style="background:#3f6b28">8 canteiros</span><br><small>Vira o seu trator numa colheitadeira com plataforma na frente. Colhe tudo que estiver pronto numa faixa de 8 canteiros (4 de cada lado) e tira as plantas podres.</small>
+      <small>Precisa de um trator para rodar (usa o motor e a gasolina dele).</small></div>
+      <div class="act">${own?(on?'<button class="alt" data-a="implon" data-v="">Voltar pro trator</button><small class="ok">em uso</small>':`<button data-a="implon" data-v="ceifa">Usar esta</button>`):`<span class="price">${brl(E.preco)}</span><button data-a="implbuy" data-v="ceifa" ${state.coins>=E.preco?'':'disabled'}>Comprar</button>`}</div></div>`}
   showPanel('tratores',`<div class="s-head t-head"><button class="close" data-a="close">Fechar ✕</button><h1>🚜 Agro Imbuial · Tratores</h1><div class="sub">${say||'Trator novo de fábrica, tanque cheio. Tecla <kbd>T</kbd> sobe e desce.'} · saldo <b>${brl(state.coins)}</b></div></div>
     <div class="s-body" style="display:block"><div class="s-list">${cards}</div>
-    <h3 style="margin:14px 0 6px">🧰 Equipamentos <small>(engate um no trator · faixa de 8 canteiros, 4 de cada lado)</small></h3><div class="s-list">${Object.keys(IMPLEM).map(k=>{const E=IMPLEM[k],q=impl(),own=q.own[k],on=q.eng===k;
+    <h3 style="margin:14px 0 6px">🧰 Equipamentos <small>(engate no trator · faixa de 8 canteiros, 4 de cada lado)</small></h3><div class="s-list">${Object.keys(IMPLEM).filter(k=>k!=='ceifa').map(k=>{const E=IMPLEM[k],q=impl(),own=q.own[k],on=q.eng===k;
       return`<div class="mcard${on?' sel':''}"><div class="mi" style="font-size:40px;display:flex;align-items:center;justify-content:center">${E.ico}</div><div class="g"><b>${E.nome}</b> <span class="cc" style="background:#3f6b28">8 canteiros</span><br><small>${E.desc}</small></div>
         <div class="act">${own?(on?'<button class="alt" data-a="implon" data-v="">Desengatar</button><small class="ok">engatado</small>':`<button data-a="implon" data-v="${k}">Engatar</button>`):`<span class="price">${brl(E.preco)}</span><button data-a="implbuy" data-v="${k}" ${state.coins>=E.preco?'':'disabled'}>Comprar</button>`}</div></div>`}).join('')}
       <div class="mcard"><div class="mi" style="font-size:40px;display:flex;align-items:center;justify-content:center">🧪</div><div class="g"><b>Veneno</b> <span class="cc">${brl(VENENO_PRECO)}/L</span><br><small>Para o pulverizador. Você tem <b>${state.inv.veneno|0} L</b>.</small></div>
@@ -3894,7 +3899,7 @@ function drawClimaWorld(W,H){const hr=state.min/60,c=state.clima;
 /* ================= MULTIPLAYER: cooperativo no mundo do dono, até 4 jogadores, pela internet com código de sala =================
    Ligação: WebRTC (canal de dados direto entre os aparelhos). Para os aparelhos se acharem usa o servidor público grátis do PeerJS
    só como "telefonista" (sinalização). Quem hospeda manda no mundo; os convidados mandam o que fazem e o dono aplica e espalha. */
-const JOGO_VERSAO='2026-11-26h';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
+const JOGO_VERSAO='2026-11-26k';      // muda a cada entrega: o dono avisa se alguém entrar com versão diferente
 const MP_MAX=4,MP_PREFIX=SLOT_KEYS[0].replace(/_slot_1$/,'').replace(/_/g,''),MP_SERVER='wss://0.peerjs.com:443/peerjs?key=peerjs';
 const MP_ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']},{urls:'stun:global.stun.twilio.com:3478'}]};
 const MP_LEVE=['p','energy','hunger','vida','forca','sujeira','sel','testoUntil','fomeT','coins','xpUntil','monster','napHoje','doze'];      // muda toda hora: vai junto em cada batida
@@ -5540,7 +5545,7 @@ function openLoja(tab){if(tab){lojaTab=tab;lojaSay=''}const l=state.b.mercado,d=
 const INV_CATS=[['tudo','Tudo','🎒'],['comida','Comida','🍞'],['recursos','Recursos','🪵'],['animais','Dos animais','🥚'],['lavoura','Colheitas','🌽'],['pesca','Pesca','🐟'],['tesouros','Tesouros','💎'],['sementes','Sementes','🌱'],['equip','Equipamentos','🧰']];
 let invTab='tudo';
 function invCat(k){if(CROPS[k]||ITEMS[k]&&ITEMS[k].qual)return'lavoura';if(FISH[k]||k==='bota'||ITEMS[k]&&ITEMS[k].tam)return'pesca';if(TREASURE[k])return'tesouros';
-  if(['ovo','pena','la','trufa','leite'].includes(ITEMS[k]&&ITEMS[k].base||k))return'animais';if(['fruta','pinhao','pao'].includes(k))return'comida';return'recursos'}
+  if(['ovo','pena','la','trufa','leite'].includes(ITEMS[k]&&ITEMS[k].base||k))return'animais';if(['fruta','pinhao','pao','monster'].includes(k))return'comida';return'recursos'}
 let pPortK='',pPortU='';
 function playerPortrait(){const eq=state.roupas.eq||{},C=k=>eq[k]?CLOTHES[eq[k]]:null,V=pVis(),sh=C('shirt'),ht=C('hat'),oc=C('oculos'),k=JSON.stringify([eq,V]);if(k===pPortK)return pPortU;
   const o={skin:V.skin,hair:V.hair,hairStyle:V.hairStyle,hairLong:V.dama||V.hairStyle==='comprido',beard:V.beard,stache:V.stache,dama:V.dama,top:sh?sh.col:V.dama?'#e86a9a':V.skin,rock:sh&&sh.rock,
@@ -5554,7 +5559,7 @@ function openInv(tab){if(tab)invTab=tab;const t=invTab;
   const ks=Object.keys(ITEMS).filter(k=>state.inv[k]>0),valor=ks.reduce((a,k)=>a+(ITEMS[k].preco?sellPrice(k)*state.inv[k]:0),0);
   const card=k=>{const it=ITEMS[k],n=state.inv[k];return`<div class="icard"><span class="n">${fmt(n)}</span><img src="${ICON[k]}" alt=""><b>${it.nome}</b>
     <small>${it.preco?`vale ${brl(sellPrice(k))}`:'não se vende'}${it.comida?` · +${it.comida} fome`:''}</small>
-    ${it.comida?`<button class="mini" data-a="eat" data-v="${k}">Comer</button>`:k==='capim'?`<button class="mini alt" data-a="craft" ${n>=2?'':'disabled'}>Fazer ração</button>`:''}</div>`};
+    ${it.bebe?`<button class="mini" data-a="bebemonster" ${monsterUsoHoje()>=MONSTER_DIA?'disabled':''}>${monsterUsoHoje()>=MONSTER_DIA?'Já tomou 2 hoje':`Beber (${monsterUsoHoje()}/${MONSTER_DIA} hoje)`}</button>`:it.comida?`<button class="mini" data-a="eat" data-v="${k}">Comer</button>`:k==='capim'?`<button class="mini alt" data-a="craft" ${n>=2?'':'disabled'}>Fazer ração</button>`:''}</div>`};
   let body='';
   if(t==='sementes'){const sk=Object.keys(CROPS).filter(k=>state.seeds[k]>0);
     body=sk.length?`<div class="igrid">${sk.map(k=>{const ok=true;return`<div class="icard${state.sel===k?' sel':''}"><span class="n">${state.seeds[k]}</span><img src="${ICON['sem_'+k]}" alt=""><b>${CROPS[k].nome}</b>
@@ -5977,6 +5982,7 @@ const ACT={
   feed(id){for(const a of state.animals)if(SPECIES[a.sp].pen===id&&a.fed<720&&state.inv.racao>0){state.inv.racao--;a.fed+=1440;state.flags.fed=1}sfx.get();openBld(id)},
   collect(id){const st=state.stock[id];let ex=0;for(const k in st){const x=studyRoll('zoo',st[k]);state.inv[k]+=st[k]+x;ex+=x;st[k]=0}if(ex)toast(`Zootecnia: +${ex} produto${ex>1?'s':''} extra!`);state.flags.collected=1;sfx.coin();openBld(id)},
   eat(k){if(state.inv[k]>0){state.inv[k]--;const c=ITEMS[k].comida;if(ITEMS[k].alcool){if(typeof MP!=='undefined'&&MP.cap)MP.cap.bebado=20;else bebadoT=20;toast('🥴 Eita... a cabeça tá girando!')}state.hunger=Math.min(100,state.hunger+c);state.energy=Math.min(maxEnergy(),state.energy+Math.round(c/3));sfx.get()}openInv()},
+  bebemonster(){bebeMonster();openInv()},
   craftrod(){if(!state.flags.rod&&state.inv.madeira>=8){state.inv.madeira-=8;state.flags.rod=1;sfx.build();toast('Vara de pescar pronta! Fique de frente para o rio ou o lago e aperte E.')}openInv()},
   invtab(v){openInv(v)},
   rtab(v){const[t,m]=v.split(':');openClothes.keep=1;openClothes(m,t)},
@@ -6023,8 +6029,8 @@ const ACT={
     openTractorShop(`Negócio fechado! O ${t.nome} é seu, de tanque cheio. Aperte T para subir.`)},
   tratoruse(k){if(!state.tratores[k])return;if(state.riding&&state.rideKind==='trator')state.riding=false;state.trator=k;openTractorShop()},
   tratorride(){toggleRide('trator');openTractorShop()},
-  implbuy(k){const E=IMPLEM[k],q=impl();if(!E||q.own[k]||state.coins<E.preco)return;state.coins-=E.preco;q.own[k]=1;q.eng=k;sfx.coin();save();openTractorShop(`${E.ico} ${E.nome} comprada e já engatada no trator!`)},
-  implon(k){const q=impl();if(k&&!q.own[k])return;q.eng=k||null;beep(330,.08,'square',.04);save();openTractorShop(k?`${IMPLEM[k].ico} ${IMPLEM[k].nome} engatada.`:'Equipamento desengatado: o trator volta a colher e plantar em volta dele.')},
+  implbuy(k){const E=IMPLEM[k],q=impl();if(!E||q.own[k]||state.coins<E.preco)return;state.coins-=E.preco;q.own[k]=1;q.eng=k;sfx.coin();save();openTractorShop(k==='ceifa'?'🌾 Colheitadeira comprada e já em uso! Aperte T para subir.':`${E.ico} ${E.nome} comprada e já engatada no trator!`)},
+  implon(k){const q=impl();if(k&&!q.own[k])return;q.eng=k||null;beep(330,.08,'square',.04);save();openTractorShop(k==='ceifa'?'🌾 Agora você está usando a colheitadeira.':k?`${IMPLEM[k].ico} ${IMPLEM[k].nome} engatada.`:'De volta ao trator: ele colhe e planta em volta dele.')},
   venbuy(v){const n=+v|0,c=n*VENENO_PRECO;if(!n||state.coins<c)return;state.coins-=c;state.inv.veneno=(state.inv.veneno|0)+n;sfx.coin();save();openTractorShop(`🧪 +${n} L de veneno.`)},
   selq(v){const[k,d]=v.split(':'),n=state.inv[k]||0;sellSel[k]=d==='all'?n:clamp((sellSel[k]||0)+(+d),0,n);if(!sellSel[k])delete sellSel[k];sellDone=0;openSell(true)},
   selall(){for(const k in ITEMS)if(ITEMS[k].preco&&state.inv[k]>0)sellSel[k]=state.inv[k];sellDone=0;openSell(true)},
@@ -6766,8 +6772,13 @@ const ACC_LOT=[43,57,4,3],MAIK_POS=[45.1,60.3];
 const DOZE_POS=[196.5,173.4],DOZE_PRECO=300000;      // Caça & Pesca do Seu Ademir, na praça de Iomerê: o único lugar que vende a doze
 const ACC_MENU=[
   {k:'estimulante',nome:'Estimulante cerebral',preco:100,ico:'🧠',desc:'XP em dobro por 5 horas (do jogo).'},
-  {k:'monster',nome:'Energético Monster',preco:85,ico:'🥤',desc:'Sobe aos poucos +50 de energia e +50 de fome.'},
+  {k:'monster',nome:'Energético Monster',preco:600,ico:'🥤',desc:'Vai para a mochila. Sobe aos poucos +50 de energia e +50 de fome. Compra até 2 e bebe até 2 por dia.'},
   {k:'pastel',nome:'Pastel',preco:25,ico:'🥟',desc:'Vai para a mochila. Mata 18 de fome.'}];
+const MONSTER_DIA=2,monsterHoje=()=>{const f=state.flags||(state.flags={});return f.monD===state.day?(f.monN|0):0};      // compras de hoje
+const monsterUsoHoje=()=>{const f=state.flags||(state.flags={});return f.monUD===state.day?(f.monUN|0):0};      // quantos bebeu hoje
+function bebeMonster(){if((state.inv.monster|0)<=0)return;if(monsterUsoHoje()>=MONSTER_DIA){toast(`🥤 Já tomou ${MONSTER_DIA} Monster hoje. Guarde esse para amanhã!`,5000);sfx.no&&sfx.no();return}
+  state.inv.monster--;state.flags.monUN=monsterUsoHoje()+1;state.flags.monUD=state.day;const m=state.monster||(state.monster={e:0,h:0});m.e+=MONSTER_PTS;m.h+=MONSTER_PTS;
+  sfx.get();toast(`🥤 Monster! A energia e a fome vão subindo aos poucos… (${state.flags.monUN}/${MONSTER_DIA} hoje)`,5000)}
 const ACC_XP_MIN=5*60,MONSTER_PTS=50,MONSTER_MIN=60;      // estimulante dura 5 h; Monster solta 50 + 50 ao longo de 1 h de jogo
 const accSprite=(()=>{let c=null;return()=>{if(c)return c;const W=ACC_LOT[2]*16,H=ACC_LOT[3]*16+LT;
   return c=mk(W,H,(r,e)=>{
@@ -7090,12 +7101,13 @@ function openAcc(){const xpL=state.xpUntil?Math.max(0,state.xpUntil-absNow()):0,
     <div class="acc-maik"><img src="${PORTRAIT.maikelen||''}" alt=""><div><b>Maikelen</b><p>"Não é CPU! É Gabinete." 👍</p></div></div>`;
   if(xpL>0)h+=`<p class="acc-on">🧠 Estimulante ativo: XP em dobro por mais ${Math.floor(xpL/60)}h ${String(Math.floor(xpL%60)).padStart(2,'0')}min</p>`;
   if(mo&&(mo.e>0||mo.h>0))h+=`<p class="acc-on">🥤 Monster batendo: ainda vem +${Math.ceil(mo.e)} energia e +${Math.ceil(mo.h)} fome</p>`;
-  h+=ACC_MENU.map(it=>`<div class="bar-it acc-it"><span class="acc-ic">${it.ico}</span><div style="flex:1"><b>${it.nome}</b><br><small>${it.desc}</small>${it.k==='pastel'?`<br><small>na mochila: ${state.inv.pastel||0}</small>`:''}</div>
-    <button class="mini" data-a="accbuy" data-v="${it.k}" ${state.coins<it.preco?'disabled':''}>${brl(it.preco)}</button></div>`).join('');
+  h+=ACC_MENU.map(it=>`<div class="bar-it acc-it"><span class="acc-ic">${it.ico}</span><div style="flex:1"><b>${it.nome}</b><br><small>${it.desc}</small>${it.k==='pastel'?`<br><small>na mochila: ${state.inv.pastel||0}</small>`:it.k==='monster'?`<br><small>na mochila: ${state.inv.monster|0} · bebeu hoje: ${monsterUsoHoje()}/${MONSTER_DIA}</small>`:''}</div>
+    ${it.k==='monster'?`<small style="display:block;text-align:right">hoje: ${monsterHoje()}/${MONSTER_DIA}</small>`:''}<button class="mini" data-a="accbuy" data-v="${it.k}" ${state.coins<it.preco||it.k==='monster'&&monsterHoje()>=MONSTER_DIA?'disabled':''}>${it.k==='monster'&&monsterHoje()>=MONSTER_DIA?'Esgotado hoje':brl(it.preco)}</button></div>`).join('');
   showPanel('acc',h)}
-function accBuy(k){const it=ACC_MENU.find(x=>x.k===k);if(!it||state.coins<it.preco)return;state.coins=Math.round((state.coins-it.preco)*100)/100;sfx.coin&&sfx.coin();
+function accBuy(k){const it=ACC_MENU.find(x=>x.k===k);if(!it||state.coins<it.preco)return;if(k==='monster'&&monsterHoje()>=MONSTER_DIA){toast(`🥤 A Maikelen não vende mais: só ${MONSTER_DIA} Monster por dia. Volte amanhã!`,5000);sfx.no&&sfx.no();return}
+  if(k==='monster'){state.flags.monN=monsterHoje()+1;state.flags.monD=state.day}state.coins=Math.round((state.coins-it.preco)*100)/100;sfx.coin&&sfx.coin();
   if(k==='estimulante'){const me=absNow();state.xpUntil=Math.max(me,state.xpUntil||0)+ACC_XP_MIN;toast('🧠 Estimulante cerebral: XP em dobro pelas próximas 5 horas!',6000)}
-  else if(k==='monster'){const m=state.monster||(state.monster={e:0,h:0});m.e+=MONSTER_PTS;m.h+=MONSTER_PTS;toast('🥤 Monster! A energia e a fome vão subindo aos poucos…',5000)}
+  else if(k==='monster'){state.inv.monster=(state.inv.monster|0)+1;toast(`🥤 Monster na mochila! Beba quando quiser (I → Comida), até ${MONSTER_DIA} por dia.`,5000)}
   else{state.inv.pastel=(state.inv.pastel||0)+1;toast('🥟 Pastel na mochila! (abra com I para comer)',4000)}
   save();openAcc()}
 // o Monster vai soltando energia e fome a cada minuto do jogo
